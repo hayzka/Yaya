@@ -3,534 +3,606 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AmonsPath Music Social</title>
+    
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:italic&display=swap" rel="stylesheet">
-    
-    <style id="base-style">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@1,400;1,700&display=swap" rel="stylesheet">
+
+    <style>
         :root { --theme-color: #ec4899; }
-        body { background-color: #fcfcfc; font-family: 'Inter', sans-serif; color: #1a1a1a; -webkit-tap-highlight-color: transparent; }
+        body { 
+            background-color: #fcfcfc; 
+            font-family: 'Inter', sans-serif; 
+            color: #1a1a1a; 
+            -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
+        }
         
-        /* Truncate Logic: Memotong caption panjang di timeline */
-        .caption-excent { 
-            display: -webkit-box; 
-            -webkit-line-clamp: 2; 
-            -webkit-box-orient: vertical; 
-            overflow: hidden; 
-            cursor: pointer; 
+        /* Typography & Aesthetics */
+        .font-serif { font-family: 'Playfair Display', serif; }
+        .elegant-card { 
+            background: white; 
+            border-radius: 30px; 
+            margin: 15px; 
+            border: 1px solid #f0f0f0; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 20px -10px rgba(0,0,0,0.05);
+        }
+        .elegant-card:hover { transform: translateY(-5px); box-shadow: 0 20px 30px -15px rgba(0,0,0,0.1); }
+        
+        /* Forms */
+        .input-elegant { 
+            background: #f8f8f8; 
+            border: 1px solid #eee; 
+            border-radius: 18px; 
+            padding: 14px 20px; 
+            outline: none; 
+            font-size: 14px; 
+            width: 100%; 
+            transition: 0.3s;
+        }
+        .input-elegant:focus { border-color: var(--theme-color); background: white; }
+        
+        .btn-main { 
+            background: var(--theme-color); 
+            color: white; 
+            border-radius: 18px; 
+            padding: 16px; 
+            font-weight: 600; 
+            width: 100%; 
+            transition: 0.3s; 
+            box-shadow: 0 10px 20px -10px var(--theme-color);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 12px;
+        }
+        .btn-main:active { transform: scale(0.95); }
+
+        /* Animations */
+        .animate-focus { animation: slideInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .elegant-card { background: white; border-radius: 20px; margin: 15px; border: 1px solid #f0f0f0; box-shadow: 0 4px 20px rgba(0,0,0,0.01); transition: 0.3s; }
-        .input-elegant { background: #f9f9f9; border: 1px solid #eee; border-radius: 12px; padding: 12px 16px; outline: none; font-size: 14px; width: 100%; }
-        .btn-main { background: var(--theme-color); color: white; border-radius: 12px; padding: 14px; font-weight: 600; width: 100%; transition: 0.2s; }
-        
-        /* Focus View Typography */
-        .focus-title { font-family: 'Playfair Display', serif; font-size: 2.5rem; font-style: italic; line-height: 1.1; }
-        .focus-body { font-weight: 300; line-height: 1.8; color: #444; font-style: italic; font-size: 1.1rem; }
+        .music-disk-anim { animation: spin 4s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-focus { animation: fadeIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        /* Utilities */
         .no-scrollbar::-webkit-scrollbar { display: none; }
+        .caption-truncate {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
     </style>
     <style id="user-custom-css"></style>
 </head>
-<body class="pb-24 no-scrollbar">
+<body class="pb-32 no-scrollbar">
 
-    <div id="header-nav" class="sticky top-0 z-50 bg-white/80 backdrop-blur-md p-5 flex justify-between items-center border-b border-gray-50">
-        <div id="user-display" class="flex items-center gap-3 cursor-pointer" onclick="toggleModal('settings-modal')">
-            <div class="w-10 h-10 rounded-full bg-gray-100 overflow-hidden border border-pink-100">
+    <nav class="sticky top-0 z-[60] bg-white/70 backdrop-blur-xl border-b border-gray-50 p-5 flex justify-between items-center">
+        <div id="profile-trigger" class="flex items-center gap-3 cursor-pointer" onclick="toggleModal('settings-modal')">
+            <div class="w-11 h-11 rounded-full bg-gray-100 overflow-hidden border-2 border-white shadow-sm">
                 <img id="my-photo" src="" class="w-full h-full object-cover hidden">
             </div>
             <div>
-                <h1 id="my-name" class="font-serif italic text-lg leading-none text-gray-400">Loading...</h1>
-                <p id="my-username" class="text-[9px] text-gray-300 mt-1 uppercase tracking-widest font-bold">@guest</p>
+                <h1 id="my-name" class="font-serif italic text-lg leading-tight text-gray-900">Loading...</h1>
+                <p id="my-username" class="text-[9px] text-gray-400 uppercase tracking-[0.2em] font-bold">@guest</p>
             </div>
         </div>
-        <div class="flex gap-4 items-center">
-            <button onclick="toggleModal('notif-modal')" class="text-xl relative">
-                🔔 <span id="notif-dot" class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full hidden border-2 border-white"></span>
-            </button>
+        <div class="flex gap-4">
+            <button onclick="toggleModal('search-layer')" class="text-xl">🔍</button>
             <button onclick="toggleModal('settings-modal')" class="text-xl">⚙️</button>
         </div>
+    </nav>
+
+    <div class="px-5 mt-4">
+        <input type="text" id="global-search" oninput="debounceSearch(this.value)" placeholder="Search tracks or users..." class="input-elegant font-serif italic italic text-gray-400">
     </div>
 
-    <div class="px-5 py-3">
-        <input type="text" id="search-input" oninput="searchMusic(this.value)" placeholder="Search songs, users, or moments..." class="input-elegant italic">
-    </div>
+    <main id="timeline" class="min-h-screen"></main>
 
-    <div id="timeline"></div>
+    <button id="fab-post" onclick="toggleModal('post-modal')" class="fixed bottom-10 right-8 w-16 h-16 rounded-full shadow-2xl flex items-center justify-center text-white text-3xl z-50 hidden transition-transform active:scale-90" style="background: var(--theme-color);">
+        <span class="mb-1">+</span>
+    </button>
 
-    <div id="focus-layer" class="hidden fixed inset-0 z-[100] bg-white/98 backdrop-blur-3xl p-8 overflow-y-auto no-scrollbar animate-focus">
-        <div class="flex justify-between items-center mb-12">
-            <button onclick="closeFocus()" class="text-[10px] font-bold tracking-[0.3em] text-gray-400 uppercase">Dismiss</button>
-            <div class="w-2 h-2 rounded-full" style="background: var(--theme-color)"></div>
-        </div>
-        <div id="focus-content" class="flex flex-col gap-10"></div>
-    </div>
-
-    <div id="history-modal" class="hidden fixed inset-0 z-[115] bg-white p-6 overflow-y-auto no-scrollbar animate-focus">
-    <div class="flex justify-between items-center mb-8">
-        <h2 class="font-serif italic text-2xl">My Activity</h2>
-        <button onclick="toggleModal('history-modal')" class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Close</button>
-    </div>
-    <div id="history-list" class="space-y-4">
-        </div>
-</div>
-
-<button onclick="viewMyHistory()" class="w-full bg-gray-50 py-4 rounded-xl text-[11px] font-bold uppercase tracking-widest text-gray-500 hover:bg-gray-100 transition">
-    View My Activity (Likes)
-</button>
-
-    <div id="settings-modal" class="hidden fixed inset-0 z-[110] bg-black/40 backdrop-blur-sm flex items-end">
-        <div class="bg-white w-full rounded-t-[30px] p-8 animate-focus">
-            <h3 class="font-bold mb-6 text-center">Settings & Layout</h3>
+    <div id="post-modal" class="hidden fixed inset-0 z-[100] bg-black/30 backdrop-blur-sm flex items-end">
+        <div class="bg-white w-full p-8 rounded-t-[40px] animate-focus shadow-2xl max-h-[95vh] overflow-y-auto no-scrollbar">
+            <div class="w-12 h-1 bg-gray-100 rounded-full mx-auto mb-8"></div>
+            <h3 class="font-serif italic text-2xl mb-6 text-gray-800 tracking-tight">Post a Track</h3>
+            
             <div class="space-y-6">
-                <div class="flex justify-between items-center bg-gray-50 p-4 rounded-2xl">
-                    <span class="text-sm font-medium">Private Account 🔒</span>
-                    <input type="checkbox" id="privacy-toggle" onchange="updatePrivacy(this.checked)" class="w-5 h-5">
+                <div class="relative">
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-gray-400 ml-1">Find Song on iTunes</label>
+                    <input id="music-search" type="text" oninput="searchiTunes(this.value)" placeholder="Artist or Song Name..." class="input-elegant mt-2">
+                    <div id="itunes-results" class="hidden absolute left-0 right-0 mt-3 bg-white border border-gray-100 rounded-2xl shadow-2xl z-[110] max-h-64 overflow-y-auto no-scrollbar"></div>
                 </div>
-                <div>
-                    <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Theme Color</span>
-                    <div class="flex gap-4 mt-3">
-                        <div onclick="setTheme('#1a1a1a')" class="w-8 h-8 rounded-full bg-black"></div>
-                        <div onclick="setTheme('#808080')" class="w-8 h-8 rounded-full bg-gray-500"></div>
-                        <div onclick="setTheme('#ec4899')" class="w-8 h-8 rounded-full bg-pink-500"></div>
-                        <div onclick="setTheme('#3b82f6')" class="w-8 h-8 rounded-full bg-blue-500"></div>
+
+                <div id="music-preview" class="hidden flex items-center gap-5 p-5 bg-gray-50 rounded-[25px] border border-dashed border-gray-200 animate-pulse">
+                    <img id="prev-cover" src="" class="w-16 h-16 rounded-2xl object-cover shadow-lg">
+                    <div class="flex-1">
+                        <p id="prev-title" class="text-sm font-bold text-gray-800 leading-tight"></p>
+                        <p id="prev-artist" class="text-[11px] text-gray-400 mt-1 uppercase tracking-tighter"></p>
                     </div>
+                    <button onclick="clearMusicSelection()" class="w-8 h-8 rounded-full bg-gray-200 text-gray-500 text-xs">✕</button>
                 </div>
+
                 <div>
-                    <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Custom CSS Code</span>
-                    <textarea id="css-input" class="w-full mt-2 h-24 bg-gray-100 p-4 rounded-xl font-mono text-xs outline-none" placeholder=".elegant-card { border: 2px solid pink; }"></textarea>
-                    <button onclick="saveCSS()" class="mt-2 text-[10px] font-bold text-blue-500">APPLY CUSTOM LAYOUT</button>
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-gray-400 ml-1">Add Thoughts</label>
+                    <textarea id="post-cap" placeholder="Write something aesthetic..." class="input-elegant h-32 mt-2 resize-none"></textarea>
                 </div>
-                <button onclick="toggleModal('settings-modal')" class="w-full py-3 text-gray-400 text-xs font-bold uppercase">Close</button>
+
+                <input type="hidden" id="post-url">
+                <input type="hidden" id="post-title">
+                <input type="hidden" id="post-cover">
+
+                <button onclick="submitPost()" class="btn-main mt-4">Broadcast to Universe</button>
+                <button onclick="toggleModal('post-modal')" class="w-full text-center text-[10px] font-bold text-gray-300 uppercase py-4">Dismiss</button>
             </div>
         </div>
     </div>
 
-    <div id="auth-modal" class="hidden fixed inset-0 z-[120] bg-white p-10 flex flex-col justify-center animate-focus overflow-y-auto no-scrollbar">
-        <h1 class="font-serif italic text-4xl mb-2">Create Profile</h1>
-        <p class="text-gray-400 text-sm mb-10">Setup your username, bio, and photo.</p>
-        <div class="space-y-4">
+    <div id="settings-modal" class="hidden fixed inset-0 z-[120] bg-black/40 backdrop-blur-sm flex items-end">
+        <div class="bg-white w-full rounded-t-[40px] p-10 animate-focus max-h-[90vh] overflow-y-auto">
+            <h3 class="font-serif italic text-2xl mb-8">Personalize</h3>
+            
+            <div class="space-y-8">
+                <button onclick="copyMyLink()" class="w-full flex justify-between items-center p-5 bg-pink-50 rounded-2xl border border-pink-100">
+                    <span class="text-xs font-bold text-pink-500 uppercase tracking-widest">Copy Profile Link</span>
+                    <span class="text-xl">🔗</span>
+                </button>
+
+                <div class="flex justify-between items-center p-2">
+                    <div class="flex flex-col">
+                        <span class="text-sm font-semibold">Private Mode</span>
+                        <span class="text-[10px] text-gray-400 uppercase tracking-widest">Hide tracks from strangers</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="privacy-toggle" onchange="updatePrivacy(this.checked)" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-pink-500"></div>
+                    </label>
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Custom CSS Engine</label>
+                    <textarea id="css-input" class="w-full mt-3 h-32 bg-gray-50 border border-gray-100 p-5 rounded-2xl font-mono text-[11px] outline-none" placeholder=".elegant-card { border: 2px solid pink; }"></textarea>
+                    <button onclick="saveCSS()" class="mt-4 text-[10px] font-bold text-pink-500 uppercase tracking-[0.2em]">Apply Transformations</button>
+                </div>
+
+                <button onclick="toggleModal('settings-modal')" class="w-full py-4 text-gray-300 text-[10px] font-bold uppercase">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="focus-layer" class="hidden fixed inset-0 z-[200] bg-white overflow-y-auto no-scrollbar animate-focus"></div>
+
+    <div id="auth-modal" class="hidden fixed inset-0 z-[300] bg-white p-12 flex flex-col justify-center animate-focus">
+        <h1 class="font-serif italic text-5xl mb-4">Identity.</h1>
+        <p class="text-gray-400 text-sm mb-12 leading-relaxed uppercase tracking-widest">Define yourself before entering the path.</p>
+        <div class="space-y-5">
             <input id="reg-name" type="text" placeholder="Full Name" class="input-elegant">
-            <input id="reg-user" type="text" placeholder="Username (e.g. zakia_w)" class="input-elegant">
-            <textarea id="reg-bio" placeholder="Your Bio / Status..." class="input-elegant h-24"></textarea>
-            <input id="reg-photo" type="text" placeholder="Photo URL (Link Foto Kamu)" class="input-elegant">
-            <button onclick="createAccount()" class="btn-main mt-4">Start Journey</button>
+            <input id="reg-user" type="text" placeholder="Username" class="input-elegant">
+            <button onclick="createAccount()" class="btn-main py-6">Begin Journey</button>
         </div>
     </div>
-
-    <div id="notif-modal" class="hidden fixed inset-0 z-[105] bg-white p-6 overflow-y-auto no-scrollbar animate-focus">
-        <div class="flex justify-between items-center mb-8">
-            <h2 class="font-bold text-2xl">Activity</h2>
-            <button onclick="toggleModal('notif-modal')" class="text-xs text-gray-300 font-bold uppercase tracking-widest">Close</button>
-        </div>
-        <div id="notif-list" class="space-y-6"></div>
-    </div>
-
-    <div id="post-modal" class="hidden fixed inset-0 z-[80] bg-black/10 backdrop-blur-sm flex items-end">
-        <div class="bg-white w-full p-8 rounded-t-[30px] animate-focus">
-            <h3 class="font-serif italic text-lg mb-6">New Moment</h3>
-            <input id="post-url" type="text" placeholder="Music Direct URL (.mp3)" class="input-elegant mb-4">
-            <textarea id="post-cap" placeholder="Caption estetik..." class="input-elegant h-40 mb-6"></textarea>
-            <button onclick="submitPost()" class="btn-main uppercase tracking-widest text-xs">Publish</button>
-        </div>
-    </div>
-
-    <button id="fab-post" onclick="toggleModal('post-modal')" class="fixed bottom-8 right-8 w-14 h-14 rounded-full shadow-2xl flex items-center justify-center text-white text-3xl z-40 hidden" style="background: var(--theme-color);"> + </button>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        
+        tg.enableClosingConfirmation();
+
+        // Database Config
         const SUPABASE_URL = 'https://aldzhrtbrjszppseawrz.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_h-BSul_X4VDxc-6gwSUa0w_Z_rsJ2xp';
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        
-        let telegramUser = tg.initDataUnsafe.user || { id: 1234, first_name: 'Dev' };
-        let profile = null;
+        const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        // State
+        let telegramUser = tg.initDataUnsafe.user || { id: 123456, first_name: 'Developer' };
+        let currentViewedId = null;
+        let replyingToId = null;
+        let itunesTimeout;
+
+        // --- 1. Initialization ---
         async function init() {
-            const { data } = await supabase.from('profiles').select('*').eq('telegram_id', telegramUser.id).single();
-            if (!data) {
+            const startParam = tg.initDataUnsafe.start_param;
+            currentViewedId = startParam ? parseInt(startParam) : telegramUser.id;
+
+            const { data: profile, error } = await client.from('profiles').select('*').eq('telegram_id', currentViewedId).single();
+
+            if (!profile && currentViewedId === telegramUser.id) {
                 document.getElementById('auth-modal').classList.remove('hidden');
-            } else {
-                profile = data;
-                updateUI();
-                loadPosts();
-                loadNotifs();
-                document.getElementById('fab-post').classList.remove('hidden');
-                if(profile.custom_css) document.getElementById('user-custom-css').innerHTML = profile.custom_css;
+            } else if (profile) {
+                // Apply Styles & UI
+                if (profile.custom_css) document.getElementById('user-custom-css').innerHTML = profile.custom_css;
+                document.getElementById('my-name').innerText = profile.display_name;
+                document.getElementById('my-username').innerText = '@' + profile.username;
+                
+                if (profile.photo_url) {
+                    const img = document.getElementById('my-photo');
+                    img.src = profile.photo_url; img.classList.remove('hidden');
+                }
+
+                // Show/Hide Owner Features
+                if (currentViewedId === telegramUser.id) {
+                    document.getElementById('fab-post').classList.remove('hidden');
+                    document.getElementById('privacy-toggle').checked = profile.is_private;
+                    document.getElementById('css-input').value = profile.custom_css || '';
+                }
+
+                // Privacy Check
+                if (profile.is_private && currentViewedId !== telegramUser.id) {
+                    document.getElementById('timeline').innerHTML = `
+                        <div class="mt-40 text-center">
+                            <span class="text-4xl">🔒</span>
+                            <p class="mt-4 font-serif italic text-gray-400">This sanctuary is private.</p>
+                        </div>`;
+                } else {
+                    loadPosts(currentViewedId);
+                }
             }
         }
 
-        function updateUI() {
-            document.getElementById('my-name').innerText = profile.display_name;
-            document.getElementById('my-name').classList.remove('text-gray-400');
-            document.getElementById('my-username').innerText = '@' + profile.username;
-            if(profile.photo_url) {
-                const img = document.getElementById('my-photo');
-                img.src = profile.photo_url;
-                img.classList.remove('hidden');
-            }
-            document.getElementById('privacy-toggle').checked = profile.is_private;
-            applyTheme(profile.theme_color || '#ec4899');
-        }
-
-        async function createAccount() {
-            const name = document.getElementById('reg-name').value;
-            const user = document.getElementById('reg-user').value;
-            const bio = document.getElementById('reg-bio').value;
-            const photo = document.getElementById('reg-photo').value;
-            if(!name || !user) return;
-            await supabase.from('profiles').insert({
-                telegram_id: telegramUser.id, display_name: name, username: user, photo_url: photo, bio: bio
-            });
-            location.reload();
-        }
-
-        
-        async function loadPosts(query = '') {
-            let db = supabase.from('music_posts').select('*, profiles(*), likes(id)');
-            if(query) db = db.or(`caption.ilike.%${query}%,profiles(display_name.ilike.%${query}%)`);
-            const { data } = await db.order('created_at', {ascending: false});
+        // --- 2. Post & Timeline Logic ---
+        async function loadPosts(targetId, query = '') {
+            let queryBuilder = client.from('music_posts').select('*, profiles(*), likes(id)').eq('sender_id', targetId);
             
-            document.getElementById('timeline').innerHTML = data.map(post => `
+            if(query) {
+                queryBuilder = queryBuilder.or(`caption.ilike.%${query}%, music_title.ilike.%${query}%`);
+            }
+
+            const { data: posts, error } = await queryBuilder.order('created_at', {ascending: false});
+            const container = document.getElementById('timeline');
+
+            if (!posts || posts.length === 0) {
+                container.innerHTML = `<div class="py-32 text-center text-gray-300 italic font-serif">No vibes shared yet...</div>`;
+                return;
+            }
+
+            container.innerHTML = posts.map(post => `
                 <div class="elegant-card animate-focus">
-                    <div class="p-5 flex justify-between items-start">
-                        <div class="flex gap-4">
-                            <img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=150" class="w-16 h-16 rounded-xl object-cover grayscale">
-                            <div class="flex flex-col justify-center">
-                                <p class="text-[9px] font-bold text-gray-300 uppercase tracking-widest">${post.profiles.display_name}</p>
-                                <h3 class="font-serif italic text-lg leading-tight">${post.caption.split(' ')[0]}</h3>
+                    <div class="p-7">
+                        <div class="flex justify-between items-start mb-6">
+                            <div class="flex items-center gap-5">
+                                <div class="relative w-16 h-16 group" id="disk-container-${post.id}">
+                                    <div class="absolute inset-0 rounded-full border border-pink-100 border-dashed animate-spin-slow opacity-20"></div>
+                                    <img src="${post.music_cover || 'https://via.placeholder.com/150'}" id="img-${post.id}" 
+                                         class="w-full h-full rounded-full object-cover shadow-lg transition-all duration-700">
+                                    <div class="absolute inset-0 flex items-center justify-center">
+                                        <div class="w-3 h-3 bg-white rounded-full shadow-inner"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="text-[8px] font-bold text-pink-500 uppercase tracking-[0.4em] mb-1">${post.profiles.display_name}</p>
+                                    <h2 class="font-serif italic text-lg leading-tight text-gray-900">${post.music_title}</h2>
+                                </div>
                             </div>
+                            <button onclick="showPostOptions('${post.id}')" class="text-gray-300 p-2 italic font-serif">⋮</button>
                         </div>
-                        <button onclick="showMenu('${post.id}', '${post.sender_id}')" class="text-gray-300 text-xl font-bold">⋮</button>
-                    </div>
-                    <div class="px-5 pb-5">
-                        <div class="caption-excent text-sm text-gray-500 italic" onclick="openFocus('${post.id}')">
-                            ${post.caption}
+
+                        <div class="text-[12px] text-gray-500 italic mb-8 leading-relaxed px-1">
+                            <span class="caption-truncate" onclick="openFocus('${post.id}')">"${post.caption}"</span>
                         </div>
-                    </div>
-                    <div class="px-5 py-3 border-t border-gray-50 flex gap-6 text-[10px] font-bold uppercase tracking-widest text-gray-400">
-                        <button onclick="handleLike('${post.id}', '${post.sender_id}')">❤️ ${post.likes.length} Like</button>
-                        <button onclick="openFocus('${post.id}')">💬 Comment</button>
+
+                        <div class="bg-gray-50 rounded-[22px] p-4 flex items-center gap-5 border border-gray-100/50 mb-6">
+                            <button onclick="toggleAudio('${post.id}')" id="btn-play-${post.id}" 
+                                    class="w-12 h-12 bg-white rounded-full shadow-sm flex items-center justify-center text-lg hover:scale-110 active:scale-95 transition">▶️</button>
+                            <div class="flex-1">
+                                <div class="h-[3px] bg-gray-200 rounded-full overflow-hidden">
+                                    <div id="progress-${post.id}" class="h-full bg-pink-400 transition-all duration-200" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <audio id="audio-${post.id}" src="${post.music_url}" 
+                                   ontimeupdate="onTimeUpdate('${post.id}')" 
+                                   onended="onAudioEnded('${post.id}')"></audio>
+                        </div>
+
+                        <div class="flex gap-8 border-t border-gray-50 pt-5 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 px-1">
+                            <button onclick="handleLike('${post.id}', '${post.sender_id}')" class="flex items-center gap-2 hover:text-pink-500 transition">
+                                <span id="like-icon-${post.id}">❤️</span> 
+                                <span>${post.likes ? post.likes.length : 0}</span>
+                            </button>
+                            <button onclick="openFocus('${post.id}')" class="flex items-center gap-2 hover:text-black transition">
+                                💬 Thoughts
+                            </button>
+                        </div>
                     </div>
                 </div>
             `).join('');
         }
 
-        async function searchMusic(val) {
-    const container = document.getElementById('timeline');
-    
-    // Jika kolom search kosong, tampilkan timeline normal
-    if (!val || val.trim() === "") {
-        loadPosts();
-        return;
-    }
+        // --- 3. Music Search (iTunes) ---
+        async function searchiTunes(query) {
+            const resultsDiv = document.getElementById('itunes-results');
+            if (query.length < 3) { resultsDiv.classList.add('hidden'); return; }
 
-    // Melakukan pencarian di Postingan (Caption) DAN Profil (Username/Name)
-    const { data, error } = await supabase
-        .from('music_posts')
-        .select('*, profiles(*), likes(id)')
-        .or(`caption.ilike.%${val}%, profiles(display_name.ilike.%${val}%), profiles(username.ilike.%${val}%)`)
-        .order('created_at', { ascending: false });
-
-    if (data.length === 0) {
-        container.innerHTML = `
-            <div class="flex flex-col items-center justify-center py-20 opacity-30">
-                <span class="text-4xl mb-4">🔍</span>
-                <p class="italic text-sm">No results found for "${val}"</p>
-            </div>`;
-        return;
-    }
-
-    // Render hasil pencarian
-    container.innerHTML = data.map(post => `
-        <div class="elegant-card animate-focus">
-            <div class="p-5 flex justify-between items-start">
-                <div class="flex gap-4">
-                    <img src="${post.profiles.photo_url || 'https://ui-avatars.com/api/?name='+post.profiles.display_name}" class="w-14 h-14 rounded-xl object-cover grayscale">
-                    <div class="flex flex-col justify-center">
-                        <p class="text-[9px] font-bold text-pink-400 uppercase tracking-widest">@${post.profiles.username}</p>
-                        <h3 class="font-serif italic text-lg leading-tight">${post.caption.split(' ')[0]}</h3>
-                    </div>
-                </div>
-                <button onclick="showMenu('${post.id}', '${post.sender_id}')" class="text-gray-200">⋮</button>
-            </div>
-            <div class="px-5 pb-5">
-                <div class="caption-excent text-sm text-gray-500 italic" onclick="openFocus('${post.id}')">
-                    ${post.caption}
-                </div>
-            </div>
-            <div class="px-5 py-3 border-t border-gray-50 flex gap-6 text-[9px] font-bold text-gray-400 uppercase tracking-widest">
-                <button onclick="handleLike('${post.id}', '${post.sender_id}')">❤️ ${post.likes.length} Like</button>
-                <button onclick="openFocus('${post.id}')">💬 Comment</button>
-            </div>
-        </div>
-    `).join('');
-                                }
-
-        let replyingTo = null; // Variable untuk menyimpan ID komentar yang sedang dibalas
-
-async function openFocus(postId) {
-    const { data: post } = await supabase.from('music_posts').select('*, profiles(*)').eq('id', postId).single();
-    const layer = document.getElementById('focus-layer');
-    const content = document.getElementById('focus-content');
-    
-    // Render Konten Postingan
-    content.innerHTML = `
-        <div class="animate-focus">
-            <p class="text-[10px] font-bold text-gray-300 tracking-[0.4em] uppercase mb-4">Moment by ${post.profiles.display_name}</p>
-            <h1 class="focus-title mb-6">${post.caption.split(' ')[0]}</h1>
-            <div class="w-full aspect-square bg-gray-50 rounded-3xl overflow-hidden shadow-2xl mb-8">
-                <img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=600" class="w-full h-full object-cover grayscale-[0.2]">
-            </div>
-            <div class="focus-body mb-10">"${post.caption}"</div>
-            
-            <div class="border-t border-gray-100 pt-8">
-                <h4 class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-6">Thoughts</h4>
-                <div id="comments-container" class="space-y-6 mb-20"></div>
-            </div>
-        </div>
-
-        <div class="fixed bottom-0 left-0 w-full bg-white p-5 border-t border-gray-50 flex flex-col gap-2">
-            <div id="reply-indicator" class="hidden text-[9px] text-pink-400 font-bold uppercase italic">Replying... <button onclick="cancelReply()" class="text-gray-300 ml-2">Cancel</button></div>
-            <div class="flex gap-3">
-                <input id="comment-input" type="text" placeholder="Add a comment..." class="flex-1 bg-gray-50 p-3 rounded-xl text-sm outline-none">
-                <button onclick="postComment('${post.id}')" class="bg-black text-white px-5 rounded-xl text-xs font-bold">SEND</button>
-            </div>
-        </div>
-    `;
-    
-    layer.classList.remove('hidden');
-    loadComments(postId);
-    tg.HapticFeedback.impactOccurred('medium');
-}
-
-async function loadComments(postId) {
-    const { data: comments } = await supabase
-        .from('comments')
-        .select('*, profiles(*)')
-        .eq('post_id', postId)
-        .order('created_at', { ascending: true });
-
-    const container = document.getElementById('comments-container');
-    const parentComments = comments.filter(c => !c.parent_id);
-    
-    container.innerHTML = parentComments.map(parent => {
-        const replies = comments.filter(r => r.parent_id === parent.id);
-        return `
-            <div class="space-y-4">
-                <div class="flex gap-3">
-                    <img src="${parent.profiles.photo_url || ''}" class="w-7 h-7 rounded-full bg-gray-100">
-                    <div class="flex-1">
-                        <p class="text-[10px] font-bold">@${parent.profiles.username}</p>
-                        <p class="text-sm text-gray-600 mt-1">${parent.content}</p>
-                        <button onclick="prepareReply('${parent.id}', '${parent.profiles.username}')" class="text-[9px] font-bold text-gray-300 uppercase mt-2">Reply</button>
-                    </div>
-                </div>
-                ${replies.map(reply => `
-                    <div class="flex gap-3 ml-8 border-l-2 border-gray-50 pl-4">
-                        <img src="${reply.profiles.photo_url || ''}" class="w-5 h-5 rounded-full bg-gray-100">
-                        <div class="flex-1">
-                            <p class="text-[9px] font-bold">@${reply.profiles.username}</p>
-                            <p class="text-xs text-gray-500 mt-1">${reply.content}</p>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-        `;
-    }).join('');
-}
-
-        let viewedUserId = null; // ID orang yang profilnya sedang kita liat
-
-async function init() {
-    // Cek apakah ada ID user di link (startapp parameter)
-    const startParam = tg.initDataUnsafe.start_param;
-    viewedUserId = startParam ? startParam : telegramUser.id;
-
-    // Ambil data profil orang yang sedang dilihat
-    const { data: viewedProfile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('telegram_id', viewedUserId)
-        .single();
-
-    if (viewedProfile) {
-        // TERAPKAN TAMPILAN PEMILIK PROFIL
-        applyViewedTheme(viewedProfile);
-        loadPostsOfUser(viewedUserId);
-    }
-}
-
-function applyViewedTheme(profileData) {
-    // Terapkan warna tema si pemilik profil
-    document.documentElement.style.setProperty('--theme-color', profileData.theme_color || '#ec4899');
-    
-    // Terapkan Custom CSS milik si pemilik profil (Ini kuncinya!)
-    const customStyleTag = document.getElementById('user-custom-css');
-    if(profileData.custom_css) {
-        customStyleTag.innerHTML = profileData.custom_css;
-    } else {
-        customStyleTag.innerHTML = ''; // Kosongkan jika dia tidak pakai CSS
-    }
-
-    // Ubah header agar menampilkan nama orang yang dikunjungi
-    document.getElementById('my-name').innerText = profileData.display_name;
-    document.getElementById('my-username').innerText = '@' + profileData.username;
-    
-    // Sembunyikan tombol Edit/Post jika kita cuma "tamu"
-    if (viewedUserId != telegramUser.id) {
-        document.getElementById('fab').classList.add('hidden');
-        document.getElementById('settings-btn').classList.add('hidden'); 
-    }
-}
-        
-function prepareReply(commentId, username) {
-    replyingTo = commentId;
-    const indicator = document.getElementById('reply-indicator');
-    indicator.innerText = `Replying to @${username}...`;
-    indicator.classList.remove('hidden');
-    document.getElementById('comment-input').focus();
-}
-
-function cancelReply() {
-    replyingTo = null;
-    document.getElementById('reply-indicator').classList.add('hidden');
-}
-
-async function postComment(postId) {
-    const content = document.getElementById('comment-input').value;
-    if(!content) return;
-
-    await supabase.from('comments').insert({
-        post_id: postId,
-        user_id: telegramUser.id,
-        content: content,
-        parent_id: replyingTo
-    });
-
-    document.getElementById('comment-input').value = '';
-    cancelReply();
-    loadComments(postId);
-    tg.HapticFeedback.notificationOccurred('success');
-}
-
-        async function handleLike(postId, receiverId) {
-            await supabase.from('likes').insert({ post_id: postId, user_id: telegramUser.id });
-            await supabase.from('notifications').insert({ receiver_id: receiverId, sender_id: telegramUser.id, type: 'loved' });
-            loadPosts();
-            tg.HapticFeedback.impactOccurred('light');
+            clearTimeout(itunesTimeout);
+            itunesTimeout = setTimeout(async () => {
+                try {
+                    const res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=music&limit=6`);
+                    const data = await res.json();
+                    
+                    if (data.results.length > 0) {
+                        resultsDiv.innerHTML = data.results.map(track => `
+                            <div class="p-5 hover:bg-gray-50 cursor-pointer flex items-center gap-4 border-b border-gray-50 last:border-0" 
+                                 onclick="selectTrack('${track.trackName}', '${track.artistName}', '${track.previewUrl}', '${track.artworkUrl100}')">
+                                <img src="${track.artworkUrl60}" class="w-10 h-10 rounded-xl">
+                                <div>
+                                    <p class="text-[11px] font-bold text-gray-800">${track.trackName}</p>
+                                    <p class="text-[10px] text-gray-400 uppercase tracking-tighter">${track.artistName}</p>
+                                </div>
+                            </div>
+                        `).join('');
+                        resultsDiv.classList.remove('hidden');
+                    }
+                } catch (e) { console.error(e); }
+            }, 500);
         }
 
-        async function viewMyHistory() {
-            toggleModal('history-modal');
-            const { data, error } = await supabase
-                .from('likes')
-                .select(`
-                    post_id,
-                    music_posts (
-                        id,
-                        caption,
-                        profiles (display_name)
-                    )
-                `)
-                .eq('user_id', telegramUser.id)
-                .order('created_at', { ascending: false });
-                    
-            const container = document.getElementById('history-list');
-    
-            if (!data || data.length === 0) {
-                 container.innerHTML = `<p class="text-center text-gray-300 italic py-10">No activity yet...</p>`;
-                 return;
+        function selectTrack(title, artist, url, cover) {
+            document.getElementById('post-title').value = `${title} - ${artist}`;
+            document.getElementById('post-url').value = url;
+            document.getElementById('post-cover').value = cover.replace('100x100', '400x400'); // Higher Res
+            
+            document.getElementById('prev-title').innerText = title;
+            document.getElementById('prev-artist').innerText = artist;
+            document.getElementById('prev-cover').src = cover;
+            
+            document.getElementById('music-preview').classList.remove('hidden');
+            document.getElementById('itunes-results').classList.add('hidden');
+            document.getElementById('music-search').value = "";
+            tg.HapticFeedback.impactOccurred('medium');
+        }
+
+        function clearMusicSelection() {
+            document.getElementById('music-preview').classList.add('hidden');
+            document.getElementById('post-url').value = "";
+            document.getElementById('post-title').value = "";
+        }
+
+        // --- 4. Audio Control ---
+        function toggleAudio(id) {
+            const audio = document.getElementById(`audio-${id}`);
+            const btn = document.getElementById(`btn-play-${id}`);
+            const img = document.getElementById(`img-${id}`);
+
+            if (audio.paused) {
+                // Pause all others
+                document.querySelectorAll('audio').forEach(a => {
+                    const aid = a.id.split('-')[1];
+                    a.pause();
+                    document.getElementById(`btn-play-${aid}`).innerText = '▶️';
+                    document.getElementById(`img-${aid}`).classList.remove('music-disk-anim');
+                });
+
+                audio.play();
+                btn.innerText = '⏸️';
+                img.classList.add('music-disk-anim');
+                tg.HapticFeedback.impactOccurred('light');
+            } else {
+                audio.pause();
+                btn.innerText = '▶️';
+                img.classList.remove('music-disk-anim');
             }
+        }
 
-            container.innerHTML = data.map(item => `
-                <div class="p-4 bg-gray-50 rounded-2xl flex justify-between items-center group cursor-pointer" onclick="openFocus('${item.music_posts.id}')">
-                    <div class="flex flex-col">
-                        <span class="text-[9px] font-bold text-pink-400 uppercase tracking-tighter">You Liked</span>
-                        <span class="font-serif italic text-sm text-gray-600">"${item.music_posts.caption.substring(0, 30)}..."</span>
-                       <span class="text-[8px] text-gray-300 mt-1 uppercase">By ${item.music_posts.profiles.display_name}</span>
+        function onTimeUpdate(id) {
+            const audio = document.getElementById(`audio-${id}`);
+            const prog = document.getElementById(`progress-${id}`);
+            const pct = (audio.currentTime / audio.duration) * 100;
+            prog.style.width = pct + '%';
+        }
+
+        function onAudioEnded(id) {
+            document.getElementById(`btn-play-${id}`).innerText = '▶️';
+            document.getElementById(`img-${id}`).classList.remove('music-disk-anim');
+        }
+
+        // --- 5. Social Interactions (Focus Layer & Comments) ---
+        async function openFocus(postId) {
+            const { data: post } = await client.from('music_posts').select('*, profiles(*)').eq('id', postId).single();
+            const layer = document.getElementById('focus-layer');
+            
+            layer.innerHTML = `
+                <div class="p-10 pb-40">
+                    <div class="flex justify-between items-center mb-12">
+                        <button onclick="closeFocus()" class="text-[11px] font-bold text-gray-300 uppercase tracking-widest">Back</button>
+                        <div class="w-2 h-2 rounded-full bg-pink-500"></div>
                     </div>
-                    <span class="text-xl opacity-0 group-hover:opacity-100 transition">❤️</span>
+                    
+                    <div class="mb-12">
+                        <img src="${post.music_cover}" class="w-full aspect-square rounded-[40px] shadow-2xl mb-8 object-cover">
+                        <h1 class="font-serif italic text-4xl mb-3">${post.music_title}</h1>
+                        <p class="text-[10px] font-bold text-pink-500 uppercase tracking-[0.4em] mb-8">Shared by @${post.profiles.username}</p>
+                        <div class="text-gray-500 italic leading-relaxed text-sm p-4 bg-gray-50 rounded-2xl">"${post.caption}"</div>
+                    </div>
+
+                    <div class="border-t border-gray-100 pt-10">
+                        <h4 class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-10">Public Thoughts</h4>
+                        <div id="comments-container" class="space-y-10"></div>
+                    </div>
                 </div>
-           `).join('');
-       }   
 
-    
+                <div class="fixed bottom-0 left-0 w-full bg-white/80 backdrop-blur-xl p-6 border-t border-gray-50 shadow-2xl">
+                    <div id="reply-label" class="hidden text-[10px] text-pink-500 font-bold uppercase mb-3 flex justify-between italic">
+                        <span>Replying...</span>
+                        <button onclick="cancelReply()">✕</button>
+                    </div>
+                    <div class="flex gap-4">
+                        <input id="comment-input" type="text" placeholder="Add your perspective..." 
+                               class="flex-1 bg-gray-100 p-5 rounded-2xl text-sm outline-none focus:bg-white border border-transparent focus:border-pink-100">
+                        <button onclick="postComment('${postId}')" class="w-14 h-14 bg-black text-white rounded-2xl flex items-center justify-center">▶</button>
+                    </div>
+                </div>
+            `;
+            
+            layer.classList.remove('hidden');
+            tg.BackButton.show();
+            tg.BackButton.onClick(() => closeFocus());
+            loadComments(postId);
+        }
 
-    const container = document.getElementById('history-list');
-    
-    if (!data || data.length === 0) {
-        container.innerHTML = `<p class="text-center text-gray-300 italic py-10">No activity yet...</p>`;
-        return;
-    }
+        async function loadComments(postId) {
+            const { data: comments } = await client.from('comments').select('*, profiles(*)').eq('post_id', postId).order('created_at', { ascending: true });
+            const container = document.getElementById('comments-container');
+            
+            const mainComments = comments.filter(c => !c.parent_id);
+            
+            container.innerHTML = mainComments.map(parent => {
+                const childReplies = comments.filter(r => r.parent_id === parent.id);
+                return `
+                    <div class="comment-group">
+                        <div class="flex gap-5">
+                            <div class="w-10 h-10 rounded-full bg-gray-100 overflow-hidden shrink-0"><img src="${parent.profiles.photo_url || ''}" class="object-cover w-full h-full"></div>
+                            <div class="flex-1">
+                                <div class="flex justify-between items-start">
+                                    <p class="text-[11px] font-bold text-gray-800">@${parent.profiles.username}</p>
+                                    <span class="text-[8px] text-gray-300">NOW</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mt-2 leading-relaxed">${parent.content}</p>
+                                <button onclick="prepareReply('${parent.id}', '${parent.profiles.username}')" 
+                                        class="text-[9px] font-bold text-pink-400 uppercase mt-4 tracking-widest">Reply</button>
+                            </div>
+                        </div>
+                        
+                        <div class="ml-12 mt-6 space-y-6 border-l-2 border-gray-50 pl-6">
+                            ${childReplies.map(r => `
+                                <div class="flex gap-4">
+                                    <div class="w-7 h-7 rounded-full bg-gray-50 overflow-hidden shrink-0"><img src="${r.profiles.photo_url || ''}" class="object-cover w-full h-full"></div>
+                                    <div>
+                                        <p class="text-[10px] font-bold text-gray-800">@${r.profiles.username}</p>
+                                        <p class="text-[12px] text-gray-500 mt-1">${r.content}</p>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('') || `<p class="text-center text-gray-300 italic text-xs">Be the first to leave a thought...</p>`;
+        }
 
-        function showMenu(postId, senderId) {
-            tg.showActionSheet({
-                title: 'Post Options',
-                buttons: [
-                    {id: 'share', title: 'Share Profile Link'},
-                    {id: 'block', title: 'Block User', type: 'destructive'}
-                ]
-            }, (id) => {
-                if(id === 'block') tg.showAlert('User has been blocked.');
-                if(id === 'share') {
-                    const link = `https://t.me/USER_BOT_KAMU/app?startapp=${telegramUser.id}`;
-                    tg.switchInlineQuery(`Liat profile estetikku! 🩰\n${link}`);
+        function prepareReply(id, username) {
+            replyingToId = id;
+            const label = document.getElementById('reply-label');
+            label.classList.remove('hidden');
+            label.querySelector('span').innerText = `Replying to @${username}`;
+            document.getElementById('comment-input').focus();
+        }
+
+        function cancelReply() { replyingToId = null; document.getElementById('reply-label').classList.add('hidden'); }
+
+        async function postComment(postId) {
+            const val = document.getElementById('comment-input').value;
+            if(!val) return;
+
+            const { error } = await client.from('comments').insert({
+                post_id: postId,
+                user_id: telegramUser.id,
+                content: val,
+                parent_id: replyingToId
+            });
+
+            if(!error) {
+                document.getElementById('comment-input').value = '';
+                cancelReply();
+                loadComments(postId);
+                tg.HapticFeedback.notificationOccurred('success');
+            }
+        }
+
+        async function handleLike(postId, receiverId) {
+            const { error } = await client.from('likes').insert({ post_id: postId, user_id: telegramUser.id });
+            if (!error) {
+                if (receiverId != telegramUser.id) {
+                    await client.from('notifications').insert({ receiver_id: receiverId, sender_id: telegramUser.id, type: 'loved' });
+                }
+                loadPosts(currentViewedId);
+                tg.HapticFeedback.impactOccurred('medium');
+            }
+        }
+
+        // --- 6. Helper & UI Functions ---
+        async function submitPost() {
+            const url = document.getElementById('post-url').value;
+            const title = document.getElementById('post-title').value;
+            const cover = document.getElementById('post-cover').value;
+            const cap = document.getElementById('post-cap').value;
+
+            if(!url || !title) return tg.showAlert("Select a track first!");
+
+            tg.showConfirm("Share this vibe to your path?", async (ok) => {
+                if(ok) {
+                    const { error } = await client.from('music_posts').insert({
+                        sender_id: telegramUser.id,
+                        music_url: url,
+                        music_title: title,
+                        music_cover: cover,
+                        caption: cap
+                    });
+                    if(!error) location.reload();
                 }
             });
         }
 
-        
-        async function loadNotifs() {
-            const { data } = await supabase.from('notifications').select('*, sender:profiles!sender_id(*)').eq('receiver_id', telegramUser.id).order('created_at', {ascending: false}).limit(10);
-            if(data.length > 0) document.getElementById('notif-dot').classList.remove('hidden');
-            document.getElementById('notif-list').innerHTML = data.map(n => `
-                <div class="flex items-center gap-4 border-b border-gray-50 pb-4">
-                    <img src="${n.sender.photo_url || ''}" class="w-10 h-10 rounded-full bg-gray-100 object-cover">
-                    <p class="text-sm"><span class="font-bold">${n.sender.display_name}</span> ${n.type === 'loved' ? 'loved your moment' : 'visited your profile'}</p>
-                </div>
-            `).join('');
+        async function createAccount() {
+            const name = document.getElementById('reg-name').value;
+            const user = document.getElementById('reg-user').value.toLowerCase();
+            if(!name || !user) return tg.showAlert("Please fill your identity.");
+
+            const { error } = await client.from('profiles').insert({
+                telegram_id: telegramUser.id,
+                display_name: name,
+                username: user,
+                photo_url: telegramUser.photo_url || ''
+            });
+
+            if(!error) location.reload();
+            else tg.showAlert("Username already taken or server error.");
         }
 
-        function setTheme(color) {
-            document.documentElement.style.setProperty('--theme-color', color);
-            supabase.from('profiles').update({ theme_color: color }).eq('telegram_id', telegramUser.id);
+        function debounceSearch(val) {
+            clearTimeout(itunesTimeout);
+            itunesTimeout = setTimeout(() => {
+                loadPosts(currentViewedId, val);
+            }, 600);
         }
 
-
-        
-
-    container.innerHTML = data.map(item => `
-        <div class="p-4 bg-gray-50 rounded-2xl flex justify-between items-center group cursor-pointer" onclick="openFocus('${item.music_posts.id}')">
-            <div class="flex flex-col">
-                <span class="text-[9px] font-bold text-pink-400 uppercase tracking-tighter">You Liked</span>
-                <span class="font-serif italic text-sm text-gray-600">"${item.music_posts.caption.substring(0, 30)}..."</span>
-                <span class="text-[8px] text-gray-300 mt-1 uppercase">By ${item.music_posts.profiles.display_name}</span>
-            </div>
-            <span class="text-xl opacity-0 group-hover:opacity-100 transition">❤️</span>
-        </div>
-    `).join('');
+        function saveCSS() {
+            const css = document.getElementById('css-input').value;
+            client.from('profiles').update({ custom_css: css }).eq('telegram_id', telegramUser.id).then(() => {
+                tg.showPopup({ message: "CSS Applied. Restarting view...", buttons: [{type: 'close'}] });
+                setTimeout(() => location.reload(), 1500);
+            });
         }
 
-        function applyTheme(color) { document.documentElement.style.setProperty('--theme-color', color); }
-        async function updatePrivacy(val) { await supabase.from('profiles').update({ is_private: val }).eq('telegram_id', telegramUser.id); }
-        function saveCSS() { const css = document.getElementById('css-input').value; supabase.from('profiles').update({ custom_css: css }).eq('telegram_id', telegramUser.id).then(() => location.reload()); }
-        function searchMusic(val) { loadPosts(val); }
-        function closeFocus() { document.getElementById('focus-layer').classList.add('hidden'); }
-        function toggleModal(id) { document.getElementById(id).classList.toggle('hidden'); }
-        async function submitPost() {
-            const url = document.getElementById('post-url').value, cap = document.getElementById('post-cap').value;
-            if(!url || !cap) return;
-            await supabase.from('music_posts').insert({ sender_id: telegramUser.id, music_url: url, caption: cap });
-            toggleModal('post-modal'); loadPosts();
+        async function updatePrivacy(val) {
+            await client.from('profiles').update({ is_private: val }).eq('telegram_id', telegramUser.id);
+            tg.HapticFeedback.notificationOccurred('success');
         }
 
+        function copyMyLink() {
+            const link = `https://t.me/AmonsPathBot/app?startapp=${telegramUser.id}`;
+            navigator.clipboard.writeText(link);
+            tg.showAlert("Link copied to clipboard! Share it with the world.");
+        }
+
+        function toggleModal(id) {
+            const el = document.getElementById(id);
+            el.classList.toggle('hidden');
+            if(!el.classList.contains('hidden')) tg.HapticFeedback.impactOccurred('light');
+        }
+
+        function closeFocus() {
+            document.getElementById('focus-layer').classList.add('hidden');
+            tg.BackButton.hide();
+        }
+
+        // Run Init
         init();
     </script>
 </body>
 </html>
+
+    

@@ -3,606 +3,702 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AmonsPath Music Social</title>
+    <title>AmonsPath | Professional Identity</title>
     
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@1,400;1,700&display=swap" rel="stylesheet">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@1,400;1,500;1,600&display=swap" rel="stylesheet">
 
     <style>
-        :root { --theme-color: #ec4899; }
-        body { 
-            background-color: #fcfcfc; 
-            font-family: 'Inter', sans-serif; 
-            color: #1a1a1a; 
-            -webkit-tap-highlight-color: transparent;
+        /* Base Variables - Unisex & Elegant */
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #fcfcfc;
+            --accent: #000000;
+            --text-main: #1a1a1a;
+            --text-muted: #8e8e8e;
+            --border-light: #f1f1f1;
+            --border-heavy: #e5e5e5;
+            --shadow-soft: 0 4px 20px -10px rgba(0,0,0,0.05);
+            --shadow-heavy: 0 20px 40px -15px rgba(0,0,0,0.1);
+        }
+
+        /* Reset & Global */
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
             overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
         }
-        
-        /* Typography & Aesthetics */
+
         .font-serif { font-family: 'Playfair Display', serif; }
-        .elegant-card { 
-            background: white; 
-            border-radius: 30px; 
-            margin: 15px; 
-            border: 1px solid #f0f0f0; 
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 4px 20px -10px rgba(0,0,0,0.05);
+
+        /* Elegant Card Architecture */
+        .card-container {
+            padding: 0 20px;
+            margin-bottom: 25px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
         }
-        .elegant-card:hover { transform: translateY(-5px); box-shadow: 0 20px 30px -15px rgba(0,0,0,0.1); }
-        
-        /* Forms */
-        .input-elegant { 
-            background: #f8f8f8; 
-            border: 1px solid #eee; 
-            border-radius: 18px; 
-            padding: 14px 20px; 
-            outline: none; 
-            font-size: 14px; 
-            width: 100%; 
-            transition: 0.3s;
+
+        .elegant-card {
+            background: white;
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            box-shadow: var(--shadow-soft);
         }
-        .input-elegant:focus { border-color: var(--theme-color); background: white; }
-        
-        .btn-main { 
-            background: var(--theme-color); 
-            color: white; 
-            border-radius: 18px; 
-            padding: 16px; 
-            font-weight: 600; 
-            width: 100%; 
-            transition: 0.3s; 
-            box-shadow: 0 10px 20px -10px var(--theme-color);
+
+        .elegant-card:hover {
+            box-shadow: var(--shadow-heavy);
+            transform: translateY(-2px);
+            border-color: var(--border-heavy);
+        }
+
+        /* Skeleton Loading States */
+        .skeleton {
+            background: linear-gradient(90deg, #f6f7f8 0%, #edeef1 50%, #f6f7f8 100%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+        }
+
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Custom Input System */
+        .input-group { margin-bottom: 20px; }
+        .input-label {
+            display: block;
+            font-size: 10px;
+            font-weight: 700;
             text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            margin-left: 4px;
+        }
+
+        .input-field {
+            width: 100%;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-heavy);
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            background: white;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(0,0,0,0.02);
+        }
+
+        /* Buttons */
+        .btn-action {
+            width: 100%;
+            background: var(--accent);
+            color: white;
+            border-radius: 14px;
+            padding: 18px;
+            font-weight: 600;
+            font-size: 13px;
             letter-spacing: 0.1em;
-            font-size: 12px;
-        }
-        .btn-main:active { transform: scale(0.95); }
-
-        /* Animations */
-        .animate-focus { animation: slideInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
-        @keyframes slideInUp {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
+            text-transform: uppercase;
+            transition: all 0.3s ease;
         }
 
-        .music-disk-anim { animation: spin 4s linear infinite; }
+        .btn-action:active { transform: scale(0.97); }
+
+        /* Audio & Animation Components */
+        .vinyl-container {
+            width: 60px;
+            height: 60px;
+            position: relative;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #f0f0f0;
+        }
+
+        .spinning { animation: spin 6s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        /* Utilities */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .caption-truncate {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+
+        /* Notification Badge */
+        .notif-dot {
+            width: 6px;
+            height: 6px;
+            background: #ef4444;
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            right: 0;
         }
+
+        /* Utility */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .focus-layer-anim { animation: focusIn 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes focusIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     </style>
+    
     <style id="user-custom-css"></style>
 </head>
 <body class="pb-32 no-scrollbar">
 
-    <nav class="sticky top-0 z-[60] bg-white/70 backdrop-blur-xl border-b border-gray-50 p-5 flex justify-between items-center">
-        <div id="profile-trigger" class="flex items-center gap-3 cursor-pointer" onclick="toggleModal('settings-modal')">
-            <div class="w-11 h-11 rounded-full bg-gray-100 overflow-hidden border-2 border-white shadow-sm">
-                <img id="my-photo" src="" class="w-full h-full object-cover hidden">
+    <div id="auth-modal" class="hidden fixed inset-0 z-[1000] bg-white flex flex-col justify-center px-10">
+        <div class="max-w-md mx-auto w-full">
+            <h1 class="font-serif italic text-5xl mb-4">Identity.</h1>
+            <p class="text-gray-400 text-[11px] uppercase tracking-[0.3em] mb-12">Set up your profile to proceed.</p>
+            
+            <div class="space-y-6">
+                <div class="input-group">
+                    <span class="input-label">Full Name</span>
+                    <input id="reg-name" type="text" placeholder="Display Name" class="input-field font-serif">
+                </div>
+                <div class="input-group">
+                    <span class="input-label">Username</span>
+                    <input id="reg-user" type="text" placeholder="unique_handle" class="input-field">
+                </div>
+                <div class="pt-4">
+                    <button onclick="handleRegistration()" class="btn-action">Create Identity</button>
+                </div>
             </div>
-            <div>
-                <h1 id="my-name" class="font-serif italic text-lg leading-tight text-gray-900">Loading...</h1>
-                <p id="my-username" class="text-[9px] text-gray-400 uppercase tracking-[0.2em] font-bold">@guest</p>
+            
+            <div class="mt-20 border-t border-gray-100 pt-8 text-center">
+                <p class="text-[9px] text-gray-300 uppercase tracking-widest">Protocol v1.1 | Secure Access</p>
             </div>
         </div>
-        <div class="flex gap-4">
-            <button onclick="toggleModal('search-layer')" class="text-xl">🔍</button>
-            <button onclick="toggleModal('settings-modal')" class="text-xl">⚙️</button>
-        </div>
-    </nav>
-
-    <div class="px-5 mt-4">
-        <input type="text" id="global-search" oninput="debounceSearch(this.value)" placeholder="Search tracks or users..." class="input-elegant font-serif italic italic text-gray-400">
     </div>
 
-    <main id="timeline" class="min-h-screen"></main>
+    <header class="sticky top-0 z-[500] bg-white/90 backdrop-blur-xl border-b border-gray-50 p-6 flex justify-between items-center">
+        <div class="flex items-center gap-4 cursor-pointer" onclick="openProfileSettings()">
+            <div class="w-10 h-10 rounded-full bg-gray-50 border border-gray-100 overflow-hidden shadow-sm">
+                <img id="header-photo" src="" class="w-full h-full object-cover hidden">
+                <div id="header-initial" class="w-full h-full flex items-center justify-center text-xs font-bold text-gray-300">A</div>
+            </div>
+            <div>
+                <h2 id="header-display-name" class="font-serif italic text-xl leading-none">Loading...</h2>
+                <p id="header-username" class="text-[9px] text-gray-400 uppercase tracking-[0.2em] mt-1">@guest</p>
+            </div>
+        </div>
+        <div class="flex gap-5 relative">
+            <button onclick="toggleTab('notifications')" class="relative">
+                <span id="notif-indicator" class="hidden notif-dot"></span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9J"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+            </button>
+            <button onclick="toggleModal('settings-modal')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            </button>
+        </div>
+    </header>
 
-    <button id="fab-post" onclick="toggleModal('post-modal')" class="fixed bottom-10 right-8 w-16 h-16 rounded-full shadow-2xl flex items-center justify-center text-white text-3xl z-50 hidden transition-transform active:scale-90" style="background: var(--theme-color);">
+    <div class="px-6 py-4 sticky top-[85px] z-[400] bg-white">
+        <div class="relative">
+            <input type="text" id="global-search" oninput="handleGlobalSearch(this.value)" placeholder="Search your archive..." class="input-field italic font-serif !bg-gray-50 !border-none !py-4">
+            <span class="absolute right-5 top-1/2 -translate-y-1/2 text-gray-300 text-xs">ARCHIVE</span>
+        </div>
+    </div>
+
+    <main id="main-timeline" class="min-h-[80vh]">
+        <div class="skeleton-loader card-container">
+            <div class="elegant-card p-6 h-64 flex flex-col justify-between">
+                <div class="flex gap-4"><div class="w-12 h-12 rounded-full skeleton"></div><div class="flex-1 space-y-2"><div class="h-3 w-24 skeleton"></div><div class="h-4 w-48 skeleton"></div></div></div>
+                <div class="h-20 w-full skeleton rounded-xl"></div>
+            </div>
+        </div>
+    </main>
+
+    <button id="fab-post" onclick="openPostModal()" class="fixed bottom-10 right-8 w-16 h-16 rounded-full bg-black shadow-2xl flex items-center justify-center text-white text-3xl z-[600] hidden transition-all hover:scale-105 active:scale-95">
         <span class="mb-1">+</span>
     </button>
 
-    <div id="post-modal" class="hidden fixed inset-0 z-[100] bg-black/30 backdrop-blur-sm flex items-end">
-        <div class="bg-white w-full p-8 rounded-t-[40px] animate-focus shadow-2xl max-h-[95vh] overflow-y-auto no-scrollbar">
-            <div class="w-12 h-1 bg-gray-100 rounded-full mx-auto mb-8"></div>
-            <h3 class="font-serif italic text-2xl mb-6 text-gray-800 tracking-tight">Post a Track</h3>
+    <div id="post-modal" class="hidden fixed inset-0 z-[1000] bg-black/10 backdrop-blur-md flex items-end">
+        <div class="bg-white w-full rounded-t-[40px] p-10 focus-layer-anim max-h-[92vh] overflow-y-auto no-scrollbar shadow-2xl">
+            <div class="w-12 h-1 bg-gray-100 rounded-full mx-auto mb-10"></div>
+            <h3 class="font-serif italic text-3xl mb-10 text-center">Archive New Music</h3>
             
-            <div class="space-y-6">
+            <div class="space-y-8">
                 <div class="relative">
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-gray-400 ml-1">Find Song on iTunes</label>
-                    <input id="music-search" type="text" oninput="searchiTunes(this.value)" placeholder="Artist or Song Name..." class="input-elegant mt-2">
-                    <div id="itunes-results" class="hidden absolute left-0 right-0 mt-3 bg-white border border-gray-100 rounded-2xl shadow-2xl z-[110] max-h-64 overflow-y-auto no-scrollbar"></div>
+                    <label class="input-label">Search iTunes Database</label>
+                    <input id="itunes-input" type="text" oninput="searchiTunes(this.value)" placeholder="Artist or Song..." class="input-field">
+                    <div id="itunes-dropdown" class="hidden absolute left-0 right-0 mt-2 bg-white border border-gray-100 rounded-2xl shadow-2xl z-[1100] max-h-72 overflow-y-auto no-scrollbar"></div>
                 </div>
 
-                <div id="music-preview" class="hidden flex items-center gap-5 p-5 bg-gray-50 rounded-[25px] border border-dashed border-gray-200 animate-pulse">
-                    <img id="prev-cover" src="" class="w-16 h-16 rounded-2xl object-cover shadow-lg">
+                <div id="selected-track-box" class="hidden flex items-center gap-6 p-6 bg-gray-50 rounded-[24px] border border-dashed border-gray-200">
+                    <img id="selected-cover" src="" class="w-20 h-20 rounded-2xl object-cover shadow-xl">
                     <div class="flex-1">
-                        <p id="prev-title" class="text-sm font-bold text-gray-800 leading-tight"></p>
-                        <p id="prev-artist" class="text-[11px] text-gray-400 mt-1 uppercase tracking-tighter"></p>
+                        <p id="selected-title" class="text-sm font-bold text-gray-900"></p>
+                        <p id="selected-artist" class="text-[11px] text-gray-400 uppercase tracking-widest mt-1"></p>
                     </div>
-                    <button onclick="clearMusicSelection()" class="w-8 h-8 rounded-full bg-gray-200 text-gray-500 text-xs">✕</button>
+                    <button onclick="clearSelectedTrack()" class="w-10 h-10 rounded-full bg-gray-200 text-gray-500">✕</button>
                 </div>
 
-                <div>
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-gray-400 ml-1">Add Thoughts</label>
-                    <textarea id="post-cap" placeholder="Write something aesthetic..." class="input-elegant h-32 mt-2 resize-none"></textarea>
+                <div class="input-group">
+                    <label class="input-label">Associated Thoughts</label>
+                    <textarea id="post-caption" placeholder="Document your perspective..." class="input-field h-40 resize-none"></textarea>
                 </div>
 
-                <input type="hidden" id="post-url">
-                <input type="hidden" id="post-title">
-                <input type="hidden" id="post-cover">
-
-                <button onclick="submitPost()" class="btn-main mt-4">Broadcast to Universe</button>
-                <button onclick="toggleModal('post-modal')" class="w-full text-center text-[10px] font-bold text-gray-300 uppercase py-4">Dismiss</button>
+                <div class="flex flex-col gap-4">
+                    <button id="submit-post-btn" onclick="executePublish()" class="btn-action">Publish Archive</button>
+                    <button onclick="toggleModal('post-modal')" class="text-[10px] font-bold text-gray-300 uppercase py-4">Discard</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <div id="settings-modal" class="hidden fixed inset-0 z-[120] bg-black/40 backdrop-blur-sm flex items-end">
-        <div class="bg-white w-full rounded-t-[40px] p-10 animate-focus max-h-[90vh] overflow-y-auto">
-            <h3 class="font-serif italic text-2xl mb-8">Personalize</h3>
-            
-            <div class="space-y-8">
-                <button onclick="copyMyLink()" class="w-full flex justify-between items-center p-5 bg-pink-50 rounded-2xl border border-pink-100">
-                    <span class="text-xs font-bold text-pink-500 uppercase tracking-widest">Copy Profile Link</span>
-                    <span class="text-xl">🔗</span>
-                </button>
+    <div id="notif-layer" class="hidden fixed inset-0 z-[800] bg-white focus-layer-anim p-10 overflow-y-auto">
+        <div class="flex justify-between items-center mb-12">
+            <h1 class="font-serif italic text-3xl">Activity.</h1>
+            <button onclick="toggleTab('notifications')" class="text-xs font-bold uppercase text-gray-300">Close</button>
+        </div>
+        <div id="notif-content" class="space-y-8">
+            </div>
+    </div>
 
-                <div class="flex justify-between items-center p-2">
-                    <div class="flex flex-col">
-                        <span class="text-sm font-semibold">Private Mode</span>
-                        <span class="text-[10px] text-gray-400 uppercase tracking-widest">Hide tracks from strangers</span>
+    <div id="settings-modal" class="hidden fixed inset-0 z-[900] bg-black/10 backdrop-blur-sm flex items-end">
+        <div class="bg-white w-full rounded-t-[40px] p-12 max-h-[85vh] overflow-y-auto">
+            <h3 class="font-serif italic text-3xl mb-12">Settings.</h3>
+            
+            <div class="space-y-10">
+                <div onclick="copyLink()" class="flex justify-between items-center p-6 bg-gray-50 rounded-2xl border border-gray-100 cursor-pointer">
+                    <span class="text-xs font-bold uppercase tracking-widest">Share Profile Handle</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                </div>
+
+                <div class="flex justify-between items-center px-2">
+                    <div>
+                        <p class="text-sm font-semibold">Private Identity</p>
+                        <p class="text-[9px] text-gray-400 uppercase tracking-widest mt-1">Restrict archive visibility</p>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" id="privacy-toggle" onchange="updatePrivacy(this.checked)" class="sr-only peer">
-                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-pink-500"></div>
+                        <input type="checkbox" id="privacy-mode" onchange="togglePrivacy(this.checked)" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-100 rounded-full peer peer-checked:bg-black after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
                     </label>
                 </div>
 
                 <div>
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Custom CSS Engine</label>
-                    <textarea id="css-input" class="w-full mt-3 h-32 bg-gray-50 border border-gray-100 p-5 rounded-2xl font-mono text-[11px] outline-none" placeholder=".elegant-card { border: 2px solid pink; }"></textarea>
-                    <button onclick="saveCSS()" class="mt-4 text-[10px] font-bold text-pink-500 uppercase tracking-[0.2em]">Apply Transformations</button>
+                    <label class="input-label">Custom Styling Engine (CSS)</label>
+                    <textarea id="custom-css-input" class="input-field h-32 font-mono text-xs" placeholder=".elegant-card { border-radius: 0px; }"></textarea>
+                    <button onclick="commitCSS()" class="mt-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Commit Transformation</button>
                 </div>
 
-                <button onclick="toggleModal('settings-modal')" class="w-full py-4 text-gray-300 text-[10px] font-bold uppercase">Close</button>
+                <div class="pt-6">
+                    <button onclick="toggleModal('settings-modal')" class="btn-action">Done</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <div id="focus-layer" class="hidden fixed inset-0 z-[200] bg-white overflow-y-auto no-scrollbar animate-focus"></div>
-
-    <div id="auth-modal" class="hidden fixed inset-0 z-[300] bg-white p-12 flex flex-col justify-center animate-focus">
-        <h1 class="font-serif italic text-5xl mb-4">Identity.</h1>
-        <p class="text-gray-400 text-sm mb-12 leading-relaxed uppercase tracking-widest">Define yourself before entering the path.</p>
-        <div class="space-y-5">
-            <input id="reg-name" type="text" placeholder="Full Name" class="input-elegant">
-            <input id="reg-user" type="text" placeholder="Username" class="input-elegant">
-            <button onclick="createAccount()" class="btn-main py-6">Begin Journey</button>
+    <div id="focus-layer" class="hidden fixed inset-0 z-[1200] bg-white overflow-y-auto no-scrollbar focus-layer-anim">
         </div>
-    </div>
 
     <script>
+        // Core Variables & Bridge
         const tg = window.Telegram.WebApp;
         tg.expand();
-        tg.enableClosingConfirmation();
+        
+        const DB_URL = 'https://aldzhrtbrjszppseawrz.supabase.co';
+        const DB_KEY = 'sb_publishable_h-BSul_X4VDxc-6gwSUa0w_Z_rsJ2xp';
+        const client = supabase.createClient(DB_URL, DB_KEY);
 
-        // Database Config
-        const SUPABASE_URL = 'https://aldzhrtbrjszppseawrz.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_h-BSul_X4VDxc-6gwSUa0w_Z_rsJ2xp';
-        const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        let userSession = tg.initDataUnsafe.user || { id: 123456, first_name: 'Developer' };
+        let currentTargetId = null;
+        let itunesDebounce;
+        let activeAudio = null;
+        let currentPostData = { url: '', title: '', cover: '' };
+        let activeReplyTo = null;
 
-        // State
-        let telegramUser = tg.initDataUnsafe.user || { id: 123456, first_name: 'Developer' };
-        let currentViewedId = null;
-        let replyingToId = null;
-        let itunesTimeout;
-
-        // --- 1. Initialization ---
-        async function init() {
+        // --- PHASE 1: Initialization & Auth Logic ---
+        async function initializeApp() {
+            const params = new URLSearchParams(window.location.search);
             const startParam = tg.initDataUnsafe.start_param;
-            currentViewedId = startParam ? parseInt(startParam) : telegramUser.id;
+            currentTargetId = startParam ? parseInt(startParam) : userSession.id;
 
-            const { data: profile, error } = await client.from('profiles').select('*').eq('telegram_id', currentViewedId).single();
+            // Fetch Profile Data
+            const { data: profile, error } = await client.from('profiles').select('*').eq('telegram_id', currentTargetId).single();
 
-            if (!profile && currentViewedId === telegramUser.id) {
+            if (!profile && currentTargetId === userSession.id) {
                 document.getElementById('auth-modal').classList.remove('hidden');
             } else if (profile) {
-                // Apply Styles & UI
-                if (profile.custom_css) document.getElementById('user-custom-css').innerHTML = profile.custom_css;
-                document.getElementById('my-name').innerText = profile.display_name;
-                document.getElementById('my-username').innerText = '@' + profile.username;
-                
-                if (profile.photo_url) {
-                    const img = document.getElementById('my-photo');
-                    img.src = profile.photo_url; img.classList.remove('hidden');
-                }
-
-                // Show/Hide Owner Features
-                if (currentViewedId === telegramUser.id) {
+                setupProfileUI(profile);
+                loadTimeline();
+                if (currentTargetId === userSession.id) {
                     document.getElementById('fab-post').classList.remove('hidden');
-                    document.getElementById('privacy-toggle').checked = profile.is_private;
-                    document.getElementById('css-input').value = profile.custom_css || '';
+                    checkNotifications();
                 }
-
-                // Privacy Check
-                if (profile.is_private && currentViewedId !== telegramUser.id) {
-                    document.getElementById('timeline').innerHTML = `
-                        <div class="mt-40 text-center">
-                            <span class="text-4xl">🔒</span>
-                            <p class="mt-4 font-serif italic text-gray-400">This sanctuary is private.</p>
-                        </div>`;
-                } else {
-                    loadPosts(currentViewedId);
-                }
+            } else if (!profile && currentTargetId !== userSession.id) {
+                renderError("Profile not found in the protocol.");
             }
         }
 
-        // --- 2. Post & Timeline Logic ---
-        async function loadPosts(targetId, query = '') {
-            let queryBuilder = client.from('music_posts').select('*, profiles(*), likes(id)').eq('sender_id', targetId);
+        function setupProfileUI(profile) {
+            document.getElementById('header-display-name').innerText = profile.display_name;
+            document.getElementById('header-username').innerText = '@' + profile.username;
+            if(profile.custom_css) document.getElementById('user-custom-css').innerHTML = profile.custom_css;
+            if(profile.photo_url) {
+                const img = document.getElementById('header-photo');
+                img.src = profile.photo_url;
+                img.classList.remove('hidden');
+                document.getElementById('header-initial').classList.add('hidden');
+            }
+            if(currentTargetId === userSession.id) {
+                document.getElementById('privacy-mode').checked = profile.is_private;
+                document.getElementById('custom-css-input').value = profile.custom_css || '';
+            }
+        }
+
+        // --- PHASE 2: Timeline & Search Logic ---
+        async function loadTimeline(query = '') {
+            const container = document.getElementById('main-timeline');
+            let dbQuery = client.from('music_posts').select('*, profiles(*), likes(id)').eq('sender_id', currentTargetId);
             
             if(query) {
-                queryBuilder = queryBuilder.or(`caption.ilike.%${query}%, music_title.ilike.%${query}%`);
+                dbQuery = dbQuery.or(`caption.ilike.%${query}%, music_title.ilike.%${query}%`);
             }
 
-            const { data: posts, error } = await queryBuilder.order('created_at', {ascending: false});
-            const container = document.getElementById('timeline');
+            const { data: posts, error } = await dbQuery.order('created_at', { ascending: false });
 
-            if (!posts || posts.length === 0) {
-                container.innerHTML = `<div class="py-32 text-center text-gray-300 italic font-serif">No vibes shared yet...</div>`;
-                return;
+            if (posts && posts.length > 0) {
+                container.innerHTML = posts.map(post => renderPostCard(post)).join('');
+            } else {
+                container.innerHTML = `<div class="py-40 text-center"><p class="font-serif italic text-gray-300">The archive is empty.</p></div>`;
             }
+        }
 
-            container.innerHTML = posts.map(post => `
-                <div class="elegant-card animate-focus">
-                    <div class="p-7">
-                        <div class="flex justify-between items-start mb-6">
-                            <div class="flex items-center gap-5">
-                                <div class="relative w-16 h-16 group" id="disk-container-${post.id}">
-                                    <div class="absolute inset-0 rounded-full border border-pink-100 border-dashed animate-spin-slow opacity-20"></div>
-                                    <img src="${post.music_cover || 'https://via.placeholder.com/150'}" id="img-${post.id}" 
-                                         class="w-full h-full rounded-full object-cover shadow-lg transition-all duration-700">
-                                    <div class="absolute inset-0 flex items-center justify-center">
-                                        <div class="w-3 h-3 bg-white rounded-full shadow-inner"></div>
+        function renderPostCard(post) {
+            return `
+                <div class="card-container">
+                    <div class="elegant-card">
+                        <div class="p-7">
+                            <div class="flex justify-between items-start mb-8">
+                                <div class="flex items-center gap-5">
+                                    <div class="vinyl-container shadow-xl">
+                                        <img id="disk-${post.id}" src="${post.music_cover}" class="w-full h-full object-cover rounded-full border border-white/20">
+                                        <div class="absolute inset-0 flex items-center justify-center">
+                                            <div class="w-3 h-3 bg-white rounded-full shadow-inner"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p class="text-[8px] font-bold text-gray-400 uppercase tracking-[0.4em] mb-1">Archived by ${post.profiles.display_name}</p>
+                                        <h2 class="font-serif italic text-lg leading-tight text-gray-900">${post.music_title}</h2>
                                     </div>
                                 </div>
-                                <div>
-                                    <p class="text-[8px] font-bold text-pink-500 uppercase tracking-[0.4em] mb-1">${post.profiles.display_name}</p>
-                                    <h2 class="font-serif italic text-lg leading-tight text-gray-900">${post.music_title}</h2>
-                                </div>
+                                <button class="text-gray-200">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+                                </button>
                             </div>
-                            <button onclick="showPostOptions('${post.id}')" class="text-gray-300 p-2 italic font-serif">⋮</button>
-                        </div>
 
-                        <div class="text-[12px] text-gray-500 italic mb-8 leading-relaxed px-1">
-                            <span class="caption-truncate" onclick="openFocus('${post.id}')">"${post.caption}"</span>
-                        </div>
-
-                        <div class="bg-gray-50 rounded-[22px] p-4 flex items-center gap-5 border border-gray-100/50 mb-6">
-                            <button onclick="toggleAudio('${post.id}')" id="btn-play-${post.id}" 
-                                    class="w-12 h-12 bg-white rounded-full shadow-sm flex items-center justify-center text-lg hover:scale-110 active:scale-95 transition">▶️</button>
-                            <div class="flex-1">
-                                <div class="h-[3px] bg-gray-200 rounded-full overflow-hidden">
-                                    <div id="progress-${post.id}" class="h-full bg-pink-400 transition-all duration-200" style="width: 0%"></div>
-                                </div>
+                            <div class="mb-10 text-[13px] text-gray-500 italic leading-relaxed px-1" onclick="openFocusMode('${post.id}')">
+                                "${post.caption}"
                             </div>
-                            <audio id="audio-${post.id}" src="${post.music_url}" 
-                                   ontimeupdate="onTimeUpdate('${post.id}')" 
-                                   onended="onAudioEnded('${post.id}')"></audio>
-                        </div>
 
-                        <div class="flex gap-8 border-t border-gray-50 pt-5 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 px-1">
-                            <button onclick="handleLike('${post.id}', '${post.sender_id}')" class="flex items-center gap-2 hover:text-pink-500 transition">
-                                <span id="like-icon-${post.id}">❤️</span> 
-                                <span>${post.likes ? post.likes.length : 0}</span>
-                            </button>
-                            <button onclick="openFocus('${post.id}')" class="flex items-center gap-2 hover:text-black transition">
-                                💬 Thoughts
-                            </button>
+                            <div class="bg-gray-50 rounded-[22px] p-4 flex items-center gap-5 border border-gray-100/50 mb-7">
+                                <button onclick="toggleMusicPlayback('${post.id}')" id="play-btn-${post.id}" class="w-12 h-12 bg-white rounded-full shadow-sm flex items-center justify-center text-xs transition active:scale-90">▶</button>
+                                <div class="flex-1 h-[2px] bg-gray-200 rounded-full overflow-hidden">
+                                    <div id="prog-bar-${post.id}" class="h-full bg-black transition-all duration-300" style="width: 0%"></div>
+                                </div>
+                                <audio id="audio-node-${post.id}" src="${post.music_url}" ontimeupdate="trackProgress('${post.id}')" onended="finishMusic('${post.id}')"></audio>
+                            </div>
+
+                            <div class="flex gap-10 border-t border-gray-50 pt-6 text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                                <button onclick="processLike('${post.id}', '${post.sender_id}')" class="flex items-center gap-2 hover:text-black transition">
+                                    <span>❤️</span> <span>${post.likes ? post.likes.length : 0}</span>
+                                </button>
+                                <button onclick="openFocusMode('${post.id}')" class="flex items-center gap-2 hover:text-black transition">
+                                    <span>💬</span> Thoughts
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            `).join('');
+            `;
         }
 
-        // --- 3. Music Search (iTunes) ---
+        // --- PHASE 3: iTunes Intelligence ---
         async function searchiTunes(query) {
-            const resultsDiv = document.getElementById('itunes-results');
-            if (query.length < 3) { resultsDiv.classList.add('hidden'); return; }
+            const dropdown = document.getElementById('itunes-dropdown');
+            if(query.length < 3) { dropdown.classList.add('hidden'); return; }
 
-            clearTimeout(itunesTimeout);
-            itunesTimeout = setTimeout(async () => {
-                try {
-                    const res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=music&limit=6`);
-                    const data = await res.json();
-                    
-                    if (data.results.length > 0) {
-                        resultsDiv.innerHTML = data.results.map(track => `
-                            <div class="p-5 hover:bg-gray-50 cursor-pointer flex items-center gap-4 border-b border-gray-50 last:border-0" 
-                                 onclick="selectTrack('${track.trackName}', '${track.artistName}', '${track.previewUrl}', '${track.artworkUrl100}')">
-                                <img src="${track.artworkUrl60}" class="w-10 h-10 rounded-xl">
-                                <div>
-                                    <p class="text-[11px] font-bold text-gray-800">${track.trackName}</p>
-                                    <p class="text-[10px] text-gray-400 uppercase tracking-tighter">${track.artistName}</p>
-                                </div>
+            clearTimeout(itunesDebounce);
+            itunesDebounce = setTimeout(async () => {
+                const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=music&limit=6`);
+                const data = await response.json();
+                
+                if (data.results && data.results.length > 0) {
+                    dropdown.innerHTML = data.results.map(track => `
+                        <div class="p-5 hover:bg-gray-50 cursor-pointer flex items-center gap-5 border-b border-gray-50 last:border-0" 
+                             onclick="selectTrack('${track.trackName}', '${track.artistName}', '${track.previewUrl}', '${track.artworkUrl100}')">
+                            <img src="${track.artworkUrl60}" class="w-12 h-12 rounded-xl object-cover">
+                            <div>
+                                <p class="text-xs font-bold text-gray-900">${track.trackName}</p>
+                                <p class="text-[10px] text-gray-400 uppercase tracking-tighter">${track.artistName}</p>
                             </div>
-                        `).join('');
-                        resultsDiv.classList.remove('hidden');
-                    }
-                } catch (e) { console.error(e); }
-            }, 500);
+                        </div>
+                    `).join('');
+                    dropdown.classList.remove('hidden');
+                }
+            }, 600);
         }
 
         function selectTrack(title, artist, url, cover) {
-            document.getElementById('post-title').value = `${title} - ${artist}`;
-            document.getElementById('post-url').value = url;
-            document.getElementById('post-cover').value = cover.replace('100x100', '400x400'); // Higher Res
+            currentPostData = { url, title: `${title} - ${artist}`, cover: cover.replace('100x100', '600x600') };
             
-            document.getElementById('prev-title').innerText = title;
-            document.getElementById('prev-artist').innerText = artist;
-            document.getElementById('prev-cover').src = cover;
+            document.getElementById('selected-title').innerText = title;
+            document.getElementById('selected-artist').innerText = artist;
+            document.getElementById('selected-cover').src = cover;
             
-            document.getElementById('music-preview').classList.remove('hidden');
-            document.getElementById('itunes-results').classList.add('hidden');
-            document.getElementById('music-search').value = "";
+            document.getElementById('selected-track-box').classList.remove('hidden');
+            document.getElementById('itunes-dropdown').classList.add('hidden');
+            document.getElementById('itunes-input').value = "";
             tg.HapticFeedback.impactOccurred('medium');
         }
 
-        function clearMusicSelection() {
-            document.getElementById('music-preview').classList.add('hidden');
-            document.getElementById('post-url').value = "";
-            document.getElementById('post-title').value = "";
+        function clearSelectedTrack() {
+            document.getElementById('selected-track-box').classList.add('hidden');
+            currentPostData = { url: '', title: '', cover: '' };
         }
 
-        // --- 4. Audio Control ---
-        function toggleAudio(id) {
-            const audio = document.getElementById(`audio-${id}`);
-            const btn = document.getElementById(`btn-play-${id}`);
-            const img = document.getElementById(`img-${id}`);
+        // --- PHASE 4: Action Handlers (Publish, Like, Comment) ---
+        async function executePublish() {
+            const cap = document.getElementById('post-caption').value;
+            if(!currentPostData.url) return tg.showAlert("Please select a track first.");
 
-            if (audio.paused) {
-                // Pause all others
-                document.querySelectorAll('audio').forEach(a => {
-                    const aid = a.id.split('-')[1];
-                    a.pause();
-                    document.getElementById(`btn-play-${aid}`).innerText = '▶️';
-                    document.getElementById(`img-${aid}`).classList.remove('music-disk-anim');
-                });
+            document.getElementById('submit-post-btn').innerText = "PUBLISHING...";
+            
+            const { error } = await client.from('music_posts').insert({
+                sender_id: userSession.id,
+                music_url: currentPostData.url,
+                music_title: currentPostData.title,
+                music_cover: currentPostData.cover,
+                caption: cap
+            });
 
-                audio.play();
-                btn.innerText = '⏸️';
-                img.classList.add('music-disk-anim');
-                tg.HapticFeedback.impactOccurred('light');
-            } else {
-                audio.pause();
-                btn.innerText = '▶️';
-                img.classList.remove('music-disk-anim');
+            if(!error) location.reload();
+            else {
+                tg.showAlert("Protocol error. Try again.");
+                document.getElementById('submit-post-btn').innerText = "Publish Archive";
             }
         }
 
-        function onTimeUpdate(id) {
-            const audio = document.getElementById(`audio-${id}`);
-            const prog = document.getElementById(`progress-${id}`);
-            const pct = (audio.currentTime / audio.duration) * 100;
-            prog.style.width = pct + '%';
+        async function processLike(postId, receiverId) {
+            const { error } = await client.from('likes').insert({ post_id: postId, user_id: userSession.id });
+            if(!error) {
+                if(receiverId != userSession.id) {
+                    await client.from('notifications').insert({ receiver_id: receiverId, sender_id: userSession.id, type: 'loved' });
+                }
+                loadTimeline();
+                tg.HapticFeedback.impactOccurred('light');
+            }
         }
 
-        function onAudioEnded(id) {
-            document.getElementById(`btn-play-${id}`).innerText = '▶️';
-            document.getElementById(`img-${id}`).classList.remove('music-disk-anim');
-        }
-
-        // --- 5. Social Interactions (Focus Layer & Comments) ---
-        async function openFocus(postId) {
+        // --- PHASE 5: Focus Layer (Discussion Logic) ---
+        async function openFocusMode(postId) {
             const { data: post } = await client.from('music_posts').select('*, profiles(*)').eq('id', postId).single();
             const layer = document.getElementById('focus-layer');
             
             layer.innerHTML = `
-                <div class="p-10 pb-40">
-                    <div class="flex justify-between items-center mb-12">
-                        <button onclick="closeFocus()" class="text-[11px] font-bold text-gray-300 uppercase tracking-widest">Back</button>
-                        <div class="w-2 h-2 rounded-full bg-pink-500"></div>
+                <div class="p-10 pb-44">
+                    <div class="flex justify-between items-center mb-16">
+                        <button onclick="closeFocusMode()" class="text-[10px] font-bold text-gray-300 uppercase tracking-[0.2em]">Return</button>
+                        <div class="h-1 w-12 bg-gray-100 rounded-full"></div>
                     </div>
                     
-                    <div class="mb-12">
-                        <img src="${post.music_cover}" class="w-full aspect-square rounded-[40px] shadow-2xl mb-8 object-cover">
-                        <h1 class="font-serif italic text-4xl mb-3">${post.music_title}</h1>
-                        <p class="text-[10px] font-bold text-pink-500 uppercase tracking-[0.4em] mb-8">Shared by @${post.profiles.username}</p>
-                        <div class="text-gray-500 italic leading-relaxed text-sm p-4 bg-gray-50 rounded-2xl">"${post.caption}"</div>
+                    <div class="mb-16">
+                        <img src="${post.music_cover}" class="w-full aspect-square rounded-[32px] shadow-2xl mb-10 object-cover">
+                        <h1 class="font-serif italic text-4xl mb-4 leading-tight">${post.music_title}</h1>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.3em] mb-12">Shared by @${post.profiles.username}</p>
+                        <div class="text-gray-500 italic leading-relaxed text-sm p-6 bg-gray-50 rounded-2xl border border-gray-100">"${post.caption}"</div>
                     </div>
 
-                    <div class="border-t border-gray-100 pt-10">
-                        <h4 class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-10">Public Thoughts</h4>
-                        <div id="comments-container" class="space-y-10"></div>
+                    <div class="border-t border-gray-50 pt-12">
+                        <h4 class="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-300 mb-12">The Discussion</h4>
+                        <div id="comments-list" class="space-y-12"></div>
                     </div>
                 </div>
 
-                <div class="fixed bottom-0 left-0 w-full bg-white/80 backdrop-blur-xl p-6 border-t border-gray-50 shadow-2xl">
-                    <div id="reply-label" class="hidden text-[10px] text-pink-500 font-bold uppercase mb-3 flex justify-between italic">
+                <div class="fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-xl p-8 border-t border-gray-50 flex flex-col gap-4">
+                    <div id="reply-info" class="hidden flex justify-between items-center text-[10px] font-bold uppercase text-gray-400 italic">
                         <span>Replying...</span>
                         <button onclick="cancelReply()">✕</button>
                     </div>
                     <div class="flex gap-4">
-                        <input id="comment-input" type="text" placeholder="Add your perspective..." 
-                               class="flex-1 bg-gray-100 p-5 rounded-2xl text-sm outline-none focus:bg-white border border-transparent focus:border-pink-100">
-                        <button onclick="postComment('${postId}')" class="w-14 h-14 bg-black text-white rounded-2xl flex items-center justify-center">▶</button>
+                        <input id="comment-field" type="text" placeholder="Add perspective..." class="flex-1 bg-gray-100 p-5 rounded-2xl text-sm outline-none border border-transparent focus:border-gray-200">
+                        <button onclick="commitComment('${postId}')" class="w-14 h-14 bg-black text-white rounded-2xl flex items-center justify-center">▶</button>
                     </div>
                 </div>
             `;
             
             layer.classList.remove('hidden');
-            tg.BackButton.show();
-            tg.BackButton.onClick(() => closeFocus());
             loadComments(postId);
+            tg.BackButton.show();
+            tg.BackButton.onClick(() => closeFocusMode());
         }
 
         async function loadComments(postId) {
             const { data: comments } = await client.from('comments').select('*, profiles(*)').eq('post_id', postId).order('created_at', { ascending: true });
-            const container = document.getElementById('comments-container');
+            const container = document.getElementById('comments-list');
             
             const mainComments = comments.filter(c => !c.parent_id);
-            
             container.innerHTML = mainComments.map(parent => {
-                const childReplies = comments.filter(r => r.parent_id === parent.id);
+                const subReplies = comments.filter(r => r.parent_id === parent.id);
                 return `
-                    <div class="comment-group">
+                    <div class="comment-block">
                         <div class="flex gap-5">
-                            <div class="w-10 h-10 rounded-full bg-gray-100 overflow-hidden shrink-0"><img src="${parent.profiles.photo_url || ''}" class="object-cover w-full h-full"></div>
+                            <div class="w-10 h-10 rounded-full bg-gray-100 overflow-hidden shrink-0 shadow-sm"><img src="${parent.profiles.photo_url || ''}" class="object-cover w-full h-full"></div>
                             <div class="flex-1">
                                 <div class="flex justify-between items-start">
                                     <p class="text-[11px] font-bold text-gray-800">@${parent.profiles.username}</p>
-                                    <span class="text-[8px] text-gray-300">NOW</span>
+                                    <span class="text-[8px] text-gray-300">RECENT</span>
                                 </div>
                                 <p class="text-sm text-gray-600 mt-2 leading-relaxed">${parent.content}</p>
-                                <button onclick="prepareReply('${parent.id}', '${parent.profiles.username}')" 
-                                        class="text-[9px] font-bold text-pink-400 uppercase mt-4 tracking-widest">Reply</button>
+                                <button onclick="setReplyTarget('${parent.id}', '${parent.profiles.username}')" class="text-[9px] font-bold text-gray-400 uppercase mt-4 tracking-widest">Reply</button>
                             </div>
                         </div>
-                        
-                        <div class="ml-12 mt-6 space-y-6 border-l-2 border-gray-50 pl-6">
-                            ${childReplies.map(r => `
+                        <div class="ml-14 mt-8 space-y-8 border-l border-gray-100 pl-8">
+                            ${subReplies.map(r => `
                                 <div class="flex gap-4">
                                     <div class="w-7 h-7 rounded-full bg-gray-50 overflow-hidden shrink-0"><img src="${r.profiles.photo_url || ''}" class="object-cover w-full h-full"></div>
-                                    <div>
-                                        <p class="text-[10px] font-bold text-gray-800">@${r.profiles.username}</p>
-                                        <p class="text-[12px] text-gray-500 mt-1">${r.content}</p>
-                                    </div>
+                                    <div><p class="text-[10px] font-bold text-gray-700">@${r.profiles.username}</p><p class="text-xs text-gray-500 mt-1">${r.content}</p></div>
                                 </div>
                             `).join('')}
                         </div>
                     </div>
                 `;
-            }).join('') || `<p class="text-center text-gray-300 italic text-xs">Be the first to leave a thought...</p>`;
+            }).join('') || `<p class="text-center text-gray-200 italic text-xs py-10">Archive silence.</p>`;
         }
 
-        function prepareReply(id, username) {
-            replyingToId = id;
-            const label = document.getElementById('reply-label');
-            label.classList.remove('hidden');
-            label.querySelector('span').innerText = `Replying to @${username}`;
-            document.getElementById('comment-input').focus();
+        function setReplyTarget(id, user) {
+            activeReplyTo = id;
+            const info = document.getElementById('reply-info');
+            info.classList.remove('hidden');
+            info.querySelector('span').innerText = `Replying to @${user}`;
+            document.getElementById('comment-field').focus();
         }
 
-        function cancelReply() { replyingToId = null; document.getElementById('reply-label').classList.add('hidden'); }
+        function cancelReply() { activeReplyTo = null; document.getElementById('reply-info').classList.add('hidden'); }
 
-        async function postComment(postId) {
-            const val = document.getElementById('comment-input').value;
+        async function commitComment(postId) {
+            const val = document.getElementById('comment-field').value;
             if(!val) return;
-
-            const { error } = await client.from('comments').insert({
-                post_id: postId,
-                user_id: telegramUser.id,
-                content: val,
-                parent_id: replyingToId
-            });
-
+            const { error } = await client.from('comments').insert({ post_id: postId, user_id: userSession.id, content: val, parent_id: activeReplyTo });
             if(!error) {
-                document.getElementById('comment-input').value = '';
+                document.getElementById('comment-field').value = '';
                 cancelReply();
                 loadComments(postId);
-                tg.HapticFeedback.notificationOccurred('success');
             }
         }
 
-        async function handleLike(postId, receiverId) {
-            const { error } = await client.from('likes').insert({ post_id: postId, user_id: telegramUser.id });
-            if (!error) {
-                if (receiverId != telegramUser.id) {
-                    await client.from('notifications').insert({ receiver_id: receiverId, sender_id: telegramUser.id, type: 'loved' });
+        // --- PHASE 6: Navigation & Utilities ---
+        function toggleMusicPlayback(id) {
+            const node = document.getElementById(`audio-node-${id}`);
+            const btn = document.getElementById(`play-btn-${id}`);
+            const disk = document.getElementById(`disk-${id}`);
+
+            if (node.paused) {
+                if(activeAudio && activeAudio !== node) {
+                    activeAudio.pause();
+                    document.querySelectorAll('button[id^="play-btn-"]').forEach(b => b.innerText = '▶');
+                    document.querySelectorAll('img[id^="disk-"]').forEach(d => d.classList.remove('spinning'));
                 }
-                loadPosts(currentViewedId);
-                tg.HapticFeedback.impactOccurred('medium');
+                node.play();
+                btn.innerText = '⏸';
+                disk.classList.add('spinning');
+                activeAudio = node;
+            } else {
+                node.pause();
+                btn.innerText = '▶';
+                disk.classList.remove('spinning');
             }
         }
 
-        // --- 6. Helper & UI Functions ---
-        async function submitPost() {
-            const url = document.getElementById('post-url').value;
-            const title = document.getElementById('post-title').value;
-            const cover = document.getElementById('post-cover').value;
-            const cap = document.getElementById('post-cap').value;
-
-            if(!url || !title) return tg.showAlert("Select a track first!");
-
-            tg.showConfirm("Share this vibe to your path?", async (ok) => {
-                if(ok) {
-                    const { error } = await client.from('music_posts').insert({
-                        sender_id: telegramUser.id,
-                        music_url: url,
-                        music_title: title,
-                        music_cover: cover,
-                        caption: cap
-                    });
-                    if(!error) location.reload();
-                }
-            });
+        function trackProgress(id) {
+            const node = document.getElementById(`audio-node-${id}`);
+            const bar = document.getElementById(`prog-bar-${id}`);
+            bar.style.width = (node.currentTime / node.duration) * 100 + '%';
         }
 
-        async function createAccount() {
+        function finishMusic(id) {
+            document.getElementById(`play-btn-${id}`).innerText = '▶';
+            document.getElementById(`disk-${id}`).classList.remove('spinning');
+        }
+
+        async function handleRegistration() {
             const name = document.getElementById('reg-name').value;
-            const user = document.getElementById('reg-user').value.toLowerCase();
-            if(!name || !user) return tg.showAlert("Please fill your identity.");
+            const user = document.getElementById('reg-user').value.toLowerCase().trim();
+            if(!name || !user) return tg.showAlert("Fields required.");
 
             const { error } = await client.from('profiles').insert({
-                telegram_id: telegramUser.id,
+                telegram_id: userSession.id,
                 display_name: name,
                 username: user,
-                photo_url: telegramUser.photo_url || ''
+                photo_url: userSession.photo_url || ''
             });
 
             if(!error) location.reload();
-            else tg.showAlert("Username already taken or server error.");
+            else tg.showAlert("Username reserved or network failure.");
         }
 
-        function debounceSearch(val) {
-            clearTimeout(itunesTimeout);
-            itunesTimeout = setTimeout(() => {
-                loadPosts(currentViewedId, val);
-            }, 600);
+        async function checkNotifications() {
+            const { data } = await client.from('notifications').select('*').eq('receiver_id', userSession.id).eq('is_read', false);
+            if(data && data.length > 0) {
+                document.getElementById('notif-indicator').classList.remove('hidden');
+                renderNotifications(data);
+            }
         }
 
-        function saveCSS() {
-            const css = document.getElementById('css-input').value;
-            client.from('profiles').update({ custom_css: css }).eq('telegram_id', telegramUser.id).then(() => {
-                tg.showPopup({ message: "CSS Applied. Restarting view...", buttons: [{type: 'close'}] });
-                setTimeout(() => location.reload(), 1500);
+        function renderNotifications(data) {
+            const container = document.getElementById('notif-content');
+            container.innerHTML = data.map(n => `
+                <div class="flex items-center gap-5 p-2">
+                    <div class="w-2 h-2 rounded-full bg-black"></div>
+                    <p class="text-sm font-medium">Someone loved your archived track.</p>
+                </div>
+            `).join('');
+        }
+
+        function toggleTab(type) {
+            const layer = document.getElementById('notif-layer');
+            layer.classList.toggle('hidden');
+            if(type === 'notifications') {
+                client.from('notifications').update({ is_read: true }).eq('receiver_id', userSession.id);
+                document.getElementById('notif-indicator').classList.add('hidden');
+            }
+        }
+
+        function handleGlobalSearch(val) {
+            clearTimeout(itunesDebounce);
+            itunesDebounce = setTimeout(() => loadTimeline(val), 500);
+        }
+
+        function commitCSS() {
+            const css = document.getElementById('custom-css-input').value;
+            client.from('profiles').update({ custom_css: css }).eq('telegram_id', userSession.id).then(() => {
+                tg.showAlert("Styling commit successful.");
+                setTimeout(() => location.reload(), 800);
             });
         }
 
-        async function updatePrivacy(val) {
-            await client.from('profiles').update({ is_private: val }).eq('telegram_id', telegramUser.id);
-            tg.HapticFeedback.notificationOccurred('success');
+        function toggleModal(id) { document.getElementById(id).classList.toggle('hidden'); }
+        function openPostModal() { toggleModal('post-modal'); }
+        function closeFocusMode() { document.getElementById('focus-layer').classList.add('hidden'); tg.BackButton.hide(); }
+        async function togglePrivacy(val) { await client.from('profiles').update({ is_private: val }).eq('telegram_id', userSession.id); }
+        function copyLink() {
+            const link = `https://t.me/AmonsPathBot/app?startapp=${userSession.id}`;
+            navigator.clipboard.writeText(link).then(() => tg.showAlert("Protocol Handle Copied."));
         }
 
-        function copyMyLink() {
-            const link = `https://t.me/AmonsPathBot/app?startapp=${telegramUser.id}`;
-            navigator.clipboard.writeText(link);
-            tg.showAlert("Link copied to clipboard! Share it with the world.");
-        }
+        // --- PHASE 7: Launch ---
+        initializeApp();
 
-        function toggleModal(id) {
-            const el = document.getElementById(id);
-            el.classList.toggle('hidden');
-            if(!el.classList.contains('hidden')) tg.HapticFeedback.impactOccurred('light');
-        }
-
-        function closeFocus() {
-            document.getElementById('focus-layer').classList.add('hidden');
-            tg.BackButton.hide();
-        }
-
-        // Run Init
-        init();
     </script>
 </body>
 </html>
-
-    

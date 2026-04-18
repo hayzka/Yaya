@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:italic&display=swap" rel="stylesheet">
+    
+    <style id="base-style">
+        :root { --theme-color: #ec4899; }
+        body { background-color: #fcfcfc; font-family: 'Inter', sans-serif; color: #1a1a1a; -webkit-tap-highlight-color: transparent; }
+        .elegant-card { background: #ffffff; border-radius: 12px; margin: 15px; border: 1px solid #f0f0f0; box-shadow: 0 2px 10px rgba(0,0,0,0.02); overflow: hidden; }
+        .caption-elegant { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; cursor: zoom-in; font-style: italic; transition: 0.3s; }
+        .btn-action { background-color: var(--theme-color); color: white; border-radius: 8px; padding: 8px 16px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+        .focus-title { font-family: 'Playfair Display', serif; font-size: 2.2rem; line-height: 1.1; font-style: italic; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .animate-up { animation: slideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
+    </style>
+    <style id="user-custom-css">/* Space for user-defined CSS */</style>
+</head>
+<body class="pb-24 no-scrollbar">
+
+    <div class="sticky top-0 z-50 bg-white/80 backdrop-blur-md p-5 flex justify-between items-center border-b border-gray-50">
+        <h1 class="text-xl font-serif italic tracking-tight">november 🩰</h1>
+        <div class="flex gap-4 items-center">
+            <button onclick="toggleModal('editor-modal')" class="text-[9px] font-bold border px-2 py-1 rounded text-gray-400 border-gray-100">CSS</button>
+            <button onclick="shareMyProfile()" class="text-[9px] font-bold tracking-widest text-gray-400 uppercase">Share</button>
+            <button onclick="toggleModal('notif-modal')" class="text-xl">🔔</button>
+        </div>
+    </div>
+
+    <div id="timeline"></div>
+    <audio id="global-player"></audio>
+
+    <button onclick="toggleModal('post-modal')" class="fixed bottom-8 right-8 w-12 h-12 rounded-full shadow-lg flex items-center justify-center text-white text-2xl z-40" style="background: var(--theme-color);"> + </button>
+
+    <div id="focus-overlay" class="hidden fixed inset-0 z-[100] bg-white/95 backdrop-blur-3xl flex flex-col p-8 overflow-y-auto no-scrollbar animate-up">
+        <div class="flex justify-between items-center mb-10">
+            <button onclick="closeFocus()" class="text-[10px] font-bold tracking-[0.3em] text-gray-400 uppercase">Dismiss</button>
+            <div class="w-1.5 h-1.5 rounded-full" style="background: var(--theme-color)"></div>
+        </div>
+        <div id="focus-content" class="flex flex-col gap-8"></div>
+    </div>
+
+    <div id="editor-modal" class="hidden fixed inset-0 z-[110] bg-black/90 flex flex-col p-6 animate-up">
+        <h2 class="text-white text-sm font-bold mb-4 tracking-widest uppercase opacity-50">Layout Code Editor</h2>
+        <textarea id="css-input" class="flex-1 bg-[#111] text-green-500 font-mono text-xs p-4 rounded-xl outline-none no-scrollbar" placeholder="/* Ketik CSS di sini. Contoh: .elegant-card { border: 2px solid pink; } */"></textarea>
+        <div class="flex gap-4 mt-6">
+            <button onclick="toggleModal('editor-modal')" class="flex-1 py-4 text-gray-500 text-xs font-bold uppercase">Batal</button>
+            <button onclick="saveCustomCSS()" class="flex-1 py-4 bg-white text-black rounded-xl text-xs font-bold uppercase">Apply Style</button>
+        </div>
+    </div>
+
+    <div id="notif-modal" class="hidden fixed inset-0 z-[70] bg-white overflow-y-auto no-scrollbar">
+        <div class="p-6 flex justify-between items-center border-b sticky top-0 bg-white">
+            <h2 class="font-bold text-lg">Activity</h2>
+            <button onclick="toggleModal('notif-modal')" class="text-xs font-bold text-gray-300 uppercase">Close</button>
+        </div>
+        <div id="notif-list"></div>
+    </div>
+
+    <div id="post-modal" class="hidden fixed inset-0 z-[60] bg-black/10 backdrop-blur-sm flex items-end">
+        <div class="bg-white w-full rounded-t-[30px] p-8 animate-up">
+            <input id="post-url" type="text" placeholder="Audio URL (.mp3 / direct link)" class="w-full bg-gray-50 p-4 rounded-xl mb-3 outline-none border border-gray-100 text-sm">
+            <textarea id="post-caption" placeholder="Caption estetik..." class="w-full bg-gray-50 p-4 rounded-xl h-32 mb-6 outline-none border border-gray-100 text-sm"></textarea>
+            <button onclick="submitPost()" class="w-full text-white py-4 rounded-xl font-bold btn-action">Publish Moment</button>
+        </div>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        
+        const SUPABASE_URL = 'https://aldzhrtbrjszppseawrz.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_h-BSul_X4VDxc-6gwSUa0w_Z_rsJ2xp';
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const player = document.getElementById('global-player');
+        const telegramUser = tg.initDataUnsafe.user || { id: 0, first_name: 'User' };
+
+        async function init() {
+            let { data } = await supabase.from('profiles').select('*').eq('telegram_id', telegramUser.id).single();
+            if (!data) {
+                data = { telegram_id: telegramUser.id, display_name: telegramUser.first_name, theme_color: '#ec4899' };
+                await supabase.from('profiles').insert(data);
+            }
+            if (data.custom_css) { applyCSS(data.custom_css); document.getElementById('css-input').value = data.custom_css; }
+            
+            const startParam = tg.initDataUnsafe.start_param;
+            if (startParam) { openFocus(null, startParam); }
+            
+            loadPosts();
+            loadNotifications();
+        }
+
+        function applyCSS(code) { document.getElementById('user-custom-css').innerHTML = code; }
+
+        async function saveCustomCSS() {
+            const code = document.getElementById('css-input').value;
+            await supabase.from('profiles').update({ custom_css: code }).eq('telegram_id', telegramUser.id);
+            tg.showAlert("Style Updated! ✨");
+            location.reload();
+        }
+
+        async function loadPosts() {
+            const { data } = await supabase.from('music_posts').select('*, profiles(*)').order('created_at', { ascending: false });
+            document.getElementById('timeline').innerHTML = data.map(post => `
+                <div class="elegant-card animate-up">
+                    <div class="p-5 flex gap-5">
+                        <div class="w-1/3 aspect-square bg-gray-50 rounded-lg overflow-hidden shrink-0">
+                            <img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=300" class="w-full h-full object-cover grayscale-[0.2]">
+                        </div>
+                        <div class="flex flex-col justify-center flex-1">
+                            <h3 class="font-serif italic text-lg mb-4">${post.caption.split(' ')[0]}</h3>
+                            <button onclick="playMusic('${post.music_url}', this)" class="btn-action w-fit">▶ Play</button>
+                        </div>
+                    </div>
+                    <div class="px-5 pb-5">
+                        <div class="caption-elegant text-[11px] text-gray-400" onclick="openFocus('${post.id}')">${post.caption}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function openFocus(postId, profileId = null) {
+            let query = supabase.from('music_posts').select('*, profiles(*)');
+            profileId ? query = query.eq('sender_id', profileId).order('created_at', {ascending: false}).limit(1) : query = query.eq('id', postId);
+            
+            const { data: result } = await query.single();
+            if (result) {
+                if (result.profiles.custom_css) { applyCSS(result.profiles.custom_css); }
+                const overlay = document.getElementById('focus-overlay');
+                document.getElementById('focus-content').innerHTML = `
+                    <div>
+                        <p class="text-[9px] font-bold text-gray-300 tracking-[0.3em] uppercase mb-4">MOMENT BY ${result.profiles.display_name}</p>
+                        <h1 class="focus-title">${result.caption.split(' ')[0]}</h1>
+                    </div>
+                    <div class="w-full aspect-[4/5] bg-gray-50 rounded-2xl overflow-hidden shadow-2xl">
+                        <img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=600" class="w-full h-full object-cover">
+                    </div>
+                    <div class="focus-body">"${result.caption}"</div>
+                    <button onclick="playMusic('${result.music_url}', this)" class="w-full py-4 rounded-xl text-white font-bold text-[10px]" style="background: var(--theme-color)">PLAY MELODY</button>
+                `;
+                overlay.classList.remove('hidden');
+                tg.HapticFeedback.impactOccurred('medium');
+                await supabase.from('notifications').insert({ receiver_id: result.sender_id, sender_id: telegramUser.id, type: 'visited', post_id: result.id });
+            }
+        }
+
+        function shareMyProfile() {
+            const bot = 'AmonsPathBot';
+            const link = `https://t.me/${bot}/app?startapp=${telegramUser.id}`;
+            tg.switchInlineQuery(`Liat profil estetikku di sini ✨\n\n${link}`);
+        }
+
+        function playMusic(url, btn) {
+            (player.src === url && !player.paused) ? (player.pause(), btn.innerText='▶ Play') : (player.src=url, player.play(), btn.innerText='⏸ Pause');
+        }
+
+        function toggleModal(id) { document.getElementById(id).classList.toggle('hidden'); }
+        function closeFocus() { document.getElementById('focus-overlay').classList.add('hidden'); location.reload(); }
+        window.addEventListener('blur', () => player.pause());
+
+        async function submitPost() {
+            const url = document.getElementById('post-url').value, cap = document.getElementById('post-caption').value;
+            if(!url || !cap) return;
+            await supabase.from('music_posts').insert({ sender_id: telegramUser.id, music_url: url, caption: cap });
+            toggleModal('post-modal'); loadPosts();
+        }
+
+        init();
+    </script>
+</body>
+</html>

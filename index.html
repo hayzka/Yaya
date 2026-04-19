@@ -1568,7 +1568,13 @@
         }
       }
     });
+        
+setTimeout(() => {
+  document.querySelectorAll('.modal-content, .modal-overlay, .layer')
+    .forEach(el => el.style.display = 'none');
+}, 1000);
 
+        
     </script>
 
 </body>

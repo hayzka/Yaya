@@ -595,17 +595,20 @@
             background: rgba(0,0,0,0.1);
         }
 
-        .layer,
-.modal-content,
-.modal-confirm {
-  pointer-events: none;
-}
+        .modal-content,
+        .modal-confirm {
+            display: none;
+        }
 
-.layer.active,
-.modal-content.active,
-.modal-confirm.active {
-  pointer-events: auto;
-}
+        .modal-content.active,
+        .modal-confirm.active {
+            display: flex;
+        }
+
+        .layer {
+            display: none;
+        }
+        
     </style>
     <style id="user-custom-css">/* User Custom CSS Space */</style>
 </head>
@@ -893,16 +896,13 @@
 
     // ============ INITIALIZATION ============
     async function initApp() {
-
-  // ✅ TAMBAHKAN INI
-  document.querySelectorAll('.layer, .modal-content, .modal-confirm')
-    .forEach(el => {
-      el.style.display = 'none';
-      el.classList.remove('active');
-    });
-
-  document.getElementById('profile-layer').style.display = 'none';
-     
+        document.querySelectorAll('.modal-content, .modal-confirm')
+         .forEach(el => {
+           el.style.display = 'none';
+           el.classList.remove('active');
+        });
+          
+        document.getElementById('profile-layer').style.display = 'none';
         try {
         // Check localStorage first
         const savedUser = localStorage.getItem('auth:userData');

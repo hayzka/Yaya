@@ -7,11 +7,9 @@
     <meta name="theme-color" content="#ec4899">
     <title>AmonsPath | Ultra Archive v2.0</title>
     
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700;800&family=Playfair+Display:ital,wght@1,400;1,700;1,900&family=JetBrains+Mono:wght@300&display=swap" rel="stylesheet">
-
+    
     <style id="master-logic-styles">
         :root { 
             --accent: #ec4899; 
@@ -26,14 +24,12 @@
             --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
         }
 
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg: #0f0f0f;
-                --surface: #1a1a1a;
-                --text-main: #f5f5f5;
-                --text-muted: #a0a0a0;
-                --glass: rgba(20, 20, 20, 0.85);
-            }
+        body.dark-mode {
+            --bg: #0f0f0f;
+            --surface: #1a1a1a;
+            --text-main: #f5f5f5;
+            --text-muted: #a0a0a0;
+            --glass: rgba(20, 20, 20, 0.85);
         }
 
         * { 
@@ -118,10 +114,6 @@
             transform: translateY(-4px);
             box-shadow: var(--shadow-lg);
         }
-        .post-entry:active { 
-            transform: scale(0.97);
-            box-shadow: var(--shadow-md);
-        }
 
         .post-delete-btn {
             position: absolute;
@@ -145,10 +137,6 @@
         .post-entry:hover .post-delete-btn {
             opacity: 1;
         }
-        .post-delete-btn:hover {
-            background: #dc2626;
-            transform: scale(1.1);
-        }
 
         .album-art-container {
             position: relative;
@@ -165,10 +153,6 @@
             height: 100%; 
             object-fit: cover; 
             transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            will-change: transform;
-        }
-        .post-entry:hover .album-art-container img { 
-            transform: scale(1.08); 
         }
 
         .viz-container {
@@ -246,7 +230,6 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             animation: toastIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             pointer-events: all;
-            backdrop-filter: blur(10px);
         }
         .toast.success { background: #10b981; }
         .toast.error { background: #ef4444; }
@@ -285,10 +268,6 @@
             transform: translateY(-2px);
             box-shadow: 0 20px 40px rgba(236, 72, 153, 0.3);
         }
-        .btn-premium:active { 
-            transform: scale(0.95); 
-            opacity: 0.9;
-        }
         .btn-premium:disabled {
             opacity: 0.5;
             cursor: not-allowed;
@@ -326,9 +305,6 @@
             outline: none;
             color: var(--text-main);
             min-height: 44px;
-        }
-        .input-premium::placeholder {
-            color: var(--text-muted);
         }
         .input-premium:focus { 
             border-color: var(--accent); 
@@ -370,11 +346,6 @@
             justify-content: center;
             font-size: 3rem;
         }
-        .profile-pfp-box img { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; 
-        }
 
         .status-badge {
             display: inline-flex;
@@ -399,10 +370,6 @@
         }
         @keyframes spin {
             to { transform: rotate(360deg); }
-        }
-
-        .search-user-text {
-            font-style: normal !important;
         }
 
         .icon-small {
@@ -436,50 +403,12 @@
         .icon-large:hover {
             transform: scale(1.1);
         }
-        .icon-large:active {
-            transform: scale(0.95);
-        }
-
-        .profile-editable-content {
-            pointer-events: none;
-            opacity: 0.6;
-        }
-
-        .profile-editable-content.enabled {
-            pointer-events: auto;
-            opacity: 1;
-        }
 
         .mine-archive-container {
             display: grid;
             grid-template-columns: 1fr;
             gap: 16px;
             padding: 16px;
-        }
-
-        .error-loading-post {
-            background-color: #fee2e2;
-            color: #991b1b;
-            padding: 16px;
-            border-radius: 12px;
-            text-align: center;
-            margin: 16px 20px;
-        }
-
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            display: none;
-            z-index: 1999;
-            animation: fadeIn 0.3s ease;
-        }
-        .modal-overlay.active {
-            display: block;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
         }
 
         .modal-content {
@@ -512,30 +441,6 @@
             flex: 1;
             padding: 24px;
             overflow-y: auto;
-        }
-
-        @media (max-width: 480px) {
-            .post-entry {
-                margin: 12px 16px 24px 16px;
-                padding: 16px;
-                border-radius: 24px;
-            }
-            .glass-nav {
-                padding: 16px 20px;
-            }
-        }
-
-        *:focus-visible {
-            outline: 2px solid var(--accent);
-            outline-offset: 2px;
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
         }
 
         .modal-confirm {
@@ -584,88 +489,137 @@
             background: #ef4444;
             color: white;
         }
-        .modal-confirm-buttons .confirm-yes:hover {
-            background: #dc2626;
-        }
         .modal-confirm-buttons .confirm-no {
             background: var(--surface);
             color: var(--text-main);
         }
-        .modal-confirm-buttons .confirm-no:hover {
-            background: rgba(0,0,0,0.1);
-        }
 
-        .modal-content,
-        .modal-confirm {
-            display: none;
-        }
-
-        .modal-content.active,
-        .modal-confirm.active {
+        .theme-color-picker {
             display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
-        .layer {
-            display: none;
+        .theme-color-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        
+
+        .theme-color-btn.active {
+            border-color: var(--text-main);
+            transform: scale(1.1);
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-flex;
+            width: 60px;
+            height: 34px;
+            background-color: #ccc;
+            border-radius: 34px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .toggle-switch.active {
+            background-color: var(--accent);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            background-color: white;
+            border-radius: 50%;
+            top: 4px;
+            left: 4px;
+            transition: left 0.3s;
+        }
+
+        .toggle-switch.active::after {
+            left: 30px;
+        }
+
+        @media (max-width: 480px) {
+            .post-entry {
+                margin: 12px 16px 24px 16px;
+                padding: 16px;
+                border-radius: 24px;
+            }
+            .glass-nav {
+                padding: 16px 20px;
+            }
+        }
+
+        .profile-editable-content {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        .profile-editable-content.enabled {
+            pointer-events: auto;
+            opacity: 1;
+        }
     </style>
-    <style id="user-custom-css">/* User Custom CSS Space */</style>
 </head>
-<body class="pb-32 no-scrollbar" role="application" aria-label="AmonsPath Music Archive">
+<body class="pb-32">
 
-    <div id="toast-container" role="region" aria-live="polite" aria-label="Notifications"></div>
+    <div id="toast-container" role="region" aria-live="polite"></div>
 
     <div class="main-container">
-        <nav class="glass-nav" role="navigation" aria-label="Main navigation">
-            <div id="notif-panel" class="hidden fixed top-24 right-6 w-80 bg-white shadow-xl rounded-xl p-4 z-[4000]" role="complementary" aria-label="Notifications panel">
-                <div id="notif-list" aria-live="polite"></div>
-            </div>
-            
+        <nav class="glass-nav" role="navigation">
             <div class="flex justify-between items-center mb-6">
                 <div>
-                    <h1 class="font-serif-italic text-3xl tracking-tighter cursor-pointer hover:opacity-75 transition" onclick="location.reload()" role="heading" aria-level="1">AmonsPath.</h1>
-                    <p id="system-status" class="text-[8px] font-bold text-pink-500 uppercase tracking-[0.4em] mt-1" aria-label="System status">Live Discovery Engine</p>
+                    <h1 class="font-serif-italic text-3xl tracking-tighter cursor-pointer hover:opacity-75 transition" onclick="location.reload()" role="heading">AmonsPath.</h1>
+                    <p id="system-status" class="text-[8px] font-bold text-pink-500 uppercase tracking-[0.4em] mt-1">Live Discovery Engine</p>
                 </div>
                 <div class="flex gap-4 items-center">
-                    <button onclick="toggleSearchUI()" class="icon-small hover:opacity-70 transition" aria-label="Search" aria-expanded="false" aria-controls="search-overlay">🔍</button>
-                    <button onclick="toggleNotif()" class="icon-small hover:opacity-70 transition" aria-label="Settings" aria-expanded="false" aria-controls="notif-panel">⚙️</button>
-                    <div id="nav-pfp-trigger" class="w-10 h-10 rounded-full bg-gray-50 border-2 border-transparent overflow-hidden transition active:scale-90 cursor-pointer hover:opacity-75" onclick="openProfileLayer()" role="button" tabindex="0" aria-label="Open profile">
-                        <img id="pfp-mini" class="hidden w-full h-full object-cover" alt="User profile picture" loading="lazy">
+                    <button onclick="toggleSearchUI()" class="icon-small hover:opacity-70 transition">🔍</button>
+                    <button onclick="openLayer('profile-layer')" class="icon-small hover:opacity-70 transition">⚙️</button>
+                    <div id="nav-pfp-trigger" class="w-10 h-10 rounded-full bg-gray-50 border-2 border-transparent overflow-hidden transition active:scale-90 cursor-pointer hover:opacity-75" onclick="openLayer('profile-layer')">
+                        <img id="pfp-mini" class="hidden w-full h-full object-cover" alt="User profile">
                         <div id="pfp-initial" class="w-full h-full flex items-center justify-center font-bold text-pink-500">👤</div>
                     </div>
                 </div>
             </div>
 
-            <div id="search-overlay" role="region" aria-label="Search section">
-                <input type="text" id="global-search-input" oninput="debounceSearch(this.value)" placeholder="Search by song, lyric or user..." class="input-premium search-user-text" aria-label="Global search">
+            <div id="search-overlay" role="region">
+                <input type="text" id="global-search-input" oninput="debounceSearch(this.value)" placeholder="Search by song, lyric or user..." class="input-premium">
             </div>
 
             <div class="flex gap-10 text-[10px] font-bold uppercase tracking-[0.2em] pb-1" role="tablist">
-                <button id="tab-btn-fyp" onclick="routeTo('fyp')" class="text-pink-500 border-b-2 border-pink-500 pb-3 hover:opacity-70 transition" role="tab" aria-selected="true" aria-controls="page-fyp">For You</button>
-                <button id="tab-btn-mine" onclick="routeTo('mine')" class="text-gray-300 pb-3 hover:opacity-70 transition" role="tab" aria-selected="false" aria-controls="page-mine">My Archive</button>
+                <button id="tab-btn-fyp" onclick="routeTo('fyp')" class="text-pink-500 border-b-2 border-pink-500 pb-3 hover:opacity-70 transition">Discover</button>
+                <button id="tab-btn-mine" onclick="routeTo('mine')" class="text-gray-300 pb-3 hover:opacity-70 transition">My Archive</button>
             </div>
         </nav>
 
         <section id="page-fyp" class="pt-8 px-2" role="main">
             <div id="fyp-feed" class="space-y-4">
-                <div class="post-entry p-8"><div class="skeleton h-60 mb-6"></div><div class="skeleton h-4 w-1/2 mb-4"></div><div class="skeleton h-3 w-full"></div></div>
-                <div class="post-entry p-8"><div class="skeleton h-60 mb-6"></div><div class="skeleton h-4 w-1/2 mb-4"></div><div class="skeleton h-3 w-full"></div></div>
+                <div class="post-entry p-8"><div class="skeleton h-60 mb-6"></div></div>
+                <div class="post-entry p-8"><div class="skeleton h-60 mb-6"></div></div>
             </div>
         </section>
 
         <section id="page-mine" class="hidden" role="main">
             <header class="profile-header-premium">
                 <div class="profile-pfp-box" id="header-pfp-box">
-                    <img id="header-pfp" class="hidden w-full h-full object-cover" alt="User profile picture" loading="lazy">
+                    <img id="header-pfp" class="hidden w-full h-full object-cover" alt="User profile">
                     <div id="header-pfp-initial" class="text-4xl">👤</div>
                 </div>
                 <div class="flex flex-col justify-center flex-1">
-                    <h2 id="header-name" class="text-3xl font-extrabold tracking-tight">Accessing...</h2>
+                    <h2 id="header-name" class="text-3xl font-extrabold">Accessing...</h2>
                     <p id="header-username" class="text-[10px] text-gray-400 font-bold uppercase tracking-[0.3em] mt-2">@pathfinder</p>
                     <div class="flex gap-2 mt-6">
                         <span id="badge-privacy" class="status-badge bg-white border border-gray-100 text-gray-400">Public</span>
-                        <span class="status-badge bg-pink-500 text-white">Active</span>
                     </div>
                 </div>
             </header>
@@ -673,23 +627,22 @@
         </section>
     </div>
 
-    <button id="create-post-btn" onclick="protectedAction(() => openModal('modal-post'))" class="icon-large fixed bottom-10 right-8" title="Create post" aria-label="Create new post">➕</button>
+    <button id="create-post-btn" onclick="protectedAction(() => openModal('modal-post'))" class="icon-large fixed bottom-10 right-8">➕</button>
 
     <!-- PROFILE LAYER -->
-    <div id="profile-layer" class="layer no-scrollbar" role="complementary" aria-label="Profile settings">
+    <div id="profile-layer" class="layer">
         <div class="p-10 pb-40">
             <div class="flex justify-between items-center mb-16">
-                <button onclick="closeLayer('profile-layer')" class="text-[10px] font-bold text-gray-300 uppercase tracking-widest hover:text-pink-500 transition" aria-label="Close profile">← Back</button>
-                <button onclick="openModal('modal-edit-profile')" class="text-xs font-bold text-pink-500 hover:opacity-70 transition" aria-label="Edit profile">Edit Path</button>
+                <button onclick="closeLayer('profile-layer')" class="text-[10px] font-bold text-gray-300 uppercase tracking-widest hover:text-pink-500 transition">← Back</button>
+                <button onclick="openModal('modal-edit-profile')" class="text-xs font-bold text-pink-500 hover:opacity-70 transition">Edit Path</button>
             </div>
 
             <div class="flex flex-col items-center mb-16">
                 <div class="relative w-36 h-36 mb-8">
-                    <div class="w-full h-full rounded-[40px] object-cover shadow-2xl bg-gray-100 flex items-center justify-center" id="layer-pfp-box">
-                        <img id="layer-pfp" class="hidden w-full h-full rounded-[40px] object-cover shadow-2xl" alt="User profile picture" loading="lazy">
+                    <div class="w-full h-full rounded-[40px] bg-gray-100 flex items-center justify-center" id="layer-pfp-box">
+                        <img id="layer-pfp" class="hidden w-full h-full rounded-[40px] object-cover" alt="User profile">
                         <div id="layer-pfp-initial" class="text-6xl">👤</div>
                     </div>
-                    <div class="absolute -bottom-2 -right-2 bg-white p-3 rounded-full shadow-xl">✨</div>
                 </div>
                 <h3 id="layer-name" class="text-3xl font-bold">...</h3>
                 <p id="layer-bio" class="text-sm text-gray-400 mt-5 text-center px-10">Searching for meaning in melodies.</p>
@@ -698,159 +651,157 @@
             <div class="grid grid-cols-2 gap-6 mb-12">
                 <div class="bg-gray-50 p-8 rounded-[30px] text-center border border-gray-100">
                     <span id="stat-count-posts" class="block text-3xl font-extrabold">0</span>
-                    <span class="text-[9px] text-gray-300 uppercase font-bold tracking-[0.2em] mt-2 block">Archives</span>
+                    <span class="text-[9px] text-gray-300 uppercase font-bold tracking-[0.2em] mt-2">Archives</span>
                 </div>
                 <div class="bg-gray-50 p-8 rounded-[30px] text-center border border-gray-100">
                     <span id="stat-count-likes" class="block text-3xl font-extrabold">0</span>
-                    <span class="text-[9px] text-gray-300 uppercase font-bold tracking-[0.2em] mt-2 block">Interactions</span>
+                    <span class="text-[9px] text-gray-300 uppercase font-bold tracking-[0.2em] mt-2">Interactions</span>
                 </div>
             </div>
 
             <div class="profile-editable-content space-y-8">
-                <div>
-                    <label class="text-[10px] font-bold text-gray-300 uppercase tracking-widest mb-5 block">Visual Palette (Accent)</label>
-                    <div class="flex gap-4">
-                        <button onclick="pendingTheme('#ec4899')" class="w-12 h-12 rounded-full bg-[#ec4899] shadow-lg shadow-pink-200 hover:scale-110 transition" title="Pink">⭐</button>
-                        <button onclick="pendingTheme('#1a1a1a')" class="w-12 h-12 rounded-full bg-[#1a1a1a] shadow-lg shadow-gray-200 hover:scale-110 transition" title="Black">⭐</button>
-                        <button onclick="pendingTheme('#3b82f6')" class="w-12 h-12 rounded-full bg-[#3b82f6] shadow-lg shadow-blue-200 hover:scale-110 transition" title="Blue">⭐</button>
-                        <button onclick="pendingTheme('#10b981')" class="w-12 h-12 rounded-full bg-[#10b981] shadow-lg shadow-emerald-200 hover:scale-110 transition" title="Green">⭐</button>
-                    </div>
-                </div>
-
+                <!-- DAY/NIGHT MODE TOGGLE -->
                 <div class="bg-gray-50 p-8 rounded-[30px] flex justify-between items-center">
                     <div>
-                        <span class="block text-xs font-bold uppercase tracking-widest">Ghost Mode</span>
-                        <p class="text-[10px] text-gray-400 mt-1">Hide your footprints from discovery</p>
+                        <span class="block text-xs font-bold uppercase tracking-widest">Dark Mode</span>
+                        <p class="text-[10px] text-gray-400 mt-1">Switch between day and night</p>
                     </div>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" id="privacy-toggle" class="sr-only peer" onchange="pendingPrivacy(this.checked)" aria-label="Toggle ghost mode">
-                        <div class="w-14 h-8 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-pink-500 after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all"></div>
-                    </label>
+                    <div id="theme-toggle" class="toggle-switch" onclick="toggleDarkMode()" role="button" tabindex="0"></div>
                 </div>
 
                 <div>
-                    <label class="text-[10px] font-bold text-gray-300 uppercase tracking-widest mb-5 block" for="input-css">Mirroring Engine (Custom CSS)</label>
-                    <textarea id="input-css" class="input-premium h-48 font-mono text-[11px] leading-relaxed" placeholder="/* .post-entry { border-radius: 0; } */" aria-label="Custom CSS input"></textarea>
+                    <label class="text-[10px] font-bold text-gray-300 uppercase tracking-widest mb-5 block">Visual Palette (Accent)</label>
+                    <div class="theme-color-picker">
+                        <div class="theme-color-btn active" onclick="changeThemeColor('#ec4899')" style="background-color: #ec4899;" data-color="#ec4899">✓</div>
+                        <div class="theme-color-btn" onclick="changeThemeColor('#1a1a1a')" style="background-color: #1a1a1a;" data-color="#1a1a1a"></div>
+                        <div class="theme-color-btn" onclick="changeThemeColor('#3b82f6')" style="background-color: #3b82f6;" data-color="#3b82f6"></div>
+                        <div class="theme-color-btn" onclick="changeThemeColor('#10b981')" style="background-color: #10b981;" data-color="#10b981"></div>
+                        <div class="theme-color-btn" onclick="changeThemeColor('#f59e0b')" style="background-color: #f59e0b;" data-color="#f59e0b"></div>
+                        <div class="theme-color-btn" onclick="changeThemeColor('#8b5cf6')" style="background-color: #8b5cf6;" data-color="#8b5cf6"></div>
+                    </div>
                 </div>
 
-                <button onclick="saveGlobalConfig()" class="btn-premium mt-8" aria-label="Save profile configuration">Synchronization</button>
-                <button onclick="logoutUser()" class="btn-secondary mt-4" aria-label="Logout">Logout</button>
+                <div>
+                    <label class="text-[10px] font-bold text-gray-300 uppercase tracking-widest mb-5 block" for="input-css">Custom CSS</label>
+                    <textarea id="input-css" class="input-premium h-48 font-mono text-[11px] leading-relaxed" placeholder="/* .post-entry { border-radius: 0; } */"></textarea>
+                </div>
+
+                <button onclick="saveGlobalConfig()" class="btn-premium mt-8">Save Settings</button>
+                <button onclick="logoutUser()" class="btn-secondary mt-4">Logout</button>
             </div>
         </div>
     </div>
 
     <!-- EDIT PROFILE MODAL -->
-    <div id="modal-edit-profile" class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modal-edit-title">
+    <div id="modal-edit-profile" class="modal-content" role="dialog">
         <div class="modal-header">
-            <h3 id="modal-edit-title" class="font-serif-italic text-2xl flex-1">Edit Path.</h3>
-            <button onclick="closeModal('modal-edit-profile')" class="text-2xl hover:opacity-70" aria-label="Close">✕</button>
+            <h3 class="font-serif-italic text-2xl flex-1">Edit Path.</h3>
+            <button onclick="closeModal('modal-edit-profile')" class="text-2xl hover:opacity-70">✕</button>
         </div>
         <div class="modal-body space-y-6 max-w-md mx-auto w-full">
             <div>
-                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 block" for="edit-pfp">Profile Photo</label>
-                <input type="file" id="edit-pfp" accept="image/*" class="input-premium" aria-label="Update profile photo">
+                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 block">Profile Photo</label>
+                <input type="file" id="edit-pfp" accept="image/*" class="input-premium">
                 <div id="edit-pfp-preview" class="mt-4 w-full h-32 bg-gray-100 rounded-2xl overflow-hidden hidden">
                     <img id="edit-pfp-img" class="w-full h-full object-cover" alt="Preview">
                 </div>
             </div>
 
             <div>
-                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 block" for="edit-name">Display Name</label>
-                <input type="text" id="edit-name" class="input-premium" placeholder="Your Name" aria-label="Display name">
+                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 block">Display Name</label>
+                <input type="text" id="edit-name" class="input-premium" placeholder="Your Name">
             </div>
 
             <div>
-                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 block" for="edit-username">Username</label>
-                <input type="text" id="edit-username" class="input-premium" placeholder="username" aria-label="Username" disabled>
-                <p class="text-[8px] text-gray-400 mt-2">Username cannot be changed</p>
+                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 block">Bio</label>
+                <textarea id="edit-bio" class="input-premium h-24 resize-none" placeholder="Tell about yourself..."></textarea>
             </div>
 
-            <div>
-                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 block" for="edit-bio">Bio</label>
-                <textarea id="edit-bio" class="input-premium h-24 resize-none" placeholder="Tell about yourself..." aria-label="Bio"></textarea>
-            </div>
-
-            <button onclick="saveProfileEdits()" class="btn-premium" aria-label="Save profile changes">Save Changes</button>
+            <button onclick="saveProfileEdits()" class="btn-premium">Save Changes</button>
             <button onclick="closeModal('modal-edit-profile')" class="btn-secondary">Cancel</button>
         </div>
     </div>
 
     <!-- CREATE POST MODAL -->
-    <div id="modal-post" class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modal-post-title">
+    <div id="modal-post" class="modal-content" role="dialog">
         <div class="modal-header">
-            <h3 id="modal-post-title" class="font-serif-italic text-2xl flex-1">New Memory.</h3>
-            <button onclick="closeModal('modal-post')" class="text-2xl hover:opacity-70" aria-label="Close">✕</button>
+            <h3 class="font-serif-italic text-2xl flex-1">New Memory.</h3>
+            <button onclick="closeModal('modal-post')" class="text-2xl hover:opacity-70">✕</button>
         </div>
         <div class="modal-body space-y-10 max-w-md mx-auto w-full">
             <div>
-                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-5 block" for="itunes-search">Select Sound</label>
+                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-5 block">Select Sound</label>
                 <div class="relative">
-                    <input type="text" id="itunes-search" oninput="searchMusicEngine(this.value)" placeholder="Search songs or artists..." class="input-premium" aria-label="Search music">
-                    <div id="itunes-loader" class="hidden absolute right-5 top-5" aria-hidden="true"><div class="spinner"></div></div>
+                    <input type="text" id="itunes-search" oninput="searchMusicEngine(this.value)" placeholder="Search songs or artists..." class="input-premium">
+                    <div id="itunes-loader" class="hidden absolute right-5 top-5"><div class="spinner"></div></div>
                 </div>
-                <div id="itunes-results" class="hidden mt-4 max-h-60 overflow-y-auto bg-gray-50 rounded-3xl border border-gray-100 no-scrollbar" role="region" aria-live="polite" aria-label="Music results"></div>
+                <div id="itunes-results" class="hidden mt-4 max-h-60 overflow-y-auto bg-gray-50 rounded-3xl border border-gray-100"></div>
             </div>
 
             <div id="selection-preview" class="hidden p-6 bg-pink-50 rounded-[30px] flex items-center gap-6 border border-pink-100">
-                <img id="sel-art" class="w-24 h-24 rounded-2xl shadow-2xl" alt="Selected track artwork" loading="lazy">
+                <img id="sel-art" class="w-24 h-24 rounded-2xl" alt="Album art">
                 <div class="flex-1 overflow-hidden">
                     <p id="sel-name" class="text-md font-bold truncate"></p>
                     <p id="sel-artist" class="text-[10px] text-gray-400 uppercase tracking-widest mt-2"></p>
                     <div class="flex gap-2 mt-4">
-                        <div class="viz-container"><div class="viz-bar viz-anim"></div><div class="viz-bar viz-anim" style="animation-delay: 0.2s"></div><div class="viz-bar viz-anim" style="animation-delay: 0.4s"></div></div>
-                        <span class="text-[8px] font-bold text-pink-500">READY TO SYNC</span>
+                        <div class="viz-container">
+                            <div class="viz-bar viz-anim"></div>
+                            <div class="viz-bar viz-anim" style="animation-delay: 0.2s"></div>
+                            <div class="viz-bar viz-anim" style="animation-delay: 0.4s"></div>
+                        </div>
+                        <span class="text-[8px] font-bold text-pink-500">READY</span>
                     </div>
                 </div>
-                <button onclick="clearMusicSelection()" class="text-gray-300 p-2 hover:text-gray-500 transition" aria-label="Clear selection">✕</button>
+                <button onclick="clearMusicSelection()" class="text-gray-300 p-2 hover:text-gray-500">✕</button>
             </div>
 
             <div>
-                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-5 block" for="post-caption">Entry Caption</label>
-                <textarea id="post-caption" class="input-premium h-44 resize-none leading-relaxed" placeholder="Write your internal monologue here..." aria-label="Post caption"></textarea>
+                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-5 block">Entry Caption</label>
+                <textarea id="post-caption" class="input-premium h-44 resize-none leading-relaxed" placeholder="Write your internal monologue here..."></textarea>
             </div>
 
-            <button id="btn-publish" onclick="processPublish()" class="btn-premium" aria-label="Publish post">Archive Forever</button>
+            <button id="btn-publish" onclick="processPublish()" class="btn-premium">Archive Forever</button>
             <button onclick="closeModal('modal-post')" class="btn-secondary">Cancel</button>
         </div>
     </div>
 
     <!-- AUTH MODAL -->
-    <div id="modal-auth" class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modal-auth-title">
+    <div id="modal-auth" class="modal-content" role="dialog">
         <div class="modal-body max-w-md mx-auto w-full flex flex-col justify-center min-h-screen">
             <div class="text-center mb-12">
-                <h2 id="modal-auth-title" class="font-serif-italic text-5xl mb-4">Identity.</h2>
+                <h2 class="font-serif-italic text-5xl mb-4">Identity.</h2>
                 <p class="text-[10px] text-gray-400 uppercase tracking-[0.5em]">Create Your Path</p>
             </div>
             
             <div class="space-y-6">
                 <div class="flex flex-col gap-2">
-                    <label class="text-[9px] font-bold text-gray-300 uppercase" for="auth-pfp">Profile Photo (Optional)</label>
-                    <input type="file" id="auth-pfp" accept="image/*" class="input-premium" aria-label="Profile photo">
+                    <label class="text-[9px] font-bold text-gray-300 uppercase">Profile Photo (Optional)</label>
+                    <input type="file" id="auth-pfp" accept="image/*" class="input-premium">
                     <div id="auth-pfp-preview" class="mt-4 w-full h-32 bg-gray-100 rounded-2xl overflow-hidden hidden">
                         <img id="auth-pfp-img" class="w-full h-full object-cover" alt="Preview">
                     </div>
                 </div>
 
                 <div class="flex flex-col gap-2">
-                    <label class="text-[9px] font-bold text-gray-300 uppercase" for="auth-name">Display Name</label>
-                    <input id="auth-name" type="text" placeholder="Your Name" class="input-premium" aria-label="Display name">
+                    <label class="text-[9px] font-bold text-gray-300 uppercase">Display Name</label>
+                    <input id="auth-name" type="text" placeholder="Your Name" class="input-premium">
                 </div>
                 
                 <div class="flex flex-col gap-2">
-                    <label class="text-[9px] font-bold text-gray-300 uppercase" for="auth-user">System Username</label>
+                    <label class="text-[9px] font-bold text-gray-300 uppercase">System Username</label>
                     <div class="relative">
-                        <input id="auth-user" type="text" oninput="validateUsername(this.value)" placeholder="username" class="input-premium" aria-label="Username">
-                        <span id="user-status-msg" class="absolute right-6 top-5 text-[9px] font-bold" role="status"></span>
+                        <input id="auth-user" type="text" oninput="validateUsername(this.value)" placeholder="username" class="input-premium">
+                        <span id="user-status-msg" class="absolute right-6 top-5 text-[9px] font-bold"></span>
                     </div>
                     <p class="text-[8px] text-gray-400">Minimum 3 characters, letters & numbers only</p>
                 </div>
 
                 <div class="flex flex-col gap-2">
-                    <label class="text-[9px] font-bold text-gray-300 uppercase" for="auth-bio">Bio (Optional)</label>
-                    <textarea id="auth-bio" placeholder="A few words about yourself..." class="input-premium h-24" aria-label="Bio"></textarea>
+                    <label class="text-[9px] font-bold text-gray-300 uppercase">Bio (Optional)</label>
+                    <textarea id="auth-bio" placeholder="A few words about yourself..." class="input-premium h-24"></textarea>
                 </div>
 
-                <button id="auth-submit" onclick="finishRegistration()" class="btn-premium opacity-50 mt-10" disabled aria-label="Complete registration">Confirm Path</button>
+                <button id="auth-submit" onclick="finishRegistration()" class="btn-premium opacity-50 mt-10" disabled>Confirm Path</button>
                 <button onclick="guestMode()" class="btn-secondary">Continue as Guest</button>
             </div>
         </div>
@@ -868,734 +819,552 @@
         </div>
     </div>
 
-    <script type="module">
-       document.addEventListener("click", () => {}, true);
-       document.addEventListener("touchstart", () => {}, true); 
+    <script>
+        // ============ GLOBAL APP STATE ============
+        window.appState = {
+            currentUser: null,
+            userSession: null,
+            myProfileData: null,
+            isGuest: false,
+            page: 'fyp',
+            selectedMusic: null,
+            pendingThemeColor: null,
+            hasChanges: false,
+            confirmCallback: null,
+            searchTimeout: null
+        };
 
-    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+        // ============ INITIALIZATION ============
+        async function initApp() {
+            const isDarkMode = localStorage.getItem('theme:darkMode') === 'true';
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode');
+                document.getElementById('theme-toggle').classList.add('active');
+            }
 
-    const supabase = createClient(
-      "https://aldzhrtbrjszppseawrz.supabase.co",
-      "sb_publishable_h-BSul_X4VDxc-6gwSUa0w_Z_rsJ2xp"
-    );
+            const savedThemeColor = localStorage.getItem('theme:accentColor') || '#ec4899';
+            document.documentElement.style.setProperty('--accent', savedThemeColor);
+            updateThemeColorButtons(savedThemeColor);
 
-    window.supabase = supabase;
-    window.appState = {
-        currentUser: null,
-        userSession: null,
-        myProfileData: null,
-        isGuest: false,
-        page: 0,
-        limit: 5,
-        selectedMusic: null,
-        pendingThemeColor: null,
-        pendingPrivacyState: null,
-        hasChanges: false,
-        confirmCallback: null
-    };
+            const savedUser = localStorage.getItem('auth:userData');
+            const savedUserId = localStorage.getItem('auth:userId');
+            const isGuestMode = localStorage.getItem('auth:guestMode') === 'true';
 
-    // ============ INITIALIZATION ============
-    async function initApp() {
-        document.querySelectorAll('.modal-content, .modal-confirm')
-         .forEach(el => {
-           el.style.display = 'none';
-           el.classList.remove('active');
+            if (savedUser && savedUserId && !isGuestMode) {
+                window.appState.myProfileData = JSON.parse(savedUser);
+                window.appState.userSession = { id: savedUserId };
+                window.appState.currentUser = { id: savedUserId };
+                window.appState.isGuest = false;
+                loadFeed();
+                loadUserProfile();
+                applyUserSettings();
+                closeModal('modal-auth');
+            } else if (isGuestMode) {
+                window.appState.isGuest = true;
+                const guestId = savedUserId || `guest_${Date.now()}`;
+                localStorage.setItem('auth:userId', guestId);
+                window.appState.userSession = { id: guestId };
+                window.appState.currentUser = { id: guestId };
+                loadFeed();
+                closeModal('modal-auth');
+            } else {
+                openModal('modal-auth');
+            }
+
+            setupFileInputs();
+        }
+
+        // ============ MODAL MANAGEMENT ============
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function openLayer(id) {
+            const layer = document.getElementById(id);
+            layer.style.display = 'flex';
+        }
+
+        function closeLayer(id) {
+            const layer = document.getElementById(id);
+            layer.style.display = 'none';
+        }
+
+        // ============ NAVIGATION ============
+        function routeTo(page) {
+            window.appState.page = page;
+            const fypPage = document.getElementById('page-fyp');
+            const minePage = document.getElementById('page-mine');
+            const fypBtn = document.getElementById('tab-btn-fyp');
+            const mineBtn = document.getElementById('tab-btn-mine');
+
+            if (page === 'fyp') {
+                fypPage.classList.remove('hidden');
+                minePage.classList.add('hidden');
+                fypBtn.classList.add('text-pink-500', 'border-b-2', 'border-pink-500');
+                fypBtn.classList.remove('text-gray-300');
+                mineBtn.classList.remove('text-pink-500', 'border-b-2', 'border-pink-500');
+                mineBtn.classList.add('text-gray-300');
+            } else {
+                fypPage.classList.add('hidden');
+                minePage.classList.remove('hidden');
+                mineBtn.classList.add('text-pink-500', 'border-b-2', 'border-pink-500');
+                mineBtn.classList.remove('text-gray-300');
+                fypBtn.classList.remove('text-pink-500', 'border-b-2', 'border-pink-500');
+                fypBtn.classList.add('text-gray-300');
+                loadUserProfile();
+            }
+        }
+
+        // ============ DARK MODE TOGGLE ============
+        function toggleDarkMode() {
+            const isDark = document.body.classList.toggle('dark-mode');
+            const toggle = document.getElementById('theme-toggle');
+            if (isDark) {
+                toggle.classList.add('active');
+                localStorage.setItem('theme:darkMode', 'true');
+            } else {
+                toggle.classList.remove('active');
+                localStorage.setItem('theme:darkMode', 'false');
+            }
+            showToast(isDark ? '🌙 Dark Mode Enabled' : '☀️ Light Mode Enabled', 'info');
+        }
+
+        // ============ THEME COLOR MANAGEMENT ============
+        function changeThemeColor(color) {
+            document.documentElement.style.setProperty('--accent', color);
+            localStorage.setItem('theme:accentColor', color);
+            updateThemeColorButtons(color);
+            showToast('Theme Updated', 'success');
+        }
+
+        function updateThemeColorButtons(activeColor) {
+            document.querySelectorAll('.theme-color-btn').forEach(btn => {
+                if (btn.getAttribute('data-color') === activeColor) {
+                    btn.classList.add('active');
+                    btn.textContent = '✓';
+                } else {
+                    btn.classList.remove('active');
+                    btn.textContent = '';
+                }
+            });
+        }
+
+        // ============ SEARCH ============
+        function toggleSearchUI() {
+            const overlay = document.getElementById('search-overlay');
+            overlay.classList.toggle('open');
+        }
+
+        function debounceSearch(value) {
+            clearTimeout(window.appState.searchTimeout);
+            if (!value.trim()) return;
+            
+            window.appState.searchTimeout = setTimeout(() => {
+                // Implement search functionality
+                console.log('Searching for:', value);
+            }, 300);
+        }
+
+        // ============ MUSIC SEARCH ============
+        let searchTimeout;
+        function searchMusicEngine(query) {
+            clearTimeout(searchTimeout);
+            if (!query.trim()) {
+                document.getElementById('itunes-results').classList.add('hidden');
+                return;
+            }
+
+            document.getElementById('itunes-loader').classList.remove('hidden');
+
+            searchTimeout = setTimeout(() => {
+                fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=music&limit=10`)
+                    .then(res => res.json())
+                    .then(data => {
+                        const resultsDiv = document.getElementById('itunes-results');
+                        resultsDiv.innerHTML = '';
+                        
+                        if (data.results && data.results.length > 0) {
+                            data.results.forEach(track => {
+                                const item = document.createElement('div');
+                                item.className = 'p-3 hover:bg-gray-100 cursor-pointer border-b';
+                                item.innerHTML = `
+                                    <div class="flex gap-3">
+                                        <img src="${track.artworkUrl60}" class="w-12 h-12 rounded" alt="">
+                                        <div class="flex-1 overflow-hidden">
+                                            <p class="font-bold text-sm truncate">${track.trackName}</p>
+                                            <p class="text-xs text-gray-400">${track.artistName}</p>
+                                        </div>
+                                    </div>
+                                `;
+                                item.onclick = () => selectMusic(track);
+                                resultsDiv.appendChild(item);
+                            });
+                            resultsDiv.classList.remove('hidden');
+                        } else {
+                            resultsDiv.innerHTML = '<div class="p-4 text-center text-gray-400">No results found</div>';
+                            resultsDiv.classList.remove('hidden');
+                        }
+                        document.getElementById('itunes-loader').classList.add('hidden');
+                    })
+                    .catch(err => {
+                        console.error('Search error:', err);
+                        document.getElementById('itunes-loader').classList.add('hidden');
+                        showToast('Search failed', 'error');
+                    });
+            }, 500);
+        }
+
+        function selectMusic(track) {
+            window.appState.selectedMusic = {
+                name: track.trackName,
+                artist: track.artistName,
+                artwork: track.artworkUrl600,
+                url: track.trackViewUrl
+            };
+
+            document.getElementById('sel-name').textContent = track.trackName;
+            document.getElementById('sel-artist').textContent = track.artistName;
+            document.getElementById('sel-art').src = track.artworkUrl600;
+            document.getElementById('selection-preview').classList.remove('hidden');
+            document.getElementById('itunes-results').classList.add('hidden');
+            document.getElementById('itunes-search').value = '';
+        }
+
+        function clearMusicSelection() {
+            window.appState.selectedMusic = null;
+            document.getElementById('selection-preview').classList.add('hidden');
+            document.getElementById('itunes-search').value = '';
+        }
+
+        // ============ POST MANAGEMENT ============
+        function processPublish() {
+            const caption = document.getElementById('post-caption').value.trim();
+            
+            if (!window.appState.selectedMusic) {
+                showToast('Please select a song first', 'warning');
+                return;
+            }
+
+            if (!caption) {
+                showToast('Please add a caption', 'warning');
+                return;
+            }
+
+            const post = {
+                id: Date.now(),
+                userId: window.appState.currentUser.id,
+                music: window.appState.selectedMusic,
+                caption,
+                timestamp: new Date().toISOString(),
+                likes: 0
+            };
+
+            const posts = JSON.parse(localStorage.getItem('posts:' + window.appState.currentUser.id) || '[]');
+            posts.unshift(post);
+            localStorage.setItem('posts:' + window.appState.currentUser.id, JSON.stringify(posts));
+
+            showToast('Post archived successfully!', 'success');
+            closeModal('modal-post');
+            document.getElementById('post-caption').value = '';
+            clearMusicSelection();
+            loadFeed();
+            loadUserProfile();
+        }
+
+        function deletePost(postId) {
+            showConfirm('Delete this post?', 'This action cannot be undone.', () => {
+                const posts = JSON.parse(localStorage.getItem('posts:' + window.appState.currentUser.id) || '[]');
+                const filtered = posts.filter(p => p.id !== postId);
+                localStorage.setItem('posts:' + window.appState.currentUser.id, JSON.stringify(filtered));
+                showToast('Post deleted', 'success');
+                loadFeed();
+                loadUserProfile();
+            });
+        }
+
+        function loadFeed() {
+            const feed = document.getElementById(window.appState.page === 'fyp' ? 'fyp-feed' : 'mine-feed');
+            const posts = JSON.parse(localStorage.getItem('posts:' + window.appState.currentUser.id) || '[]');
+
+            feed.innerHTML = '';
+
+            if (posts.length === 0) {
+                feed.innerHTML = '<div class="text-center text-gray-400 p-8">No posts yet. Create your first archive!</div>';
+                return;
+            }
+
+            posts.forEach(post => {
+                const postEl = document.createElement('div');
+                postEl.className = 'post-entry';
+                postEl.innerHTML = `
+                    <button class="post-delete-btn" onclick="deletePost(${post.id})">×</button>
+                    <div class="album-art-container">
+                        <img src="${post.music.artwork}" alt="Album art">
+                    </div>
+                    <h3 class="font-bold text-lg">${post.music.name}</h3>
+                    <p class="text-sm text-gray-400 mb-3">${post.music.artist}</p>
+                    <p class="text-sm leading-relaxed">${post.caption}</p>
+                    <div class="text-xs text-gray-400 mt-4">${new Date(post.timestamp).toLocaleDateString()}</div>
+                `;
+                feed.appendChild(postEl);
+            });
+        }
+
+        // ============ PROFILE MANAGEMENT ============
+        function loadUserProfile() {
+            if (!window.appState.myProfileData) {
+                return;
+            }
+
+            const profile = window.appState.myProfileData;
+
+            document.getElementById('header-name').textContent = profile.name || 'User';
+            document.getElementById('header-username').textContent = '@' + profile.username;
+            document.getElementById('layer-name').textContent = profile.name || 'User';
+            document.getElementById('layer-bio').textContent = profile.bio || 'Searching for meaning in melodies.';
+
+            if (profile.pfp) {
+                document.getElementById('header-pfp').src = profile.pfp;
+                document.getElementById('header-pfp').classList.remove('hidden');
+                document.getElementById('header-pfp-initial').classList.add('hidden');
+                document.getElementById('layer-pfp').src = profile.pfp;
+                document.getElementById('layer-pfp').classList.remove('hidden');
+                document.getElementById('layer-pfp-initial').classList.add('hidden');
+                document.getElementById('pfp-mini').src = profile.pfp;
+                document.getElementById('pfp-mini').classList.remove('hidden');
+            }
+
+            const posts = JSON.parse(localStorage.getItem('posts:' + window.appState.currentUser.id) || '[]');
+            document.getElementById('stat-count-posts').textContent = posts.length;
+            document.getElementById('stat-count-likes').textContent = posts.reduce((sum, p) => sum + p.likes, 0);
+
+            document.getElementById('edit-name').value = profile.name || '';
+            document.getElementById('edit-bio').value = profile.bio || '';
+        }
+
+        function saveProfileEdits() {
+            if (!window.appState.myProfileData) return;
+
+            window.appState.myProfileData.name = document.getElementById('edit-name').value.trim();
+            window.appState.myProfileData.bio = document.getElementById('edit-bio').value.trim();
+
+            const pfpFile = document.getElementById('edit-pfp').files[0];
+            if (pfpFile) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    window.appState.myProfileData.pfp = e.target.result;
+                    localStorage.setItem('auth:userData', JSON.stringify(window.appState.myProfileData));
+                    showToast('Profile updated!', 'success');
+                    closeModal('modal-edit-profile');
+                    loadUserProfile();
+                };
+                reader.readAsDataURL(pfpFile);
+            } else {
+                localStorage.setItem('auth:userData', JSON.stringify(window.appState.myProfileData));
+                showToast('Profile updated!', 'success');
+                closeModal('modal-edit-profile');
+                loadUserProfile();
+            }
+        }
+
+        function applyUserSettings() {
+            const customCSS = localStorage.getItem('settings:customCSS');
+            if (customCSS) {
+                document.getElementById('input-css').value = customCSS;
+                const styleEl = document.getElementById('user-custom-css') || document.createElement('style');
+                if (!styleEl.id) {
+                    styleEl.id = 'user-custom-css';
+                    document.head.appendChild(styleEl);
+                }
+                styleEl.textContent = customCSS;
+            }
+        }
+
+        function saveGlobalConfig() {
+            const customCSS = document.getElementById('input-css').value;
+            localStorage.setItem('settings:customCSS', customCSS);
+
+            const styleEl = document.getElementById('user-custom-css') || document.createElement('style');
+            if (!styleEl.id) {
+                styleEl.id = 'user-custom-css';
+                document.head.appendChild(styleEl);
+            }
+            styleEl.textContent = customCSS;
+
+            showToast('Settings saved!', 'success');
+        }
+
+        // ============ AUTHENTICATION ============
+        function validateUsername(value) {
+            const msg = document.getElementById('user-status-msg');
+            const submit = document.getElementById('auth-submit');
+            const isValid = /^[a-zA-Z0-9]{3,}$/.test(value);
+
+            if (value.length === 0) {
+                msg.textContent = '';
+                submit.disabled = true;
+            } else if (isValid) {
+                msg.textContent = '✓';
+                msg.style.color = '#10b981';
+                submit.disabled = !document.getElementById('auth-name').value.trim();
+            } else {
+                msg.textContent = '✗';
+                msg.style.color = '#ef4444';
+                submit.disabled = true;
+            }
+        }
+
+        async function finishRegistration() {
+            const name = document.getElementById('auth-name').value.trim();
+            const username = document.getElementById('auth-user').value.trim();
+            const bio = document.getElementById('auth-bio').value.trim();
+            const pfpFile = document.getElementById('auth-pfp').files[0];
+
+            if (!name || !username) {
+                showToast('Please fill in required fields', 'error');
+                return;
+            }
+
+            let pfpUrl = '';
+            if (pfpFile) {
+                pfpUrl = await new Promise(resolve => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.readAsDataURL(pfpFile);
+                });
+            }
+
+            const userId = `user_${Date.now()}`;
+            const profileData = {
+                user_id: userId,
+                name,
+                username,
+                bio,
+                pfp: pfpUrl,
+                theme: '#ec4899',
+                private: false
+            };
+
+            localStorage.setItem('auth:userId', userId);
+            localStorage.setItem('auth:userData', JSON.stringify(profileData));
+            localStorage.removeItem('auth:guestMode');
+
+            window.appState.myProfileData = profileData;
+            window.appState.userSession = { id: userId };
+            window.appState.currentUser = { id: userId };
+            window.appState.isGuest = false;
+
+            showToast('Welcome to AmonsPath!', 'success');
+            closeModal('modal-auth');
+            loadUserProfile();
+        }
+
+        function guestMode() {
+            const guestId = `guest_${Date.now()}`;
+            localStorage.setItem('auth:userId', guestId);
+            localStorage.setItem('auth:guestMode', 'true');
+            window.appState.isGuest = true;
+            window.appState.userSession = { id: guestId };
+            window.appState.currentUser = { id: guestId };
+            window.appState.myProfileData = { name: 'Guest User', username: 'guest', bio: '', pfp: '' };
+            closeModal('modal-auth');
+            loadFeed();
+        }
+
+        function logoutUser() {
+            localStorage.removeItem('auth:userData');
+            localStorage.removeItem('auth:userId');
+            localStorage.removeItem('auth:guestMode');
+            window.location.reload();
+        }
+
+        // ============ UI HELPERS ============
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        function protectedAction(callback) {
+            if (window.appState.isGuest) {
+                showToast('Please register to use this feature', 'warning');
+                return;
+            }
+            callback();
+        }
+
+        function showConfirm(title, message, callback) {
+            document.getElementById('confirm-title').textContent = title;
+            document.getElementById('confirm-message').textContent = message;
+            window.appState.confirmCallback = callback;
+            openModal('modal-confirm');
+        }
+
+        function closeConfirm() {
+            closeModal('modal-confirm');
+        }
+
+        function executeConfirm() {
+            if (window.appState.confirmCallback) {
+                window.appState.confirmCallback();
+                window.appState.confirmCallback = null;
+            }
+            closeConfirm();
+        }
+
+        function setupFileInputs() {
+            // Auth PFP preview
+            document.getElementById('auth-pfp')?.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const preview = document.getElementById('auth-pfp-preview');
+                        document.getElementById('auth-pfp-img').src = e.target.result;
+                        preview.classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Edit PFP preview
+            document.getElementById('edit-pfp')?.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const preview = document.getElementById('edit-pfp-preview');
+                        document.getElementById('edit-pfp-img').src = e.target.result;
+                        preview.classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        // ============ START APP ============
+        initApp();
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal('modal-auth');
+                closeModal('modal-post');
+                closeModal('modal-edit-profile');
+                closeModal('modal-confirm');
+                closeLayer('profile-layer');
+            }
         });
-          
-        document.getElementById('profile-layer').style.display = 'none';
-        try {
-        // Check localStorage first
-        const savedUser = localStorage.getItem('auth:userData');
-        const savedUserId = localStorage.getItem('auth:userId');
-        const isGuestMode = localStorage.getItem('auth:guestMode') === 'true';
-
-        if (savedUser && savedUserId && !isGuestMode) {
-          // User has saved profile
-          window.appState.myProfileData = JSON.parse(savedUser);
-          window.appState.userSession = { id: savedUserId };
-          window.appState.currentUser = { id: savedUserId };
-          window.appState.isGuest = false;
-          loadFeed(true);
-          loadUserProfile();
-          applyUserSettings();
-        } else if (isGuestMode) {
-          // Guest mode
-          window.appState.isGuest = true;
-          const guestId = savedUserId || `guest_${Date.now()}`;
-          localStorage.setItem('auth:userId', guestId);
-          window.appState.userSession = { id: guestId };
-          window.appState.currentUser = { id: guestId };
-          loadFeed(true);
-          
-        } else {
-          // New user - show signup
-          const anonSession = await supabase.auth.signInAnonymously();
-          window.appState.userSession = anonSession.data.user;
-          window.appState.currentUser = anonSession.data.user;
-          document.getElementById('modal-auth').classList.add('active');
-        }
-      } catch (error) {
-        console.error('Init error:', error);
-        // Fallback to guest mode
-        const guestId = `guest_${Date.now()}`;
-        localStorage.setItem('auth:userId', guestId);
-        localStorage.setItem('auth:guestMode', 'true');
-        window.appState.isGuest = true;
-        window.appState.userSession = { id: guestId };
-        window.appState.currentUser = { id: guestId };
-        loadFeed(true);
-      }
-    }
-
-    window.initApp = initApp;
-    initApp();
-
-    // ============ AUTHENTICATION ============
-    window.finishRegistration = async function() {
-      const name = document.getElementById('auth-name').value.trim();
-      const username = document.getElementById('auth-user').value.trim();
-      const bio = document.getElementById('auth-bio').value.trim();
-      const pfpFile = document.getElementById('auth-pfp').files[0];
-
-      if (!name || !username) {
-        showToast('Please fill in name and username', 'error');
-        return;
-      }
-
-      try {
-        let pfpUrl = '';
-        if (pfpFile) {
-          const reader = new FileReader();
-          pfpUrl = await new Promise((resolve) => {
-            reader.onload = (e) => resolve(e.target.result);
-            reader.readAsDataURL(pfpFile);
-          });
-        }
-
-        const userId = window.appState.userSession.id;
-        const profileData = {
-          user_id: userId,
-          name,
-          username,
-          bio,
-          pfp: pfpUrl,
-          theme: '#ec4899',
-          private: false
-        };
-
-        // Save to localStorage
-        localStorage.setItem('auth:userId', userId);
-        localStorage.setItem('auth:userData', JSON.stringify(profileData));
-        localStorage.removeItem('auth:guestMode');
-
-        window.appState.myProfileData = profileData;
-        window.appState.isGuest = false;
-
-        // Also try to save to Supabase if possible
-        try {
-          await supabase.from('profiles').upsert({
-            user_id: userId,
-            ...profileData
-          });
-        } catch (e) {
-          console.log('Supabase save failed, using localStorage only');
-        }
-
-        showToast('Profile created successfully!', 'success');
-        document.getElementById('modal-auth').classList.remove('active');
-        updateProfileUI(profileData);
-        loadFeed(true);
-      } catch (error) {
-        console.error('Registration error:', error);
-        showToast('Failed to create profile', 'error');
-      }
-    };
-
-    window.guestMode = function() {
-      const guestId = `guest_${Date.now()}`;
-      localStorage.setItem('auth:userId', guestId);
-      localStorage.setItem('auth:guestMode', 'true');
-      window.appState.isGuest = true;
-      window.appState.userSession = { id: guestId };
-      window.appState.currentUser = { id: guestId };
-      document.getElementById('modal-auth').classList.remove('active');
-      loadFeed(true);
-      showToast('Welcome, guest!', 'info');
-    };
-
-    window.logoutUser = function() {
-      showConfirm('Logout?', 'Are you sure you want to logout?', () => {
-        localStorage.removeItem('auth:userId');
-        localStorage.removeItem('auth:userData');
-        localStorage.setItem('auth:guestMode', 'true');
-        window.appState.myProfileData = null;
-        window.appState.isGuest = true;
-        document.getElementById('modal-auth').classList.add('active');
-        location.reload();
-      });
-    };
-
-    // ============ FEED ============
-    async function loadFeed(reset = false) {
-      try {
-        const container = document.getElementById("fyp-feed");
-
-        if (reset) {
-          window.appState.page = 0;
-          container.innerHTML = `<div class="text-center py-10 flex items-center justify-center gap-2"><div class="spinner"></div><span>Loading posts...</span></div>`;
-        }
-
-        const { data, error } = await supabase
-          .from("posts")
-          .select(`*`)
-          .range(window.appState.page * window.appState.limit, window.appState.page * window.appState.limit + window.appState.limit - 1)
-          .order("created_at", { ascending: false });
-
-        if (error) {
-          console.error('Feed error:', error);
-          container.innerHTML = `<div class="error-loading-post">⚠️ Using local posts. Connect for full experience.</div>`;
-          return;
-        }
-
-        if (reset) container.innerHTML = "";
-
-        if (!data || data.length === 0) {
-          if (window.appState.page === 0) {
-            container.innerHTML += `<p class="text-center py-10 text-gray-400">No posts yet. Be the first to share!</p>`;
-          }
-          return;
-        }
-
-        container.innerHTML += data.map(renderPost).join("");
-        window.appState.page++;
-      } catch (error) {
-        console.error('Load feed error:', error);
-      }
-    }
-
-    function renderPost(p) {
-      const isOwn = p.user_id === window.appState.userSession.id;
-      const deleteBtn = isOwn ? `<button class="post-delete-btn" onclick="deletePostConfirm('${p.id}')" title="Delete post">🗑️</button>` : '';
-      
-      return `
-        <div class="post-entry" id="post-${p.id}">
-          ${deleteBtn}
-          <div class="album-art-container">
-            <img src="${p.music_cover || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22%3E%3Crect fill=%23f0f0f0%22 width=%22100%25%22 height=%22100%25%22/%3E%3C/svg%3E'}" alt="Album cover" class="w-full h-full object-cover" loading="lazy">
-          </div>
-
-          <h3 class="text-lg font-bold truncate">${p.music_title || 'Unknown Title'}</h3>
-          <p class="text-sm text-gray-500 mb-3">${p.caption || 'No caption'}</p>
-
-          <div class="flex gap-6 text-sm mt-3">
-            <button onclick="protectedAction(() => toggleLike('${p.id}'))" class="hover:opacity-70 transition" aria-label="Like post">
-              ❤️ <span id="likes-${p.id}">0</span>
-            </button>
-
-            <button onclick="protectedAction(() => openComment('${p.id}'))" class="hover:opacity-70 transition" aria-label="Comment on post">
-              💬 <span id="comments-${p.id}">0</span>
-            </button>
-
-            <button onclick="sharePost('${p.id}')" class="hover:opacity-70 transition" aria-label="Share post">
-              🔗
-            </button>
-          </div>
-        </div>
-      `;
-    }
-
-    window.toggleLike = async function(postId) {
-      try {
-        showToast('❤️ Liked!', 'success');
-        // Increment local counter
-        const elem = document.getElementById(`likes-${postId}`);
-        if (elem) elem.textContent = (parseInt(elem.textContent) || 0) + 1;
-      } catch (error) {
-        console.error('Like error:', error);
-      }
-    };
-
-    window.deletePostConfirm = function(postId) {
-      showConfirm('Delete Post?', 'This action cannot be undone.', () => {
-        deletePost(postId);
-      });
-    };
-
-    window.deletePost = async function(postId) {
-      try {
-        const { error } = await supabase
-          .from("posts")
-          .delete()
-          .eq("id", postId);
-
-        if (error) throw error;
-
-        document.getElementById(`post-${postId}`)?.remove();
-        showToast('Post deleted', 'success');
-        loadUserArchive();
-      } catch (error) {
-        console.error('Delete error:', error);
-        showToast('Failed to delete post', 'error');
-      }
-    };
-
-    window.openComment = function(postId) {
-      const text = prompt("Write comment:");
-      if (!text) return;
-      showToast('💬 Comment added!', 'success');
-    };
-
-    window.sharePost = function(id) {
-      try {
-        const link = location.origin + "?post=" + id;
-        navigator.clipboard.writeText(link);
-        showToast("🔗 Link copied!", "success");
-      } catch (error) {
-        showToast('Failed to copy link', 'error');
-      }
-    };
-
-    // ============ PROFILE ============
-    function loadUserProfile() {
-      if (window.appState.myProfileData) {
-        updateProfileUI(window.appState.myProfileData);
-        loadUserArchive();
-      }
-    }
-
-    function updateProfileUI(data) {
-      const pfpImg = data.pfp;
-      
-      // Header
-      if (pfpImg) {
-        document.getElementById('header-pfp').classList.remove('hidden');
-        document.getElementById('header-pfp').src = pfpImg;
-        document.getElementById('header-pfp-initial').classList.add('hidden');
-      } else {
-        document.getElementById('header-pfp').classList.add('hidden');
-        document.getElementById('header-pfp-initial').classList.remove('hidden');
-      }
-      
-      document.getElementById('header-name').textContent = data.name || 'User';
-      document.getElementById('header-username').textContent = '@' + (data.username || 'user');
-
-      // Layer
-      if (pfpImg) {
-        document.getElementById('layer-pfp').classList.remove('hidden');
-        document.getElementById('layer-pfp').src = pfpImg;
-        document.getElementById('layer-pfp-initial').classList.add('hidden');
-      } else {
-        document.getElementById('layer-pfp').classList.add('hidden');
-        document.getElementById('layer-pfp-initial').classList.remove('hidden');
-      }
-      
-      document.getElementById('layer-name').textContent = data.name || 'User';
-      document.getElementById('layer-bio').textContent = data.bio || 'Searching for meaning in melodies.';
-
-      // Mini PFP
-      if (pfpImg) {
-        document.getElementById('pfp-mini').classList.remove('hidden');
-        document.getElementById('pfp-mini').src = pfpImg;
-        document.getElementById('pfp-initial').classList.add('hidden');
-      } else {
-        document.getElementById('pfp-mini').classList.add('hidden');
-        document.getElementById('pfp-initial').classList.remove('hidden');
-      }
-
-      // Edit form
-      document.getElementById('edit-name').value = data.name || '';
-      document.getElementById('edit-username').value = data.username || '';
-      document.getElementById('edit-bio').value = data.bio || '';
-
-      // Privacy toggle
-      document.getElementById('privacy-toggle').checked = data.private || false;
-    }
-
-    async function loadUserArchive() {
-      if (window.appState.isGuest) return;
-      
-      try {
-        const { data } = await supabase
-          .from("posts")
-          .select("*")
-          .eq("user_id", window.appState.userSession.id)
-          .order("created_at", { ascending: false });
-
-        const container = document.getElementById('mine-feed');
-        container.innerHTML = '';
-
-        if (!data || data.length === 0) {
-          container.innerHTML = '<p class="text-center py-10 text-gray-400">No posts yet. Create one to get started!</p>';
-          document.getElementById('stat-count-posts').textContent = '0';
-          return;
-        }
-
-        container.innerHTML = data.map(renderPost).join("");
-        document.getElementById('stat-count-posts').textContent = data.length;
-      } catch (error) {
-        console.error('Archive error:', error);
-      }
-    }
-
-    window.openProfileLayer = function() {
-  document.getElementById('profile-layer').style.display = 'flex';
-};
-
-    // ============ MODALS ============
-    window.openModal = function(modalId) {
-  const el = document.getElementById(modalId);
-  if (!el) return;
-
-  el.classList.add('active');
-  el.style.display = 'flex';
-};
-
-    window.closeModal = function(modalId) {
-  const el = document.getElementById(modalId);
-  if (!el) return;
-
-  el.classList.remove('active');
-  el.style.display = 'none';
-};
-
-    window.openLayer = function(layerId) {
-      document.getElementById(layerId)?.style.display = 'flex';
-    };
-
-    window.closeLayer = function(layerId) {
-      document.getElementById(layerId).style.display = 'none';
-    };
-
-    window.protectedAction = function(callback) {
-  if (window.appState.isGuest) {
-    openModal('modal-auth');
-    return;
-  }
-  callback();
-};
-
-    // ============ PROFILE EDITS ============
-    document.getElementById('edit-pfp')?.addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (evt) => {
-          const preview = document.getElementById('edit-pfp-preview');
-          document.getElementById('edit-pfp-img').src = evt.target.result;
-          preview.classList.remove('hidden');
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-
-    document.getElementById('auth-pfp')?.addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (evt) => {
-          const preview = document.getElementById('auth-pfp-preview');
-          document.getElementById('auth-pfp-img').src = evt.target.result;
-          preview.classList.remove('hidden');
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-
-    window.saveProfileEdits = async function() {
-      const name = document.getElementById('edit-name').value.trim();
-      const bio = document.getElementById('edit-bio').value.trim();
-      const pfpFile = document.getElementById('edit-pfp').files[0];
-
-      if (!name) {
-        showToast('Name is required', 'error');
-        return;
-      }
-
-      try {
-        let pfpUrl = window.appState.myProfileData.pfp;
-        if (pfpFile) {
-          const reader = new FileReader();
-          pfpUrl = await new Promise((resolve) => {
-            reader.onload = (e) => resolve(e.target.result);
-            reader.readAsDataURL(pfpFile);
-          });
-        }
-
-        const updated = {
-          ...window.appState.myProfileData,
-          name,
-          bio,
-          pfp: pfpUrl
-        };
-
-        localStorage.setItem('auth:userData', JSON.stringify(updated));
-        window.appState.myProfileData = updated;
-        updateProfileUI(updated);
-        closeModal('modal-edit-profile');
-        showToast('Profile updated!', 'success');
-      } catch (error) {
-        console.error('Edit error:', error);
-        showToast('Failed to update profile', 'error');
-      }
-    };
-
-    window.validateUsername = function(username) {
-      const msg = document.getElementById('user-status-msg');
-      const btn = document.getElementById('auth-submit');
-      const name = document.getElementById('auth-name').value.trim();
-
-      if (username.length < 3) {
-        msg.textContent = '❌ Too short';
-        msg.style.color = '#ef4444';
-        btn.disabled = true;
-        btn.style.opacity = '0.5';
-        return;
-      }
-
-      if (!/^[a-z0-9_]+$/.test(username)) {
-        msg.textContent = '❌ Invalid chars';
-        msg.style.color = '#ef4444';
-        btn.disabled = true;
-        btn.style.opacity = '0.5';
-        return;
-      }
-
-      msg.textContent = '✅ Available';
-      msg.style.color = '#10b981';
-      btn.disabled = !(name && username.length >= 3);
-      btn.style.opacity = btn.disabled ? '0.5' : '1';
-    };
-
-    // ============ MUSIC SEARCH ============
-    let searchTimeout;
-    window.debounceSearch = function(query) {
-      clearTimeout(searchTimeout);
-      searchTimeout = setTimeout(() => searchMusicEngine(query), 300);
-    };
-
-    window.searchMusicEngine = async function(query) {
-      if (!query || query.length < 2) {
-        document.getElementById('itunes-results').classList.add('hidden');
-        return;
-      }
-
-      const loader = document.getElementById('itunes-loader');
-      const results = document.getElementById('itunes-results');
-
-      loader.classList.remove('hidden');
-      results.classList.add('hidden');
-
-      try {
-        const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=song&limit=8`);
-        const data = await response.json();
-
-        loader.classList.add('hidden');
-
-        if (data.results.length === 0) {
-          results.innerHTML = '<div class="p-4 text-center text-gray-400">No songs found</div>';
-          results.classList.remove('hidden');
-          return;
-        }
-
-        results.innerHTML = data.results.map(song => `
-          <div class="p-3 border-b cursor-pointer hover:bg-white transition flex items-center gap-3" onclick="selectMusic('${song.trackId}', '${song.trackName.replace(/'/g, "\\'")}', '${song.artistName.replace(/'/g, "\\'")}', '${song.artworkUrl100.replace(/'/g, "\\'")}')">
-            <img src="${song.artworkUrl100}" class="w-12 h-12 rounded" alt="">
-            <div class="flex-1 overflow-hidden">
-              <p class="text-sm font-bold truncate">${song.trackName}</p>
-              <p class="text-xs text-gray-400 truncate">${song.artistName}</p>
-            </div>
-          </div>
-        `).join('');
-
-        results.classList.remove('hidden');
-      } catch (error) {
-        console.error('Search error:', error);
-        loader.classList.add('hidden');
-      }
-    };
-
-    window.selectMusic = function(id, name, artist, cover) {
-      window.appState.selectedMusic = { id, name, artist, cover };
-      document.getElementById('sel-name').textContent = name;
-      document.getElementById('sel-artist').textContent = artist;
-      document.getElementById('sel-art').src = cover;
-      document.getElementById('selection-preview').classList.remove('hidden');
-      document.getElementById('itunes-results').classList.add('hidden');
-      document.getElementById('itunes-search').value = '';
-    };
-
-    window.clearMusicSelection = function() {
-      window.appState.selectedMusic = null;
-      document.getElementById('selection-preview').classList.add('hidden');
-    };
-
-    // ============ POST CREATION ============
-    window.processPublish = async function() {
-      if (!window.appState.selectedMusic) {
-        showToast('Please select a song', 'error');
-        return;
-      }
-
-      const caption = document.getElementById('post-caption').value.trim();
-      const btn = document.getElementById('btn-publish');
-      btn.disabled = true;
-
-      try {
-        const { data, error } = await supabase.from('posts').insert({
-          user_id: window.appState.userSession.id,
-          music_title: window.appState.selectedMusic.name,
-          music_artist: window.appState.selectedMusic.artist,
-          music_cover: window.appState.selectedMusic.cover,
-          caption,
-          created_at: new Date().toISOString()
-        });
-
-        if (error) throw error;
-
-        showToast('Post archived! 🎉', 'success');
-        closeModal('modal-post');
-        loadFeed(true);
-        loadUserArchive();
-      } catch (error) {
-        console.error('Publish error:', error);
-        showToast('Failed to create post', 'error');
-      } finally {
-        btn.disabled = false;
-      }
-    };
-
-    // ============ SETTINGS ============
-    window.pendingTheme = function(color) {
-      window.appState.pendingThemeColor = color;
-      document.documentElement.style.setProperty('--accent', color);
-      showToast('Theme updated (save to keep)', 'info');
-    };
-
-    window.pendingPrivacy = function(isPrivate) {
-      window.appState.pendingPrivacyState = isPrivate;
-      showToast(`Ghost mode ${isPrivate ? 'ON' : 'OFF'} (save to keep)`, 'info');
-    };
-
-    window.saveGlobalConfig = function() {
-      const css = document.getElementById('input-css').value;
-      const customStyle = document.getElementById('user-custom-css');
-      customStyle.textContent = css;
-
-      const updated = {
-        ...window.appState.myProfileData,
-        theme: window.appState.pendingThemeColor || window.appState.myProfileData.theme,
-        private: window.appState.pendingPrivacyState !== null ? window.appState.pendingPrivacyState : window.appState.myProfileData.private,
-        customCSS: css
-      };
-
-      localStorage.setItem('auth:userData', JSON.stringify(updated));
-      localStorage.setItem('theme-color', updated.theme);
-      localStorage.setItem('custom-css', css);
-
-      window.appState.myProfileData = updated;
-      showToast('Settings synchronized! ✨', 'success');
-    };
-
-    function applyUserSettings() {
-      if (!window.appState.myProfileData) return;
-
-      const theme = window.appState.myProfileData.theme || '#ec4899';
-      const css = window.appState.myProfileData.customCSS || '';
-
-      document.documentElement.style.setProperty('--accent', theme);
-      document.getElementById('user-custom-css').textContent = css;
-
-      if (window.appState.myProfileData.customCSS) {
-        document.getElementById('input-css').value = window.appState.myProfileData.customCSS;
-      }
-    }
-
-    // ============ UI HELPERS ============
-    window.toggleSearchUI = function() {
-      document.getElementById('search-overlay').classList.toggle('open');
-    };
-
-    window.toggleNotif = function() {
-      document.getElementById('notif-panel').classList.toggle('hidden');
-    };
-
-    window.routeTo = function(target) {
-      const fyp = document.getElementById('page-fyp');
-      const mine = document.getElementById('page-mine');
-      const fypBtn = document.getElementById('tab-btn-fyp');
-      const mineBtn = document.getElementById('tab-btn-mine');
-
-      fyp.classList.add('hidden');
-      mine.classList.add('hidden');
-      fypBtn.setAttribute('aria-selected', 'false');
-      mineBtn.setAttribute('aria-selected', 'false');
-      fypBtn.classList.add('text-gray-300');
-      mineBtn.classList.add('text-gray-300');
-      fypBtn.classList.remove('text-pink-500', 'border-b-2', 'border-pink-500');
-      mineBtn.classList.remove('text-pink-500', 'border-b-2', 'border-pink-500');
-
-      if (target === 'fyp') {
-        fyp.classList.remove('hidden');
-        fypBtn.classList.remove('text-gray-300');
-        fypBtn.classList.add('text-pink-500', 'border-b-2', 'border-pink-500');
-        fypBtn.setAttribute('aria-selected', 'true');
-        document.getElementById('system-status').textContent = 'Live Discovery Engine';
-      } else {
-        if (window.appState.isGuest) {
-          showToast('Please create an account first', 'info');
-          routeTo('fyp');
-          return;
-        }
-        mine.classList.remove('hidden');
-        mineBtn.classList.remove('text-gray-300');
-        mineBtn.classList.add('text-pink-500', 'border-b-2', 'border-pink-500');
-        mineBtn.setAttribute('aria-selected', 'true');
-        document.getElementById('system-status').textContent = 'Personal Archive View';
-        loadUserArchive();
-      }
-    };
-
-    window.showToast = function(msg, type = 'default') {
-      const container = document.getElementById('toast-container');
-      const toast = document.createElement('div');
-      toast.className = `toast ${type}`;
-      toast.innerText = msg;
-      toast.setAttribute('role', 'status');
-      toast.setAttribute('aria-live', 'polite');
-      container.appendChild(toast);
-      setTimeout(() => toast.remove(), 3000);
-    };
-
-    // ============ CONFIRM DIALOG ============
-    window.showConfirm = function(title, message, callback) {
-      document.getElementById('confirm-title').textContent = title;
-      document.getElementById('confirm-message').textContent = message;
-      window.appState.confirmCallback = callback;
-      document.getElementById('modal-confirm').classList.add('active');
-    };
-
-    window.closeConfirm = function() {
-      document.getElementById('modal-confirm').classList.remove('active');
-      window.appState.confirmCallback = null;
-    };
-
-    window.executeConfirm = function() {
-      if (window.appState.confirmCallback) {
-        window.appState.confirmCallback();
-      }
-      closeConfirm();
-    };
-
-    // Scroll loading
-    window.addEventListener("scroll", () => {
-      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
-        if (document.getElementById('page-fyp').classList.contains('hidden') === false) {
-          loadFeed();
-        }
-      }
-    });
-        
     </script>
-
 </body>
 </html>

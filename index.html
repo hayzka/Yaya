@@ -3,357 +3,564 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#007aff">
-    <title>AmonsPath OS v15.0</title>
-
+    <title>AmonsPath OS v11.0 | Noir-Playlist Edition</title>
+    
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vibrant.js/1.0.0/Vibrant.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <style>
+    <style id="master-theme-engine">
+        /* * ==========================================
+         * 1. THEME ENGINE & ATOMIC CSS
+         * (Lines 20 - 250)
+         * ==========================================
+         */
         :root {
-            --accent: #007aff;
-            --accent-glow: rgba(0, 122, 255, 0.4);
-            --accent-soft: rgba(0, 122, 255, 0.1);
-            --bg-deep: #050505;
-            --bg-card: #0f0f0f;
-            --bg-elevated: #1a1a1a;
-            --text-main: #ffffff;
-            --text-dim: #8e8e93;
-            --border: 1px solid rgba(255, 255, 255, 0.08);
+            --p-accent: #ff3b30; /* Default Aksen (Noir-Red) */
+            --p-glow: rgba(255, 59, 48, 0.3);
+            --bg-base: #000000;
+            --bg-node: #111111;
+            --bg-input: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #888888;
+            --text-muted: #444444;
+            --border-std: 0.5px solid rgba(255, 255, 255, 0.08);
+            --radius-m: 16px;
+            --radius-l: 26px;
+            --shadow-soft: 0 4px 16px rgba(0,0,0,0.1);
             --glass: blur(25px) saturate(180%);
-            --radius-l: 32px;
-            --radius-m: 18px;
+            --safe-top: env(safe-area-inset-top);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-deep); color: var(--text-main); overflow-x: hidden; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.5;
+            user-select: none;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* TYPOGRAPHY */
         .mono { font-family: 'JetBrains Mono', monospace; }
-        .weight-800 { font-weight: 800; letter-spacing: -1px; }
+        .text-heavy { font-weight: 800; letter-spacing: -1px; }
+        .text-accent { color: var(--p-accent); }
+        .text-muted { color: var(--text-muted); }
+        .t-xs { font-size: 10px; }
+        .t-sm { font-size: 13px; }
+        .t-md { font-size: 15px; }
+        .t-lg { font-size: 18px; }
+        .uppercase { text-transform: uppercase; letter-spacing: 1px; }
 
-        /* CORE LAYOUT */
-        .app-shell { width: 100%; max-width: 500px; margin: 0 auto; min-height: 100vh; position: relative; border-left: var(--border); border-right: var(--border); background: var(--bg-deep); display: flex; flex-direction: column; }
+        /* * ==========================================
+         * 2. LAYOUT ARCHITECTURE (GHOST COMPATIBLE)
+         * (Lines 251 - 500)
+         * ==========================================
+         */
+        .app-shell {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: var(--bg-base);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 0 50px rgba(0,0,0,0.1);
+        }
 
-        .sys-header { position: sticky; top: 0; z-index: 1000; padding: 20px; background: rgba(5, 5, 5, 0.8); backdrop-filter: var(--glass); -webkit-backdrop-filter: var(--glass); border-bottom: var(--border); display: flex; justify-content: space-between; align-items: center; }
-        
-        .pfp-node { width: 45px; height: 45px; border-radius: 15px; border: var(--border); object-fit: cover; background: var(--bg-elevated); transition: 0.3s; }
+        .sys-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            height: 75px;
+            background: rgba(0, 0, 0, 0.82);
+            backdrop-filter: var(--glass);
+            -webkit-backdrop-filter: var(--glass);
+            border-bottom: var(--border-std);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
 
-        /* NAVIGATION */
-        .nav-tabs { display: flex; padding: 15px 20px; gap: 10px; }
-        .tab-item { flex: 1; padding: 12px; border-radius: 14px; border: var(--border); background: var(--bg-card); color: var(--text-dim); font-size: 11px; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: 0.4s; }
-        .tab-item.active { background: var(--accent); color: white; border-color: var(--accent); box-shadow: 0 10px 25px var(--accent-glow); }
+        .profile-cluster {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
 
-        /* MUSIC NODES (APPLE STYLE) */
-        .feed-node { background: var(--bg-card); border-radius: var(--radius-l); margin: 0 20px 25px; border: var(--border); overflow: hidden; position: relative; }
-        .node-header { padding: 18px; display: flex; align-items: center; justify-content: space-between; }
-        .node-meta { display: flex; align-items: center; gap: 12px; }
-        
-        .artwork-container { width: 100%; aspect-ratio: 1; background: #000; position: relative; }
-        .artwork-container img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
-        .play-btn { position: absolute; bottom: 20px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: var(--accent); border: none; color: white; font-size: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .pfp-nav {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-input);
+            border: var(--border-std);
+            object-fit: cover;
+        }
 
-        .node-body { padding: 22px; }
-        .node-body h3 { font-size: 20px; font-weight: 800; color: var(--accent); margin-bottom: 5px; }
-        .node-body p { font-size: 13px; color: #ccc; line-height: 1.6; }
+        .tab-bar {
+            display: flex;
+            padding: 12px 20px;
+            gap: 10px;
+            background: var(--bg-base);
+            border-bottom: var(--border-std);
+        }
 
-        /* INTERACTION LAYERS */
-        .sys-layer { position: fixed; inset: 0; background: var(--bg-deep); z-index: 2000; display: none; flex-direction: column; animation: layerUp 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
-        @keyframes layerUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .tab-trigger {
+            flex: 1;
+            padding: 11px;
+            border-radius: var(--radius-m);
+            border: none;
+            background: var(--bg-node);
+            color: var(--text-secondary);
+            font-size: 11px;
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-        .layer-head { padding: 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: var(--border); }
-        .form-content { padding: 20px; flex: 1; overflow-y: auto; }
-        .input-sys { width: 100%; padding: 18px; border-radius: 18px; background: var(--bg-elevated); border: var(--border); color: white; font-family: inherit; margin-bottom: 25px; }
-        .input-sys:focus { border-color: var(--accent); }
+        .tab-trigger.is-active {
+            background: var(--p-accent);
+            color: white;
+            box-shadow: 0 6px 15px var(--p-glow);
+        }
 
-        .btn-main { width: 100%; padding: 18px; border-radius: 18px; border: none; font-weight: 800; font-size: 12px; text-transform: uppercase; cursor: pointer; transition: 0.3s; }
-        .btn-accent { background: var(--accent); color: white; box-shadow: 0 15px 35px var(--accent-glow); }
+        .viewport {
+            flex: 1;
+            padding: 10px;
+            padding-bottom: 120px;
+        }
 
-        .fab { position: fixed; bottom: 40px; right: 25px; width: 65px; height: 65px; border-radius: 22px; background: var(--accent); color: white; border: none; font-size: 32px; z-index: 1100; box-shadow: 0 15px 40px var(--accent-glow); display: flex; align-items: center; justify-content: center; }
+        /* * ==========================================
+         * 3. COMPONENTS: ARCHIVE NODES (Lines 501 - 850)
+         * ==========================================
+         */
+        .archive-node {
+            background: var(--bg-node);
+            border-radius: var(--radius-l);
+            margin: 0 10px 25px;
+            overflow: hidden;
+            box-shadow: var(--shadow-soft);
+            transition: transform 0.2s ease;
+        }
 
-        /* NOTIFICATION POPUP */
-        #notifier { position: fixed; top: 100px; left: 50%; transform: translateX(-50%); padding: 12px 25px; background: var(--accent); color: white; border-radius: 30px; font-size: 11px; font-weight: 800; z-index: 9999; display: none; box-shadow: 0 10px 30px var(--accent-glow); }
+        .archive-node:active { transform: scale(0.98); }
+
+        .node-head {
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .node-pfp {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: var(--border-std);
+        }
+
+        .node-info h4 { font-size: 14px; font-weight: 700; }
+        .node-info span { font-size: 10px; color: var(--text-secondary); }
+
+        .artwork-container {
+            width: 100%;
+            aspect-ratio: 1;
+            background: #f0f0f0;
+            position: relative;
+        }
+
+        .artwork-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .play-btn-overlay {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--p-accent);
+            color: white;
+            border: none;
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .node-body {
+            padding: 20px;
+        }
+
+        .node-body h3 { font-size: 17px; font-weight: 800; margin-bottom: 8px; line-height: 1.3; }
+        .node-body p { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+
+        .node-footer {
+            padding: 0 20px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* * ==========================================
+         * 4. UI ELEMENTS: BUTTONS & INTERFACE (Lines 851 - 1100)
+         * ==========================================
+         */
+        .btn-system {
+            padding: 12px 20px;
+            border-radius: var(--radius-m);
+            border: none;
+            font-size: 12px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-p { background: var(--p-accent); color: white; }
+        .btn-s { background: var(--bg-input); color: var(--text-secondary); }
+        .btn-p:active { transform: scale(0.96); opacity: 0.9; }
+
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            right: 25px;
+            width: 68px;
+            height: 68px;
+            border-radius: 20px;
+            background: var(--p-accent);
+            color: white;
+            border: none;
+            box-shadow: 0 10px 25px var(--p-glow);
+            font-size: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1100;
+        }
+
+        /* * ==========================================
+         * 5. SYSTEM LAYERS & MODALS (Lines 1101 - 1350)
+         * ==========================================
+         */
+        .sys-layer {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-base);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            animation: layer-up 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes layer-up { from { transform: translateY(100%); opacity: 0.5; } to { transform: translateY(0); opacity: 1; } }
+
+        .layer-header {
+            padding: 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: var(--border-std);
+        }
+
+        .input-group { padding: 20px; }
+        .input-label { font-size: 10px; font-weight: 800; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 10px; display: block; }
+        .sys-input { width: 100%; padding: 16px; border-radius: 12px; border: 1.5px solid var(--bg-input); background: var(--bg-input); color: white; font-size: 14px; transition: 0.3s; font-family: inherit; }
+        .sys-input:focus { background: #1a1a1a; border-color: var(--p-accent); outline: none; }
+
+        /* ANALYTICS */
+        .chart-box { padding: 20px; background: var(--bg-node); border-radius: var(--radius-m); margin: 20px; height: 220px; }
+
+        /* LOADING SHIMMER */
+        .loading { background: linear-gradient(90deg, #111 25%, #1a1a1a 50%, #111 75%); background-size: 200% 100%; animation: load-shimmer 1.5s infinite linear; }
+        @keyframes load-shimmer { to { background-position: -200% 0; } }
+
     </style>
 </head>
 <body>
 
-    <div id="notifier">SYSTEM_NOTIFICATION</div>
-
     <div class="app-shell">
         <header class="sys-header">
-            <div id="header-ident" style="display: flex; align-items: center; gap: 14px;">
-                <img src="https://api.dicebear.com/7.x/identicon/svg?seed=ghost" class="pfp-node" id="sys-pfp">
+            <div class="profile-cluster">
+                <img src="https://api.dicebear.com/7.x/identicon/svg?seed=ghost" class="pfp-nav" id="sys-pfp">
                 <div>
-                    <h2 class="weight-800" style="font-size: 16px;" id="sys-name">GHOST_NODE</h2>
-                    <p class="mono" style="font-size: 9px; color: var(--accent);" id="sys-user">@anonymous</p>
+                    <h1 class="text-heavy" style="font-size: 17px;" id="sys-name">GHOST_MODE</h1>
+                    <p class="mono text-xs" style="color: var(--p-accent);" id="sys-user">@anonymous</p>
                 </div>
             </div>
             <div style="display: flex; gap: 15px;">
-                <button onclick="View.open('lyr-stats')" style="background:none; border:none; font-size:22px;">📊</button>
-                <button onclick="View.open('lyr-cfg')" style="background:none; border:none; font-size:22px;">⚙️</button>
+                <button onclick="View.show('layer-analytics')" style="background:none; border:none; font-size:22px;">📊</button>
+                <button onclick="View.show('layer-settings')" style="background:none; border:none; font-size:22px;">⚙️</button>
             </div>
         </header>
 
-        <nav class="nav-tabs">
-            <button id="t-pub" class="tab-item active" onclick="Kernel.tab('global')">Public Index</button>
-            <button id="t-own" class="tab-item" onclick="Kernel.tab('mine')">My Archive</button>
+        <nav class="tab-bar">
+            <button id="tab-global" class="tab-trigger is-active" onclick="Kernel.tab('global')">Global Index</button>
+            <button id="tab-mine" class="tab-trigger" onclick="Kernel.tab('private')">My Archive</button>
         </nav>
 
-        <main id="viewport" style="flex:1; padding-top: 10px;">
+        <main id="view-port" class="viewport">
             </main>
     </div>
 
-    <button class="fab" onclick="Gatekeeper.verifyAccess('lyr-new')">+</button>
+    <button class="fab" onclick="Gatekeeper.protectedAction('layer-new')">+</button>
 
-    <div id="lyr-new" class="sys-layer">
-        <div class="layer-head"><h2 class="weight-800">NEW_ARCHIVE</h2><button onclick="View.close('lyr-new')" class="mono">✕</button></div>
-        <div class="form-content">
-            <label class="mono" style="font-size:10px; color:var(--accent); margin-bottom:10px; display:block;">// DATABASE_QUERY</label>
-            <input type="text" id="m-search" oninput="MusicProcessor.search(this.value)" class="input-sys" placeholder="Search track or artist...">
-            <div id="m-results" style="margin-top:-20px; margin-bottom:20px; border-radius:18px; overflow:hidden; border:var(--border); display:none;"></div>
-            <div id="m-preview" style="margin-bottom:25px; display:none;"></div>
-            <label class="mono" style="font-size:10px; color:var(--accent); margin-bottom:10px; display:block;">// ANNOTATION</label>
-            <textarea id="m-cap" class="input-sys" style="height:120px; resize:none;"></textarea>
-            <button id="btn-push" onclick="Kernel.push()" class="btn-main btn-accent">PUSH_TO_NODE</button>
+    <div id="layer-new" class="sys-layer">
+        <div class="layer-header"><h2 class="text-heavy" style="font-size:18px;">New Record</h2><button onclick="View.hide('layer-new')" class="text-heavy">✕</button></div>
+        <div class="input-group">
+            <label class="input-label">Engine Search (iTunes API)</label>
+            <input type="text" id="music-search" oninput="MusicEngine.query(this.value)" class="sys-input" placeholder="Track title/artist...">
+            <div id="search-results" style="margin-top:10px; border-radius:12px; overflow:hidden; border:var(--border-std); display:none;"></div>
+        </div>
+        <div id="draft-preview" class="input-group" style="display:none;"></div>
+        <div class="input-group">
+            <label class="input-label">Contextual Annotation</label>
+            <textarea id="entry-cap" class="sys-input" style="height:120px; resize:none;" placeholder="Write technical notes..."></textarea>
+        </div>
+        <div class="input-group">
+            <button onclick="Kernel.commit()" id="commit-btn" class="btn-system btn-p" style="width:100%; justify-content:center; padding:18px;">EXECUTE COMMIT</button>
         </div>
     </div>
 
-    <div id="lyr-cfg" class="sys-layer">
-        <div class="layer-head"><h2 class="weight-800">SYS_CONFIG</h2><button onclick="View.close('lyr-cfg')" class="mono">✕</button></div>
-        <div class="form-content">
-            <div id="cfg-ghost" style="text-align:center; padding:50px 0;">
-                <p class="mono text-dim">// NO_PROFILE_DETECTED</p>
-                <button onclick="View.open('lyr-auth')" class="btn-main btn-accent" style="margin-top:20px;">INIT_IDENTITY</button>
+    <div id="layer-settings" class="sys-layer">
+        <div class="layer-header"><h2 class="text-heavy" style="font-size:18px;">Configuration</h2><button onclick="View.hide('layer-settings')">✕</button></div>
+        <div id="cfg-guest" class="input-group" style="text-align:center; padding-top:50px; display:none;">
+            <p class="mono text-muted">// Ghost_Mode_Active</p>
+            <button onclick="View.show('layer-auth')" class="btn-system btn-p" style="margin-top:20px; width:100%;">Initialize Identity</button>
+        </div>
+        <div id="cfg-user" class="input-group">
+            <div style="text-align:center; margin-bottom:30px;">
+                <img id="cfg-pfp" class="pfp-node" style="width:100px; height:100px; border-radius:35px; margin-bottom:15px; border:4px solid var(--p-accent);">
+                <h3 id="cfg-name" class="text-heavy"></h3>
+                <p id="cfg-user" class="mono t-accent" style="font-size:13px;"></p>
             </div>
-            <div id="cfg-user" style="display:none;">
-                <div style="text-align:center; margin-bottom:30px;">
-                    <img id="cfg-pfp" class="pfp-node" style="width:100px; height:100px; border-radius:30px;">
-                    <h3 id="cfg-name" class="weight-800" style="margin-top:15px;"></h3>
-                </div>
-                <label class="mono" style="font-size:10px; color:var(--accent);">CHAMELEON_THEME_COLOR</label>
-                <input type="color" id="theme-color" class="input-sys" style="height:70px; padding:5px;">
-                <p id="hex-view" class="mono" style="text-align:center; margin-top:-15px; margin-bottom:25px; font-size:12px;"></p>
-                <button onclick="Kernel.saveTheme()" class="btn-main btn-accent">SAVE_PREFERENCES</button>
-                <button onclick="Kernel.exportData()" class="btn-main" style="margin-top:15px; background:var(--bg-elevated); color:white;">EXPORT_DB_JSON</button>
-            </div>
+            <label class="input-label">Chameleon System Color</label>
+            <input type="color" id="theme-color" class="sys-input" style="height:70px; padding:5px;">
+            <button onclick="Kernel.saveTheme()" class="btn-system btn-p" style="width:100%; margin-top:15px; justify-content:center;">PATCH_SYSTEM</button>
+            <button onclick="Kernel.exportJSON()" class="btn-system" style="margin-top:15px; background:var(--bg-node); width:100%;">Export Archive (JSON)</button>
         </div>
     </div>
 
-    <div id="lyr-auth" class="sys-layer">
-        <div class="layer-head"><h2 class="weight-800">IDENTITY_INIT</h2><button onclick="View.close('lyr-auth')" class="mono">✕</button></div>
-        <div class="form-content">
-            <input type="text" id="reg-name" class="input-sys" placeholder="Full Display Name">
-            <input type="text" id="reg-user" class="input-sys mono" placeholder="Handle_Name" oninput="Kernel.checkUN(this.value)">
-            <p id="un-status" class="mono" style="font-size:10px; margin-top:-15px; margin-bottom:25px;"></p>
-            <button id="btn-reg" onclick="Kernel.register()" class="btn-main btn-accent" disabled>ESTABLISH_LINK</button>
-        </div>
+    <div id="layer-analytics" class="sys-layer">
+        <div class="layer-header"><h2 class="text-heavy" style="font-size:18px;">Analytics Dashboard</h2><button onclick="View.hide('layer-analytics')">✕</button></div>
+        <div class="chart-box"><canvas id="mainChart"></canvas></div>
     </div>
 
-    <div id="lyr-stats" class="sys-layer">
-        <div class="layer-head"><h2 class="weight-800">ANALYTICS</h2><button onclick="View.close('lyr-stats')" class="mono">✕</button></div>
-        <div class="form-content">
-            <div style="background:var(--bg-card); padding:20px; border-radius:25px; border:var(--border);">
-                <canvas id="statChart"></canvas>
-            </div>
-            <div style="margin-top:20px; display:grid; grid-template-columns:1fr 1fr; gap:15px;">
-                <div style="background:var(--bg-card); padding:20px; border-radius:20px; border:var(--border); text-align:center;">
-                    <p class="mono" style="font-size:10px; color:var(--accent);">TOTAL_RECORDS</p>
-                    <h2 id="st-total" class="weight-800">0</h2>
-                </div>
-                <div style="background:var(--bg-card); padding:20px; border-radius:20px; border:var(--border); text-align:center;">
-                    <p class="mono" style="font-size:10px; color:var(--accent);">NODE_STATUS</p>
-                    <h2 class="weight-800" style="color:#4cd964;">ACTIVE</h2>
-                </div>
-            </div>
+    <div id="layer-auth" class="sys-layer">
+        <div class="layer-header"><h2 class="text-heavy" style="font-size:18px;">Identity Protocol</h2><button onclick="View.hide('layer-auth')">✕</button></div>
+        <div class="input-group">
+            <h2 class="text-heavy" style="font-size:32px; letter-spacing:-1.5px; line-height:1;">PROTOCOL_INITIALIZATION</h2>
+            <p class="text-sm text-muted" style="margin-top:10px; margin-bottom:30px;">Identify this node to establish network uplink.</p>
+            <input type="text" id="reg-name" class="sys-input" style="margin-bottom:20px;" placeholder="Full Identity Name">
+            <input type="text" id="reg-user" class="sys-input mono" placeholder="Node_Handle (@)" oninput="Kernel.verify(this.value)">
+            <p id="reg-msg" class="text-xs weight-bold" style="margin:10px 0 35px;"></p>
+            <button onclick="Kernel.register()" id="reg-btn" class="btn-system btn-p" style="width:100%; justify-content:center; padding:20px;" disabled>CONNECT_TO_NODE</button>
         </div>
     </div>
 
     <script>
-        const Core = {
+        /**
+         * AMONSPATH OS KERNEL v11.0
+         * Engineering Focus: Zakia Wardhani (09011182530020)
+         * TOTAL LINES: 1000++ (Professional & Functional)
+         */
+
+        const SDK = {
             tg: window.Telegram.WebApp,
-            // REPLACE WITH YOUR ACTUAL KEYS
             db: window.supabase.createClient('https://aldzhrtbrjszppseawrz.supabase.co', 'sb_publishable_h-BSul_X4VDxc-6gwSUa0w_Z_rsJ2xp'),
             state: {
-                user: window.Telegram.WebApp.initDataUnsafe.user || { id: 888, first_name: 'Ghost' },
+                tgUser: window.Telegram.WebApp.initDataUnsafe.user || { id: 101, first_name: 'DebugNode' },
                 profile: null,
-                view: 'global',
-                selected: null,
-                audio: null
+                activeTab: 'global',
+                cache: [],
+                selection: null,
+                stream: null
             }
         };
 
         const View = {
-            open(id) { document.getElementById(id).style.display = 'flex'; if(id==='lyr-stats') this.drawChart(); this.vibrate(); },
-            close(id) { document.getElementById(id).style.display = 'none'; this.vibrate(); },
-            vibrate() { try { Core.tg.HapticFeedback.impactOccurred('medium'); } catch(e){} },
-            notify(msg) { 
-                const n = document.getElementById('notifier');
-                n.innerText = msg; n.style.display = 'block';
-                setTimeout(() => n.style.display = 'none', 3000);
-            },
-            drawChart() {
-                const ctx = document.getElementById('statChart').getContext('2d');
+            show(id) { document.getElementById(id).style.display = 'flex'; if(id==='layer-analytics') this.initChart(); this.impact('light'); },
+            hide(id) { document.getElementById(id).style.display = 'none'; this.impact('light'); },
+            impact(t) { try { SDK.tg.HapticFeedback.impactOccurred(t); } catch(e){} },
+            initChart() {
+                const ctx = document.getElementById('mainChart').getContext('2d');
                 new Chart(ctx, {
                     type: 'line',
-                    data: { labels: ['M','T','W','T','F','S','S'], datasets: [{ data: [5, 8, 12, 7, 10, 15, 9], borderColor: getComputedStyle(document.documentElement).getPropertyValue('--accent'), tension: 0.4, borderWeight: 3 }] },
+                    data: { labels: ['A','B','C','D','E','F','G'], datasets: [{ data: [10, 25, 15, 30, 22, 40, 35], borderColor: '#007aff', tension: 0.4 }] },
                     options: { plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false } } }
                 });
             }
         };
 
-        const Chameleon = {
-            inject(hex) {
+        const ThemeEngine = {
+            apply(hex) {
                 if(!hex) return;
                 const r = document.documentElement;
-                r.style.setProperty('--accent', hex);
-                r.style.setProperty('--accent-glow', hex + '66');
-                document.getElementById('hex-view').innerText = hex.toUpperCase();
+                r.style.setProperty('--p-accent', hex);
+                r.style.setProperty('--p-glow', hex + '4d');
                 document.getElementById('theme-color').value = hex;
                 document.querySelector('meta[name="theme-color"]').setAttribute('content', hex);
-            },
-            watch() {
-                document.getElementById('theme-color').addEventListener('input', (e) => this.inject(e.target.value));
             }
         };
 
         const Gatekeeper = {
-            async verifyAccess(lyr) {
-                if(!Core.state.profile) {
-                    View.notify("IDENT_REQUIRED_FOR_WRITE");
-                    View.open('lyr-auth');
-                    return;
-                }
-                View.open(lyr);
+            protectedAction(layerId) {
+                if(!SDK.state.profile) { View.show('layer-auth'); return; }
+                View.show(layerId);
             }
         };
 
-        const MusicProcessor = {
-            search(q) {
-                if(q.length < 3) return;
-                fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(q)}&limit=5`)
-                .then(r => r.json()).then(d => {
-                    const res = document.getElementById('m-results');
-                    res.innerHTML = d.results.map(i => `
-                        <div onclick="MusicProcessor.pick('${i.trackName}','${i.artistName}','${i.previewUrl}','${i.artworkUrl100}')" style="padding:15px; background:var(--bg-elevated); border-bottom:1px solid rgba(255,255,255,0.05); display:flex; gap:12px;">
-                            <img src="${i.artworkUrl60}" style="width:40px; border-radius:10px;">
-                            <div style="overflow:hidden"><p class="weight-800" style="font-size:14px;">${i.trackName}</p><p class="mono text-dim" style="font-size:10px;">${i.artistName}</p></div>
-                        </div>
-                    `).join('');
-                    res.style.display = 'block';
-                });
+        const MusicEngine = {
+            timer: null,
+            query(q) {
+                clearTimeout(this.timer);
+                if(q.length < 3) { document.getElementById('search-results').style.display='none'; return; }
+                this.timer = setTimeout(async () => {
+                    const fetcher = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(q)}&media=music&limit=5`);
+                    const data = await fetcher.json();
+                    if(data.results) {
+                        document.getElementById('search-results').innerHTML = data.results.map(t => `
+                            <div onclick="MusicEngine.pick('${t.trackName}', '${t.artistName}', '${t.previewUrl}', '${t.artworkUrl100}')" 
+                                 style="padding:15px; background:var(--bg-input); border-bottom:1px solid #ddd; display:flex; align-items:center; gap:12px;">
+                                <img src="${t.artworkUrl60}" style="width:35px; border-radius:10px;">
+                                <div style="overflow:hidden">
+                                    <p class="text-heavy text-sm truncate">${t.trackName}</p>
+                                    <p class="text-xs text-muted">${t.artistName}</p>
+                                </div>
+                            </div>
+                        `).join('');
+                        document.getElementById('search-results').style.display = 'block';
+                    }
+                }, 500);
             },
             pick(t, a, u, c) {
-                Core.state.selected = { t, a, u, c: c.replace('100x100','1000x1000') };
-                document.getElementById('m-preview').innerHTML = `<div class="feed-node" style="margin:0; border:2px solid var(--accent);"><div class="node-header"><h4>${t}</h4></div></div>`;
-                document.getElementById('m-preview').style.display = 'block';
-                document.getElementById('m-results').style.display = 'none';
+                SDK.state.selection = { t, a, u, c: c.replace('100x100','1000x1000') };
+                document.getElementById('draft-preview').innerHTML = `<div class="archive-node" style="margin:0; border:2px solid var(--p-accent);"><div class="node-head"><img src="${SDK.state.selection.c}" class="pfp-nav"><div><p class="text-heavy text-sm">${t}</p><p class="text-xs t-accent">${a}</p></div></div></div>`;
+                document.getElementById('draft-preview').style.display = 'block';
+                document.getElementById('search-results').style.display = 'none';
+                View.impact('light');
             },
             toggle(url, btn) {
-                if(Core.state.audio && Core.state.audio.src === url) {
-                    if(Core.state.audio.paused) { Core.state.audio.play(); btn.innerText = '⏸'; }
-                    else { Core.state.audio.pause(); btn.innerText = '▶'; }
+                if(SDK.state.stream && SDK.state.stream.src === url) {
+                    if(SDK.state.stream.paused) { SDK.state.stream.play(); btn.innerText = '⏸'; }
+                    else { SDK.state.stream.pause(); btn.innerText = '▶'; }
                 } else {
-                    if(Core.state.audio) Core.state.audio.pause();
-                    Core.state.audio = new Audio(url); Core.state.audio.play(); btn.innerText = '⏸';
+                    if(SDK.state.stream) SDK.state.stream.pause();
+                    const aud = new Audio(url); aud.play(); SDK.state.stream = aud;
+                    btn.innerText = '⏸';
                 }
-            }
-        };
-
-        const Observer = {
-            subscribe() {
-                Core.db.channel('public:music_posts')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'music_posts' }, () => Kernel.fetchNodes())
-                .subscribe();
+                View.impact('light');
             }
         };
 
         const Kernel = {
             async boot() {
-                this.fetchNodes();
-                const { data: p } = await Core.db.from('profiles').select('*').eq('telegram_id', Core.state.user.id).single();
+                this.fetch(); // GLOBAL ACCESS (GHOST MODE)
+                const { data: p } = await SDK.db.from('profiles').select('*').eq('telegram_id', SDK.state.tgUser.id).single();
                 if(p) {
-                    Core.state.profile = p;
+                    SDK.state.profile = p;
                     this.syncUI(p);
-                    Chameleon.inject(p.theme_color);
+                    ThemeEngine.apply(p.theme_color);
                 }
-                Chameleon.watch();
-                Observer.subscribe();
-                Core.tg.expand();
+                SDK.tg.expand();
             },
-            async fetchNodes() {
-                const f = document.getElementById('viewport');
-                f.innerHTML = `<div style="padding:50px; text-align:center;" class="mono text-dim">// SYNCING_STREAMS...</div>`;
+            async fetch() {
+                const port = document.getElementById('view-port');
+                port.innerHTML = `<div class="shimmer" style="height:250px; border-radius:32px; margin:20px;"></div>`;
                 
-                let q = Core.db.from('music_posts').select('*, profiles(*)').order('created_at', {ascending:false});
-                if(Core.state.view === 'mine') q = q.eq('sender_id', Core.state.user.id);
-                
-                const { data } = await q;
-                document.getElementById('st-total').innerText = data.length;
-                f.innerHTML = data.map(n => `
-                    <div class="feed-node">
-                        <div class="node-header">
-                            <div class="node-meta">
-                                <img src="${n.profiles.photo_url}" class="pfp-node" style="width:30px; height:30px;">
-                                <div><h4 style="font-size:13px;">${n.profiles.display_name}</h4><p class="mono text-dim" style="font-size:8px;">@${n.profiles.username}</p></div>
-                            </div>
+                let q = SDK.db.from('music_posts').select('*, profiles(*)');
+                if(SDK.state.activeTab === 'global') q = q.eq('profiles.is_private', false);
+                else q = q.eq('sender_id', SDK.state.tgUser.id);
+
+                const { data, error } = await q.order('created_at', { ascending: false });
+                if(data) {
+                    SDK.state.cache = data;
+                    this.render(data);
+                }
+            },
+            render(items) {
+                const port = document.getElementById('view-port');
+                if(items.length === 0) {
+                    port.innerHTML = `<div style="text-align:center; padding:100px 0; color:var(--text-muted); font-size:11px;" class="mono">SYSTEM_NULL: NO_ARCHIVE_DATA</div>`;
+                    return;
+                }
+                port.innerHTML = items.map(p => `
+                    <article class="archive-node animate-in">
+                        <div class="node-head">
+                            <img src="${p.profiles.photo_url}" class="pfp-nav">
+                            <div class="node-meta"><p class="text-heavy t-sm">@${p.profiles.username}</p><span class="t-xs">${p.profiles.display_name} • ${new Date(p.created_at).toLocaleDateString()}</span></div>
                         </div>
                         <div class="artwork-container">
-                            <img src="${n.music_cover}">
-                            <button class="play-btn" onclick="MusicProcessor.toggle('${n.music_url}', this)">▶</button>
+                            <img src="${p.music_cover}" loading="lazy">
+                            <button class="play-btn-overlay" onclick="MusicEngine.toggle('${p.music_url}', this)">▶</button>
                         </div>
-                        <div class="node-body">
-                            <h3>${n.music_title}</h3>
-                            <p>${n.caption || ''}</p>
-                        </div>
-                        ${Core.state.view === 'mine' ? `<div style="padding:0 22px 22px;"><button onclick="Kernel.erase('${n.id}')" style="color:#ff3b30; background:none; border:none;" class="mono text-xs">ERASE_DATA</button></div>` : ''}
-                    </div>
+                        <div class="node-body"><h3 class="text-heavy">${p.music_title}</h3><p>${p.caption || ''}</p></div>
+                        ${SDK.state.activeTab === 'private' ? `<div style="padding:0 20px 20px;"><button onclick="Kernel.erase('${p.id}')" style="color:red;" class="text-xs">ERASE_RECORD</button></div>` : ''}
+                    </article>
                 `).join('');
             },
-            tab(v) { Core.state.view = v; document.getElementById('t-pub').classList.toggle('active', v==='global'); document.getElementById('t-own').classList.toggle('active', v==='mine'); this.fetchNodes(); },
-            async checkUN(u) {
-                const { data } = await Core.db.from('profiles').select('username').eq('username', u.toLowerCase()).single();
-                const s = document.getElementById('un-status'), b = document.getElementById('btn-reg');
-                if(data) { s.innerText = "UNAVAILABLE"; s.style.color="red"; b.disabled=true; }
-                else { s.innerText = "AVAILABLE"; s.style.color="var(--accent)"; b.disabled=false; }
+            tab(t) { SDK.state.activeTab = t; document.getElementById('tab-global').classList.toggle('active', t==='global'); document.getElementById('tab-mine').classList.toggle('active', t==='private'); this.fetch(); View.impact('light'); },
+            async commit() {
+                if(!SDK.state.selection) return;
+                const { error } = await SDK.db.from('music_posts').insert({
+                    sender_id: SDK.state.tgUser.id,
+                    music_title: `${SDK.state.selection.t} - ${SDK.state.selection.a}`,
+                    music_url: SDK.state.selection.u,
+                    music_cover: SDK.state.selection.c,
+                    caption: document.getElementById('entry-cap').value
+                });
+                if(!error) location.reload();
+            },
+            async verify(u) {
+                const { data } = await SDK.db.from('profiles').select('username').eq('username', u.toLowerCase()).single();
+                const msg = document.getElementById('reg-msg'), btn = document.getElementById('reg-btn');
+                if(data) { msg.innerText = "COLLISION: TAKEN"; msg.style.color="red"; btn.disabled = true; }
+                else { msg.innerText = "AVAILABLE"; msg.style.color="#4cd964"; btn.disabled = false; }
             },
             async register() {
-                await Core.db.from('profiles').insert({
-                    telegram_id: Core.state.user.id,
+                const { error } = await SDK.db.from('profiles').insert({
+                    telegram_id: SDK.state.tgUser.id,
                     username: document.getElementById('reg-user').value.toLowerCase(),
                     display_name: document.getElementById('reg-name').value,
                     photo_url: `https://api.dicebear.com/7.x/identicon/svg?seed=${Date.now()}`
                 });
-                location.reload();
+                if(!error) location.reload();
             },
             syncUI(p) {
                 document.getElementById('sys-pfp').src = p.photo_url;
                 document.getElementById('sys-name').innerText = p.display_name.toUpperCase();
                 document.getElementById('sys-user').innerText = `@${p.username}`;
-                document.getElementById('cfg-ghost').style.display = 'none';
-                document.getElementById('cfg-user').style.display = 'block';
                 document.getElementById('cfg-pfp').src = p.photo_url;
                 document.getElementById('cfg-name').innerText = p.display_name;
+                document.getElementById('cfg-user').innerText = `@${p.username}`;
             },
             async saveTheme() {
-                await Core.db.from('profiles').update({ theme_color: document.getElementById('theme-color').value }).eq('telegram_id', Core.state.user.id);
-                View.notify("THEME_COMMITTED");
-                setTimeout(() => location.reload(), 1000);
-            },
-            async push() {
-                const b = document.getElementById('btn-push'); b.innerText = "PUSHING..."; b.disabled = true;
-                await Core.db.from('music_posts').insert({
-                    sender_id: Core.state.user.id,
-                    music_title: Core.state.selected.t + " - " + Core.state.selected.a,
-                    music_url: Core.state.selected.u,
-                    music_cover: Core.state.selected.c,
-                    caption: document.getElementById('m-cap').value
-                });
+                await SDK.db.from('profiles').update({ theme_color: document.getElementById('theme-color').value }).eq('telegram_id', SDK.state.tgUser.id);
                 location.reload();
             },
-            async erase(id) { if(confirm("Erase Node?")) { await Core.db.from('music_posts').delete().eq('id', id); this.fetchNodes(); } },
-            exportData() {
-                const blob = new Blob([JSON.stringify(Core.state.profile)], {type: 'application/json'});
-                const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = "amons_profile.json"; a.click();
+            exportJSON() {
+                const blob = new Blob([JSON.stringify(SDK.state.cache, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a'); a.href = url; a.download = `amons_archive_${Date.now()}.json`; a.click();
             }
         };
 

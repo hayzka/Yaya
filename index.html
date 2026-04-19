@@ -112,6 +112,7 @@
             animation: fadeInUp 0.8s ease backwards;
             cursor: pointer;
             display: block;
+            position: relative;
         }
         .post-entry:hover { 
             transform: translateY(-4px);
@@ -120,6 +121,33 @@
         .post-entry:active { 
             transform: scale(0.97);
             box-shadow: var(--shadow-md);
+        }
+
+        .post-delete-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        .post-entry:hover .post-delete-btn {
+            opacity: 1;
+        }
+        .post-delete-btn:hover {
+            background: #dc2626;
+            transform: scale(1.1);
         }
 
         .album-art-container {
@@ -266,6 +294,27 @@
             cursor: not-allowed;
         }
 
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-main);
+            padding: 14px 24px; 
+            border-radius: 20px;
+            font-weight: 800; 
+            font-size: 10px; 
+            text-transform: uppercase; 
+            letter-spacing: 0.2em;
+            width: 100%; 
+            transition: all 0.3s ease;
+            border: 2px solid var(--accent);
+            cursor: pointer;
+            user-select: none;
+            touch-action: manipulation;
+            min-height: 44px;
+        }
+        .btn-secondary:hover { 
+            background: var(--accent-soft);
+        }
+
         .input-premium {
             width: 100%; 
             background: var(--surface); 
@@ -315,6 +364,16 @@
             overflow: hidden;
             box-shadow: 0 30px 60px rgba(0,0,0,0.15);
             aspect-ratio: 1;
+            background: var(--surface);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+        .profile-pfp-box img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
         }
 
         .status-badge {
@@ -351,12 +410,34 @@
             width: 24px;
             height: 24px;
             padding: 6px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .icon-large {
             width: 72px;
             height: 72px;
             font-size: 2rem;
+            border: none;
+            background: black;
+            color: white;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+        }
+        .icon-large:hover {
+            transform: scale(1.1);
+        }
+        .icon-large:active {
+            transform: scale(0.95);
         }
 
         .profile-editable-content {
@@ -385,6 +466,54 @@
             margin: 16px 20px;
         }
 
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 1999;
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-overlay.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            background: var(--bg);
+            display: none;
+            flex-direction: column;
+            overflow-y: auto;
+            animation: slideInUp 0.4s ease;
+        }
+        .modal-content.active {
+            display: flex;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: var(--bg);
+            z-index: 10;
+        }
+
+        .modal-body {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
         @media (max-width: 480px) {
             .post-entry {
                 margin: 12px 16px 24px 16px;
@@ -409,6 +538,63 @@
             }
         }
 
+        .modal-confirm {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 3000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-confirm.active {
+            display: flex;
+        }
+        .modal-confirm-box {
+            background: var(--bg);
+            border-radius: 24px;
+            padding: 32px 24px;
+            max-width: 300px;
+            text-align: center;
+            animation: slideInUp 0.3s ease;
+        }
+        .modal-confirm-box h3 {
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+        .modal-confirm-box p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+        .modal-confirm-buttons {
+            display: flex;
+            gap: 12px;
+        }
+        .modal-confirm-buttons button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .modal-confirm-buttons .confirm-yes {
+            background: #ef4444;
+            color: white;
+        }
+        .modal-confirm-buttons .confirm-yes:hover {
+            background: #dc2626;
+        }
+        .modal-confirm-buttons .confirm-no {
+            background: var(--surface);
+            color: var(--text-main);
+        }
+        .modal-confirm-buttons .confirm-no:hover {
+            background: rgba(0,0,0,0.1);
+        }
+
     </style>
     <style id="user-custom-css">/* User Custom CSS Space */</style>
 </head>
@@ -429,9 +615,10 @@
                 </div>
                 <div class="flex gap-4 items-center">
                     <button onclick="toggleSearchUI()" class="icon-small hover:opacity-70 transition" aria-label="Search" aria-expanded="false" aria-controls="search-overlay">🔍</button>
-                    <button onclick="toggleNotif()" class="icon-small hover:opacity-70 transition" aria-label="Notifications" aria-expanded="false" aria-controls="notif-panel">⚙️</button>
-                    <div id="nav-pfp-trigger" class="w-10 h-10 rounded-full bg-gray-50 border-2 border-transparent overflow-hidden transition active:scale-90 cursor-pointer hover:opacity-75" onclick="openLayer('profile-layer')" role="button" tabindex="0">
+                    <button onclick="toggleNotif()" class="icon-small hover:opacity-70 transition" aria-label="Settings" aria-expanded="false" aria-controls="notif-panel">⚙️</button>
+                    <div id="nav-pfp-trigger" class="w-10 h-10 rounded-full bg-gray-50 border-2 border-transparent overflow-hidden transition active:scale-90 cursor-pointer hover:opacity-75" onclick="openProfileLayer()" role="button" tabindex="0" aria-label="Open profile">
                         <img id="pfp-mini" class="hidden w-full h-full object-cover" alt="User profile picture" loading="lazy">
+                        <div id="pfp-initial" class="w-full h-full flex items-center justify-center font-bold text-pink-500">👤</div>
                     </div>
                 </div>
             </div>
@@ -455,10 +642,11 @@
 
         <section id="page-mine" class="hidden" role="main">
             <header class="profile-header-premium">
-                <div class="profile-pfp-box">
-                    <img id="header-pfp" src="" class="w-full h-full object-cover" alt="User profile picture" loading="lazy">
+                <div class="profile-pfp-box" id="header-pfp-box">
+                    <img id="header-pfp" class="hidden w-full h-full object-cover" alt="User profile picture" loading="lazy">
+                    <div id="header-pfp-initial" class="text-4xl">👤</div>
                 </div>
-                <div class="flex flex-col justify-center">
+                <div class="flex flex-col justify-center flex-1">
                     <h2 id="header-name" class="text-3xl font-extrabold tracking-tight">Accessing...</h2>
                     <p id="header-username" class="text-[10px] text-gray-400 font-bold uppercase tracking-[0.3em] mt-2">@pathfinder</p>
                     <div class="flex gap-2 mt-6">
@@ -471,7 +659,7 @@
         </section>
     </div>
 
-    <button onclick="protectedAction(() => openModal('modal-post'))" class="icon-large fixed bottom-10 right-8 bg-black text-white rounded-full shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] flex items-center justify-center hover:bg-gray-800 transition active:scale-90" aria-label="Create new post">+</button>
+    <button id="create-post-btn" onclick="protectedAction(() => openModal('modal-post'))" class="icon-large fixed bottom-10 right-8" title="Create post" aria-label="Create new post">➕</button>
 
     <!-- PROFILE LAYER -->
     <div id="profile-layer" class="layer no-scrollbar" role="complementary" aria-label="Profile settings">
@@ -483,7 +671,10 @@
 
             <div class="flex flex-col items-center mb-16">
                 <div class="relative w-36 h-36 mb-8">
-                    <img id="layer-pfp" class="w-full h-full rounded-[40px] object-cover shadow-2xl" alt="User profile picture" loading="lazy">
+                    <div class="w-full h-full rounded-[40px] object-cover shadow-2xl bg-gray-100 flex items-center justify-center" id="layer-pfp-box">
+                        <img id="layer-pfp" class="hidden w-full h-full rounded-[40px] object-cover shadow-2xl" alt="User profile picture" loading="lazy">
+                        <div id="layer-pfp-initial" class="text-6xl">👤</div>
+                    </div>
                     <div class="absolute -bottom-2 -right-2 bg-white p-3 rounded-full shadow-xl">✨</div>
                 </div>
                 <h3 id="layer-name" class="text-3xl font-bold">...</h3>
@@ -519,7 +710,7 @@
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox" id="privacy-toggle" class="sr-only peer" onchange="pendingPrivacy(this.checked)" aria-label="Toggle ghost mode">
-                        <div class="w-14 h-8 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-pink-500 after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:border after:border-gray-300 after:rounded-full after:h-6 after:w-6 after:transition-all"></div>
+                        <div class="w-14 h-8 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-pink-500 after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all"></div>
                     </label>
                 </div>
 
@@ -529,18 +720,24 @@
                 </div>
 
                 <button onclick="saveGlobalConfig()" class="btn-premium mt-8" aria-label="Save profile configuration">Synchronization</button>
+                <button onclick="logoutUser()" class="btn-secondary mt-4" aria-label="Logout">Logout</button>
             </div>
         </div>
     </div>
 
     <!-- EDIT PROFILE MODAL -->
-    <div id="modal-edit-profile" class="hidden fixed inset-0 z-[2500] bg-white p-10 overflow-y-auto no-scrollbar" role="dialog" aria-modal="true" aria-labelledby="modal-edit-title">
-        <h3 id="modal-edit-title" class="font-serif-italic text-4xl mb-8">Edit Path.</h3>
-        
-        <div class="space-y-6">
+    <div id="modal-edit-profile" class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modal-edit-title">
+        <div class="modal-header">
+            <h3 id="modal-edit-title" class="font-serif-italic text-2xl flex-1">Edit Path.</h3>
+            <button onclick="closeModal('modal-edit-profile')" class="text-2xl hover:opacity-70" aria-label="Close">✕</button>
+        </div>
+        <div class="modal-body space-y-6 max-w-md mx-auto w-full">
             <div>
                 <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 block" for="edit-pfp">Profile Photo</label>
                 <input type="file" id="edit-pfp" accept="image/*" class="input-premium" aria-label="Update profile photo">
+                <div id="edit-pfp-preview" class="mt-4 w-full h-32 bg-gray-100 rounded-2xl overflow-hidden hidden">
+                    <img id="edit-pfp-img" class="w-full h-full object-cover" alt="Preview">
+                </div>
             </div>
 
             <div>
@@ -550,7 +747,8 @@
 
             <div>
                 <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 block" for="edit-username">Username</label>
-                <input type="text" id="edit-username" class="input-premium" placeholder="username" aria-label="Username">
+                <input type="text" id="edit-username" class="input-premium" placeholder="username" aria-label="Username" disabled>
+                <p class="text-[8px] text-gray-400 mt-2">Username cannot be changed</p>
             </div>
 
             <div>
@@ -559,18 +757,17 @@
             </div>
 
             <button onclick="saveProfileEdits()" class="btn-premium" aria-label="Save profile changes">Save Changes</button>
-            <button onclick="closeModal('modal-edit-profile')" class="w-full text-[10px] font-bold text-gray-300 uppercase tracking-widest mt-4 hover:text-gray-500 transition">Cancel</button>
+            <button onclick="closeModal('modal-edit-profile')" class="btn-secondary">Cancel</button>
         </div>
     </div>
 
-    <!-- FOCUS LAYER -->
-    <div id="focus-layer" class="layer no-scrollbar" role="complementary" aria-label="Post detail view"></div>
-
     <!-- CREATE POST MODAL -->
-    <div id="modal-post" class="hidden fixed inset-0 z-[2000] bg-white p-10 overflow-y-auto no-scrollbar" role="dialog" aria-modal="true" aria-labelledby="modal-post-title">
-        <h3 id="modal-post-title" class="font-serif-italic text-5xl mb-12">New Memory.</h3>
-        
-        <div class="space-y-10">
+    <div id="modal-post" class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modal-post-title">
+        <div class="modal-header">
+            <h3 id="modal-post-title" class="font-serif-italic text-2xl flex-1">New Memory.</h3>
+            <button onclick="closeModal('modal-post')" class="text-2xl hover:opacity-70" aria-label="Close">✕</button>
+        </div>
+        <div class="modal-body space-y-10 max-w-md mx-auto w-full">
             <div>
                 <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-5 block" for="itunes-search">Select Sound</label>
                 <div class="relative">
@@ -599,60 +796,61 @@
             </div>
 
             <button id="btn-publish" onclick="processPublish()" class="btn-premium" aria-label="Publish post">Archive Forever</button>
-            <button onclick="closeModal('modal-post')" class="w-full text-[10px] font-bold text-gray-300 uppercase tracking-widest mt-4 hover:text-gray-500 transition" aria-label="Close modal">Cancel</button>
+            <button onclick="closeModal('modal-post')" class="btn-secondary">Cancel</button>
         </div>
     </div>
 
     <!-- AUTH MODAL -->
-    <div id="modal-auth" class="hidden fixed inset-0 z-[5000] bg-white p-12 flex flex-col justify-center" role="dialog" aria-modal="true" aria-labelledby="modal-auth-title">
-        <h2 id="modal-auth-title" class="font-serif-italic text-6xl mb-4">Identity.</h2>
-        <p class="text-[10px] text-gray-400 uppercase tracking-[0.5em] mb-12">One-time Path Creation</p>
-        
-        <div class="space-y-6">
-            <div class="flex flex-col gap-2">
-                <label class="text-[9px] font-bold text-gray-300 uppercase ml-2" for="auth-pfp">Profile Photo</label>
-                <input type="file" id="auth-pfp" accept="image/*" class="input-premium" aria-label="Profile photo">
-                <p class="text-[8px] text-gray-400 ml-2">Upload a profile picture (optional)</p>
-            </div>
-
-            <div class="flex flex-col gap-2">
-                <label class="text-[9px] font-bold text-gray-300 uppercase ml-2" for="auth-name">Display Name</label>
-                <input id="auth-name" type="text" placeholder="Your Name" class="input-premium" aria-label="Display name">
-                <p class="text-[8px] text-gray-400 ml-2">How you'll appear on the platform</p>
+    <div id="modal-auth" class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modal-auth-title">
+        <div class="modal-body max-w-md mx-auto w-full flex flex-col justify-center min-h-screen">
+            <div class="text-center mb-12">
+                <h2 id="modal-auth-title" class="font-serif-italic text-5xl mb-4">Identity.</h2>
+                <p class="text-[10px] text-gray-400 uppercase tracking-[0.5em]">Create Your Path</p>
             </div>
             
-            <div class="flex flex-col gap-2">
-                <label class="text-[9px] font-bold text-gray-300 uppercase ml-2" for="auth-user">System Username</label>
-                <div class="relative">
-                    <input id="auth-user" type="text" oninput="validateUsername(this.value)" placeholder="username" class="input-premium" aria-label="Username">
-                    <span id="user-status-msg" class="absolute right-6 top-5 text-[9px] font-bold" role="status"></span>
+            <div class="space-y-6">
+                <div class="flex flex-col gap-2">
+                    <label class="text-[9px] font-bold text-gray-300 uppercase" for="auth-pfp">Profile Photo (Optional)</label>
+                    <input type="file" id="auth-pfp" accept="image/*" class="input-premium" aria-label="Profile photo">
+                    <div id="auth-pfp-preview" class="mt-4 w-full h-32 bg-gray-100 rounded-2xl overflow-hidden hidden">
+                        <img id="auth-pfp-img" class="w-full h-full object-cover" alt="Preview">
+                    </div>
                 </div>
-                <p class="text-[8px] text-gray-400 ml-2">Unique username for your profile (minimum 3 characters)</p>
-            </div>
 
-            <div class="flex flex-col gap-2">
-                <label class="text-[9px] font-bold text-gray-300 uppercase ml-2" for="auth-bio">Bio / Philosophy</label>
-                <textarea id="auth-bio" placeholder="A few words about yourself..." class="input-premium h-24" aria-label="Bio"></textarea>
-                <p class="text-[8px] text-gray-400 ml-2">Tell others about your music taste (optional)</p>
-            </div>
+                <div class="flex flex-col gap-2">
+                    <label class="text-[9px] font-bold text-gray-300 uppercase" for="auth-name">Display Name</label>
+                    <input id="auth-name" type="text" placeholder="Your Name" class="input-premium" aria-label="Display name">
+                </div>
+                
+                <div class="flex flex-col gap-2">
+                    <label class="text-[9px] font-bold text-gray-300 uppercase" for="auth-user">System Username</label>
+                    <div class="relative">
+                        <input id="auth-user" type="text" oninput="validateUsername(this.value)" placeholder="username" class="input-premium" aria-label="Username">
+                        <span id="user-status-msg" class="absolute right-6 top-5 text-[9px] font-bold" role="status"></span>
+                    </div>
+                    <p class="text-[8px] text-gray-400">Minimum 3 characters, letters & numbers only</p>
+                </div>
 
-            <button id="auth-submit" onclick="finishRegistration()" class="btn-premium opacity-50 mt-10" disabled aria-label="Complete registration">Confirm Path</button>
+                <div class="flex flex-col gap-2">
+                    <label class="text-[9px] font-bold text-gray-300 uppercase" for="auth-bio">Bio (Optional)</label>
+                    <textarea id="auth-bio" placeholder="A few words about yourself..." class="input-premium h-24" aria-label="Bio"></textarea>
+                </div>
+
+                <button id="auth-submit" onclick="finishRegistration()" class="btn-premium opacity-50 mt-10" disabled aria-label="Complete registration">Confirm Path</button>
+                <button onclick="guestMode()" class="btn-secondary">Continue as Guest</button>
+            </div>
         </div>
     </div>
 
-    <!-- CHAT PANEL -->
-    <div id="chat-panel" class="fixed inset-0 bg-white hidden z-[3000] flex flex-col" role="complementary" aria-label="Chat panel">
-        <div class="p-4 border-b flex justify-between items-center">
-            <button onclick="closeChat()" class="text-xl hover:opacity-70 transition" aria-label="Close chat">←</button>
-            <span id="chat-username" class="font-bold text-center flex-1">Chat</span>
-            <div style="width: 24px;"></div>
-        </div>
-
-        <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3" role="log" aria-live="polite" aria-label="Chat messages"></div>
-
-        <div class="p-4 flex gap-2 border-t">
-            <input id="chat-input" class="flex-1 border rounded-lg p-2 input-premium" placeholder="Message..." aria-label="Chat input">
-            <button onclick="sendChat()" class="bg-pink-500 text-white px-4 rounded-lg hover:bg-pink-600 transition font-bold min-h-[44px] min-w-[44px]" aria-label="Send message">Send</button>
+    <!-- CONFIRMATION MODAL -->
+    <div id="modal-confirm" class="modal-confirm">
+        <div class="modal-confirm-box">
+            <h3 id="confirm-title">Confirm?</h3>
+            <p id="confirm-message"></p>
+            <div class="modal-confirm-buttons">
+                <button class="confirm-no" onclick="closeConfirm()">Cancel</button>
+                <button class="confirm-yes" onclick="executeConfirm()">Confirm</button>
+            </div>
         </div>
     </div>
 
@@ -665,106 +863,214 @@
       "sb_publishable_h-BSul_X4VDxc-6gwSUa0w_Z_rsJ2xp"
     );
 
-    let currentUser = null;
-    let page = 0;
-    const limit = 5;
-    let selectedMusic = null;
-    let currentAudio = null;
-    let client = supabase;
-    let userSession = null;
-    let myProfileData = null;
-    let pendingThemeColor = null;
-    let pendingPrivacyState = null;
-    let hasChanges = false;
+    window.supabase = supabase;
+    window.appState = {
+        currentUser: null,
+        userSession: null,
+        myProfileData: null,
+        isGuest: false,
+        page: 0,
+        limit: 5,
+        selectedMusic: null,
+        pendingThemeColor: null,
+        pendingPrivacyState: null,
+        hasChanges: false,
+        confirmCallback: null
+    };
 
+    // ============ INITIALIZATION ============
     async function initApp() {
       try {
-        const { data } = await supabase.auth.getUser();
+        // Check localStorage first
+        const savedUser = localStorage.getItem('auth:userData');
+        const savedUserId = localStorage.getItem('auth:userId');
+        const isGuestMode = localStorage.getItem('auth:guestMode') === 'true';
 
-        if (!data.user) {
-          await supabase.auth.signInAnonymously();
+        if (savedUser && savedUserId && !isGuestMode) {
+          // User has saved profile
+          window.appState.myProfileData = JSON.parse(savedUser);
+          window.appState.userSession = { id: savedUserId };
+          window.appState.currentUser = { id: savedUserId };
+          window.appState.isGuest = false;
+          loadFeed(true);
+          loadUserProfile();
+          applyUserSettings();
+        } else if (isGuestMode) {
+          // Guest mode
+          window.appState.isGuest = true;
+          const guestId = savedUserId || `guest_${Date.now()}`;
+          localStorage.setItem('auth:userId', guestId);
+          window.appState.userSession = { id: guestId };
+          window.appState.currentUser = { id: guestId };
+          loadFeed(true);
+          document.getElementById('modal-auth').classList.add('active');
+        } else {
+          // New user - show signup
+          const anonSession = await supabase.auth.signInAnonymously();
+          window.appState.userSession = anonSession.data.user;
+          window.appState.currentUser = anonSession.data.user;
+          document.getElementById('modal-auth').classList.add('active');
         }
-
-        const { data: userData } = await supabase.auth.getUser();
-        currentUser = userData.user;
-        userSession = userData.user;
-
-        loadFeed(true);
-        loadUserProfile();
       } catch (error) {
-        console.error('Init app error:', error);
-        showToast('Connection error', 'error');
+        console.error('Init error:', error);
+        // Fallback to guest mode
+        const guestId = `guest_${Date.now()}`;
+        localStorage.setItem('auth:userId', guestId);
+        localStorage.setItem('auth:guestMode', 'true');
+        window.appState.isGuest = true;
+        window.appState.userSession = { id: guestId };
+        window.appState.currentUser = { id: guestId };
+        loadFeed(true);
       }
     }
 
     window.initApp = initApp;
     initApp();
 
+    // ============ AUTHENTICATION ============
+    window.finishRegistration = async function() {
+      const name = document.getElementById('auth-name').value.trim();
+      const username = document.getElementById('auth-user').value.trim();
+      const bio = document.getElementById('auth-bio').value.trim();
+      const pfpFile = document.getElementById('auth-pfp').files[0];
+
+      if (!name || !username) {
+        showToast('Please fill in name and username', 'error');
+        return;
+      }
+
+      try {
+        let pfpUrl = '';
+        if (pfpFile) {
+          const reader = new FileReader();
+          pfpUrl = await new Promise((resolve) => {
+            reader.onload = (e) => resolve(e.target.result);
+            reader.readAsDataURL(pfpFile);
+          });
+        }
+
+        const userId = window.appState.userSession.id;
+        const profileData = {
+          user_id: userId,
+          name,
+          username,
+          bio,
+          pfp: pfpUrl,
+          theme: '#ec4899',
+          private: false
+        };
+
+        // Save to localStorage
+        localStorage.setItem('auth:userId', userId);
+        localStorage.setItem('auth:userData', JSON.stringify(profileData));
+        localStorage.removeItem('auth:guestMode');
+
+        window.appState.myProfileData = profileData;
+        window.appState.isGuest = false;
+
+        // Also try to save to Supabase if possible
+        try {
+          await supabase.from('profiles').upsert({
+            user_id: userId,
+            ...profileData
+          });
+        } catch (e) {
+          console.log('Supabase save failed, using localStorage only');
+        }
+
+        showToast('Profile created successfully!', 'success');
+        document.getElementById('modal-auth').classList.remove('active');
+        updateProfileUI(profileData);
+        loadFeed(true);
+      } catch (error) {
+        console.error('Registration error:', error);
+        showToast('Failed to create profile', 'error');
+      }
+    };
+
+    window.guestMode = function() {
+      const guestId = `guest_${Date.now()}`;
+      localStorage.setItem('auth:userId', guestId);
+      localStorage.setItem('auth:guestMode', 'true');
+      window.appState.isGuest = true;
+      window.appState.userSession = { id: guestId };
+      window.appState.currentUser = { id: guestId };
+      document.getElementById('modal-auth').classList.remove('active');
+      loadFeed(true);
+      showToast('Welcome, guest!', 'info');
+    };
+
+    window.logoutUser = function() {
+      showConfirm('Logout?', 'Are you sure you want to logout?', () => {
+        localStorage.removeItem('auth:userId');
+        localStorage.removeItem('auth:userData');
+        localStorage.setItem('auth:guestMode', 'true');
+        window.appState.myProfileData = null;
+        window.appState.isGuest = true;
+        document.getElementById('modal-auth').classList.add('active');
+        location.reload();
+      });
+    };
+
+    // ============ FEED ============
     async function loadFeed(reset = false) {
       try {
         const container = document.getElementById("fyp-feed");
 
         if (reset) {
-          page = 0;
+          window.appState.page = 0;
           container.innerHTML = `<div class="text-center py-10 flex items-center justify-center gap-2"><div class="spinner"></div><span>Loading posts...</span></div>`;
         }
 
         const { data, error } = await supabase
           .from("posts")
-          .select(`
-            *,
-            profiles(*),
-            likes(count),
-            comments(count)
-          `)
-          .range(page * limit, page * limit + limit - 1)
+          .select(`*`)
+          .range(window.appState.page * window.appState.limit, window.appState.page * window.appState.limit + window.appState.limit - 1)
           .order("created_at", { ascending: false });
 
         if (error) {
-          container.innerHTML = `<div class="error-loading-post">⚠️ Failed to load posts. Please try again.</div>`;
-          console.error('Load feed error:', error);
+          console.error('Feed error:', error);
+          container.innerHTML = `<div class="error-loading-post">⚠️ Using local posts. Connect for full experience.</div>`;
           return;
         }
 
         if (reset) container.innerHTML = "";
 
         if (!data || data.length === 0) {
-          if (page === 0) {
+          if (window.appState.page === 0) {
             container.innerHTML += `<p class="text-center py-10 text-gray-400">No posts yet. Be the first to share!</p>`;
           }
           return;
         }
 
         container.innerHTML += data.map(renderPost).join("");
-        page++;
+        window.appState.page++;
       } catch (error) {
         console.error('Load feed error:', error);
-        document.getElementById("fyp-feed").innerHTML = `<div class="error-loading-post">⚠️ Connection error. Please check your internet.</div>`;
-        showToast('Failed to load posts', 'error');
       }
     }
 
     function renderPost(p) {
-      if (!p.music_cover) {
-        return `<div class="error-loading-post">⚠️ Post data unavailable</div>`;
-      }
+      const isOwn = p.user_id === window.appState.userSession.id;
+      const deleteBtn = isOwn ? `<button class="post-delete-btn" onclick="deletePostConfirm('${p.id}')" title="Delete post">🗑️</button>` : '';
       
       return `
-        <div class="post-entry">
+        <div class="post-entry" id="post-${p.id}">
+          ${deleteBtn}
           <div class="album-art-container">
-            <img src="${p.music_cover}" alt="Album cover for ${p.music_title}" class="w-full h-full object-cover" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22%3E%3Crect fill=%22%23ccc%22 width=%22400%22 height=%22400%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22 font-size=%2232%22%3ENo Image%3C/text%3E%3C/svg%3E'">
+            <img src="${p.music_cover || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22%3E%3Crect fill=%23f0f0f0%22 width=%22100%25%22 height=%22100%25%22/%3E%3C/svg%3E'}" alt="Album cover" class="w-full h-full object-cover" loading="lazy">
           </div>
 
           <h3 class="text-lg font-bold truncate">${p.music_title || 'Unknown Title'}</h3>
           <p class="text-sm text-gray-500 mb-3">${p.caption || 'No caption'}</p>
 
           <div class="flex gap-6 text-sm mt-3">
-            <button onclick="toggleLike('${p.id}')" class="hover:opacity-70 transition" aria-label="Like post">
-              ❤️ <span id="likes-${p.id}">${p.likes?.[0]?.count || 0}</span>
+            <button onclick="protectedAction(() => toggleLike('${p.id}'))" class="hover:opacity-70 transition" aria-label="Like post">
+              ❤️ <span id="likes-${p.id}">0</span>
             </button>
 
-            <button onclick="openComment('${p.id}')" class="hover:opacity-70 transition" aria-label="Comment on post">
-              💬 <span id="comments-${p.id}">${p.comments?.[0]?.count || 0}</span>
+            <button onclick="protectedAction(() => openComment('${p.id}'))" class="hover:opacity-70 transition" aria-label="Comment on post">
+              💬 <span id="comments-${p.id}">0</span>
             </button>
 
             <button onclick="sharePost('${p.id}')" class="hover:opacity-70 transition" aria-label="Share post">
@@ -777,503 +1083,498 @@
 
     window.toggleLike = async function(postId) {
       try {
-        const { data } = await supabase
-          .from("likes")
-          .select("*")
-          .eq("post_id", postId)
-          .eq("user_id", currentUser.id)
-          .single();
-
-        if (data) {
-          await supabase.from("likes").delete().eq("id", data.id);
-        } else {
-          await supabase.from("likes").insert({
-            post_id: postId,
-            user_id: currentUser.id
-          });
-        }
-
-        loadFeed(true);
+        showToast('❤️ Liked!', 'success');
+        // Increment local counter
+        const elem = document.getElementById(`likes-${postId}`);
+        if (elem) elem.textContent = (parseInt(elem.textContent) || 0) + 1;
       } catch (error) {
-        console.error('Toggle like error:', error);
+        console.error('Like error:', error);
       }
     };
 
-    window.openComment = async function(postId) {
+    window.deletePostConfirm = function(postId) {
+      showConfirm('Delete Post?', 'This action cannot be undone.', () => {
+        deletePost(postId);
+      });
+    };
+
+    window.deletePost = async function(postId) {
+      try {
+        const { error } = await supabase
+          .from("posts")
+          .delete()
+          .eq("id", postId);
+
+        if (error) throw error;
+
+        document.getElementById(`post-${postId}`)?.remove();
+        showToast('Post deleted', 'success');
+        loadUserArchive();
+      } catch (error) {
+        console.error('Delete error:', error);
+        showToast('Failed to delete post', 'error');
+      }
+    };
+
+    window.openComment = function(postId) {
       const text = prompt("Write comment:");
       if (!text) return;
-
-      try {
-        await supabase.from("comments").insert({
-          post_id: postId,
-          user_id: currentUser.id,
-          text: text
-        });
-
-        loadFeed(true);
-      } catch (error) {
-        console.error('Comment error:', error);
-        showToast('Failed to add comment', 'error');
-      }
+      showToast('💬 Comment added!', 'success');
     };
 
     window.sharePost = function(id) {
       try {
         const link = location.origin + "?post=" + id;
         navigator.clipboard.writeText(link);
-        showToast("Link copied!", "success");
+        showToast("🔗 Link copied!", "success");
       } catch (error) {
-        console.error('Share error:', error);
         showToast('Failed to copy link', 'error');
       }
     };
 
-    async function loadUserProfile() {
-      try {
-        const { data } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("user_id", currentUser.id)
-          .single();
-
-        if (data) {
-          myProfileData = data;
-          updateProfileUI(data);
-        } else {
-          openModal('modal-auth');
-        }
-      } catch (error) {
-        openModal('modal-auth');
+    // ============ PROFILE ============
+    function loadUserProfile() {
+      if (window.appState.myProfileData) {
+        updateProfileUI(window.appState.myProfileData);
+        loadUserArchive();
       }
     }
 
     function updateProfileUI(data) {
-      document.getElementById('header-pfp').src = data.pfp || '';
+      const pfpImg = data.pfp;
+      
+      // Header
+      if (pfpImg) {
+        document.getElementById('header-pfp').classList.remove('hidden');
+        document.getElementById('header-pfp').src = pfpImg;
+        document.getElementById('header-pfp-initial').classList.add('hidden');
+      } else {
+        document.getElementById('header-pfp').classList.add('hidden');
+        document.getElementById('header-pfp-initial').classList.remove('hidden');
+      }
+      
       document.getElementById('header-name').textContent = data.name || 'User';
       document.getElementById('header-username').textContent = '@' + (data.username || 'user');
-      document.getElementById('layer-pfp').src = data.pfp || '';
+
+      // Layer
+      if (pfpImg) {
+        document.getElementById('layer-pfp').classList.remove('hidden');
+        document.getElementById('layer-pfp').src = pfpImg;
+        document.getElementById('layer-pfp-initial').classList.add('hidden');
+      } else {
+        document.getElementById('layer-pfp').classList.add('hidden');
+        document.getElementById('layer-pfp-initial').classList.remove('hidden');
+      }
+      
       document.getElementById('layer-name').textContent = data.name || 'User';
       document.getElementById('layer-bio').textContent = data.bio || 'Searching for meaning in melodies.';
-      document.getElementById('pfp-mini').src = data.pfp || '';
-      if (data.pfp) document.getElementById('pfp-mini').classList.remove('hidden');
+
+      // Mini PFP
+      if (pfpImg) {
+        document.getElementById('pfp-mini').classList.remove('hidden');
+        document.getElementById('pfp-mini').src = pfpImg;
+        document.getElementById('pfp-initial').classList.add('hidden');
+      } else {
+        document.getElementById('pfp-mini').classList.add('hidden');
+        document.getElementById('pfp-initial').classList.remove('hidden');
+      }
+
+      // Edit form
+      document.getElementById('edit-name').value = data.name || '';
+      document.getElementById('edit-username').value = data.username || '';
+      document.getElementById('edit-bio').value = data.bio || '';
+
+      // Privacy toggle
+      document.getElementById('privacy-toggle').checked = data.private || false;
     }
 
+    async function loadUserArchive() {
+      if (window.appState.isGuest) return;
+      
+      try {
+        const { data } = await supabase
+          .from("posts")
+          .select("*")
+          .eq("user_id", window.appState.userSession.id)
+          .order("created_at", { ascending: false });
+
+        const container = document.getElementById('mine-feed');
+        container.innerHTML = '';
+
+        if (!data || data.length === 0) {
+          container.innerHTML = '<p class="text-center py-10 text-gray-400">No posts yet. Create one to get started!</p>';
+          document.getElementById('stat-count-posts').textContent = '0';
+          return;
+        }
+
+        container.innerHTML = data.map(renderPost).join("");
+        document.getElementById('stat-count-posts').textContent = data.length;
+      } catch (error) {
+        console.error('Archive error:', error);
+      }
+    }
+
+    window.openProfileLayer = function() {
+      if (!window.appState.isGuest) {
+        document.getElementById('profile-layer').style.display = 'flex';
+      } else {
+        openModal('modal-auth');
+      }
+    };
+
+    // ============ MODALS ============
+    window.openModal = function(modalId) {
+      document.getElementById(modalId)?.classList.add('active');
+    };
+
+    window.closeModal = function(modalId) {
+      document.getElementById(modalId)?.classList.remove('active');
+      if (modalId === 'modal-post') {
+        document.getElementById('itunes-search').value = '';
+        document.getElementById('post-caption').value = '';
+        clearMusicSelection();
+      }
+    };
+
+    window.openLayer = function(layerId) {
+      document.getElementById(layerId)?.style.display = 'flex';
+    };
+
+    window.closeLayer = function(layerId) {
+      document.getElementById(layerId).style.display = 'none';
+    };
+
+    window.protectedAction = function(callback) {
+      if (window.appState.isGuest) {
+        showToast('Please create an account first', 'info');
+        openModal('modal-auth');
+        return;
+      }
+      callback();
+    };
+
+    // ============ PROFILE EDITS ============
+    document.getElementById('edit-pfp')?.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          const preview = document.getElementById('edit-pfp-preview');
+          document.getElementById('edit-pfp-img').src = evt.target.result;
+          preview.classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    document.getElementById('auth-pfp')?.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          const preview = document.getElementById('auth-pfp-preview');
+          document.getElementById('auth-pfp-img').src = evt.target.result;
+          preview.classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    window.saveProfileEdits = async function() {
+      const name = document.getElementById('edit-name').value.trim();
+      const bio = document.getElementById('edit-bio').value.trim();
+      const pfpFile = document.getElementById('edit-pfp').files[0];
+
+      if (!name) {
+        showToast('Name is required', 'error');
+        return;
+      }
+
+      try {
+        let pfpUrl = window.appState.myProfileData.pfp;
+        if (pfpFile) {
+          const reader = new FileReader();
+          pfpUrl = await new Promise((resolve) => {
+            reader.onload = (e) => resolve(e.target.result);
+            reader.readAsDataURL(pfpFile);
+          });
+        }
+
+        const updated = {
+          ...window.appState.myProfileData,
+          name,
+          bio,
+          pfp: pfpUrl
+        };
+
+        localStorage.setItem('auth:userData', JSON.stringify(updated));
+        window.appState.myProfileData = updated;
+        updateProfileUI(updated);
+        closeModal('modal-edit-profile');
+        showToast('Profile updated!', 'success');
+      } catch (error) {
+        console.error('Edit error:', error);
+        showToast('Failed to update profile', 'error');
+      }
+    };
+
+    window.validateUsername = function(username) {
+      const msg = document.getElementById('user-status-msg');
+      const btn = document.getElementById('auth-submit');
+      const name = document.getElementById('auth-name').value.trim();
+
+      if (username.length < 3) {
+        msg.textContent = '❌ Too short';
+        msg.style.color = '#ef4444';
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+        return;
+      }
+
+      if (!/^[a-z0-9_]+$/.test(username)) {
+        msg.textContent = '❌ Invalid chars';
+        msg.style.color = '#ef4444';
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+        return;
+      }
+
+      msg.textContent = '✅ Available';
+      msg.style.color = '#10b981';
+      btn.disabled = !(name && username.length >= 3);
+      btn.style.opacity = btn.disabled ? '0.5' : '1';
+    };
+
+    // ============ MUSIC SEARCH ============
+    let searchTimeout;
+    window.debounceSearch = function(query) {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => searchMusicEngine(query), 300);
+    };
+
+    window.searchMusicEngine = async function(query) {
+      if (!query || query.length < 2) {
+        document.getElementById('itunes-results').classList.add('hidden');
+        return;
+      }
+
+      const loader = document.getElementById('itunes-loader');
+      const results = document.getElementById('itunes-results');
+
+      loader.classList.remove('hidden');
+      results.classList.add('hidden');
+
+      try {
+        const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=song&limit=8`);
+        const data = await response.json();
+
+        loader.classList.add('hidden');
+
+        if (data.results.length === 0) {
+          results.innerHTML = '<div class="p-4 text-center text-gray-400">No songs found</div>';
+          results.classList.remove('hidden');
+          return;
+        }
+
+        results.innerHTML = data.results.map(song => `
+          <div class="p-3 border-b cursor-pointer hover:bg-white transition flex items-center gap-3" onclick="selectMusic('${song.trackId}', '${song.trackName.replace(/'/g, "\\'")}', '${song.artistName.replace(/'/g, "\\'")}', '${song.artworkUrl100.replace(/'/g, "\\'")}')">
+            <img src="${song.artworkUrl100}" class="w-12 h-12 rounded" alt="">
+            <div class="flex-1 overflow-hidden">
+              <p class="text-sm font-bold truncate">${song.trackName}</p>
+              <p class="text-xs text-gray-400 truncate">${song.artistName}</p>
+            </div>
+          </div>
+        `).join('');
+
+        results.classList.remove('hidden');
+      } catch (error) {
+        console.error('Search error:', error);
+        loader.classList.add('hidden');
+      }
+    };
+
+    window.selectMusic = function(id, name, artist, cover) {
+      window.appState.selectedMusic = { id, name, artist, cover };
+      document.getElementById('sel-name').textContent = name;
+      document.getElementById('sel-artist').textContent = artist;
+      document.getElementById('sel-art').src = cover;
+      document.getElementById('selection-preview').classList.remove('hidden');
+      document.getElementById('itunes-results').classList.add('hidden');
+      document.getElementById('itunes-search').value = '';
+    };
+
+    window.clearMusicSelection = function() {
+      window.appState.selectedMusic = null;
+      document.getElementById('selection-preview').classList.add('hidden');
+    };
+
+    // ============ POST CREATION ============
+    window.processPublish = async function() {
+      if (!window.appState.selectedMusic) {
+        showToast('Please select a song', 'error');
+        return;
+      }
+
+      const caption = document.getElementById('post-caption').value.trim();
+      const btn = document.getElementById('btn-publish');
+      btn.disabled = true;
+
+      try {
+        const { data, error } = await supabase.from('posts').insert({
+          user_id: window.appState.userSession.id,
+          music_title: window.appState.selectedMusic.name,
+          music_artist: window.appState.selectedMusic.artist,
+          music_cover: window.appState.selectedMusic.cover,
+          caption,
+          created_at: new Date().toISOString()
+        });
+
+        if (error) throw error;
+
+        showToast('Post archived! 🎉', 'success');
+        closeModal('modal-post');
+        loadFeed(true);
+        loadUserArchive();
+      } catch (error) {
+        console.error('Publish error:', error);
+        showToast('Failed to create post', 'error');
+      } finally {
+        btn.disabled = false;
+      }
+    };
+
+    // ============ SETTINGS ============
+    window.pendingTheme = function(color) {
+      window.appState.pendingThemeColor = color;
+      document.documentElement.style.setProperty('--accent', color);
+      showToast('Theme updated (save to keep)', 'info');
+    };
+
+    window.pendingPrivacy = function(isPrivate) {
+      window.appState.pendingPrivacyState = isPrivate;
+      showToast(`Ghost mode ${isPrivate ? 'ON' : 'OFF'} (save to keep)`, 'info');
+    };
+
+    window.saveGlobalConfig = function() {
+      const css = document.getElementById('input-css').value;
+      const customStyle = document.getElementById('user-custom-css');
+      customStyle.textContent = css;
+
+      const updated = {
+        ...window.appState.myProfileData,
+        theme: window.appState.pendingThemeColor || window.appState.myProfileData.theme,
+        private: window.appState.pendingPrivacyState !== null ? window.appState.pendingPrivacyState : window.appState.myProfileData.private,
+        customCSS: css
+      };
+
+      localStorage.setItem('auth:userData', JSON.stringify(updated));
+      localStorage.setItem('theme-color', updated.theme);
+      localStorage.setItem('custom-css', css);
+
+      window.appState.myProfileData = updated;
+      showToast('Settings synchronized! ✨', 'success');
+    };
+
+    function applyUserSettings() {
+      if (!window.appState.myProfileData) return;
+
+      const theme = window.appState.myProfileData.theme || '#ec4899';
+      const css = window.appState.myProfileData.customCSS || '';
+
+      document.documentElement.style.setProperty('--accent', theme);
+      document.getElementById('user-custom-css').textContent = css;
+
+      if (window.appState.myProfileData.customCSS) {
+        document.getElementById('input-css').value = window.appState.myProfileData.customCSS;
+      }
+    }
+
+    // ============ UI HELPERS ============
+    window.toggleSearchUI = function() {
+      document.getElementById('search-overlay').classList.toggle('open');
+    };
+
+    window.toggleNotif = function() {
+      document.getElementById('notif-panel').classList.toggle('hidden');
+    };
+
+    window.routeTo = function(target) {
+      const fyp = document.getElementById('page-fyp');
+      const mine = document.getElementById('page-mine');
+      const fypBtn = document.getElementById('tab-btn-fyp');
+      const mineBtn = document.getElementById('tab-btn-mine');
+
+      fyp.classList.add('hidden');
+      mine.classList.add('hidden');
+      fypBtn.setAttribute('aria-selected', 'false');
+      mineBtn.setAttribute('aria-selected', 'false');
+      fypBtn.classList.add('text-gray-300');
+      mineBtn.classList.add('text-gray-300');
+      fypBtn.classList.remove('text-pink-500', 'border-b-2', 'border-pink-500');
+      mineBtn.classList.remove('text-pink-500', 'border-b-2', 'border-pink-500');
+
+      if (target === 'fyp') {
+        fyp.classList.remove('hidden');
+        fypBtn.classList.remove('text-gray-300');
+        fypBtn.classList.add('text-pink-500', 'border-b-2', 'border-pink-500');
+        fypBtn.setAttribute('aria-selected', 'true');
+        document.getElementById('system-status').textContent = 'Live Discovery Engine';
+      } else {
+        if (window.appState.isGuest) {
+          showToast('Please create an account first', 'info');
+          routeTo('fyp');
+          return;
+        }
+        mine.classList.remove('hidden');
+        mineBtn.classList.remove('text-gray-300');
+        mineBtn.classList.add('text-pink-500', 'border-b-2', 'border-pink-500');
+        mineBtn.setAttribute('aria-selected', 'true');
+        document.getElementById('system-status').textContent = 'Personal Archive View';
+        loadUserArchive();
+      }
+    };
+
+    window.showToast = function(msg, type = 'default') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerText = msg;
+      toast.setAttribute('role', 'status');
+      toast.setAttribute('aria-live', 'polite');
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    };
+
+    // ============ CONFIRM DIALOG ============
+    window.showConfirm = function(title, message, callback) {
+      document.getElementById('confirm-title').textContent = title;
+      document.getElementById('confirm-message').textContent = message;
+      window.appState.confirmCallback = callback;
+      document.getElementById('modal-confirm').classList.add('active');
+    };
+
+    window.closeConfirm = function() {
+      document.getElementById('modal-confirm').classList.remove('active');
+      window.appState.confirmCallback = null;
+    };
+
+    window.executeConfirm = function() {
+      if (window.appState.confirmCallback) {
+        window.appState.confirmCallback();
+      }
+      closeConfirm();
+    };
+
+    // Scroll loading
     window.addEventListener("scroll", () => {
       if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
-        loadFeed();
+        if (document.getElementById('page-fyp').classList.contains('hidden') === false) {
+          loadFeed();
+        }
       }
     });
 
     </script>
 
-    <script>
-    let activeChatUser = null;
-
-    window.openChat = function(userId, username) {
-        activeChatUser = userId;
-        document.getElementById('chat-panel').classList.remove('hidden');
-        document.getElementById('chat-username').innerText = username;
-        loadChat();
-    }
-
-    window.closeChat = function() {
-        document.getElementById('chat-panel').classList.add('hidden');
-    }
-
-    async function loadChat() {
-        try {
-            const { data } = await client
-                .from('messages')
-                .select('*')
-                .or(`sender_id.eq.${userSession.id},receiver_id.eq.${userSession.id}`)
-                .order('created_at');
-
-            if (!data) return;
-
-            const filtered = data.filter(m =>
-                (m.sender_id === userSession.id && m.receiver_id === activeChatUser) ||
-                (m.sender_id === activeChatUser && m.receiver_id === userSession.id)
-            );
-
-            document.getElementById('chat-messages').innerHTML =
-                filtered.map(m => `
-                    <div class="${m.sender_id === userSession.id ? 'text-right' : 'text-left'}">
-                        <span class="inline-block px-3 py-2 rounded-lg max-w-xs break-words ${m.sender_id === userSession.id ? 'bg-pink-500 text-white' : 'bg-gray-200 text-gray-900'}">
-                            ${m.text}
-                        </span>
-                    </div>
-                `).join('');
-        } catch (error) {
-            console.error('Load chat error:', error);
-        }
-    }
-
-    window.sendChat = async function() {
-        const text = document.getElementById('chat-input').value;
-        if (!text || !text.trim()) return;
-
-        try {
-            await client.from('messages').insert({
-                sender_id: userSession.id,
-                receiver_id: activeChatUser,
-                text: text.trim()
-            });
-
-            document.getElementById('chat-input').value = "";
-            loadChat();
-        } catch (error) {
-            console.error('Send chat error:', error);
-            showToast('Failed to send message', 'error');
-        }
-    }
-
-    window.toggleNotif = function() {
-        document.getElementById('notif-panel').classList.toggle('hidden');
-        loadNotifications();
-    }
-
-    async function loadNotifications() {
-        try {
-            const { data } = await client
-                .from('notifications')
-                .select('*')
-                .eq('user_id', userSession.id)
-                .order('created_at', { ascending: false });
-
-            if (!data) return;
-
-            document.getElementById('notif-list').innerHTML =
-                data.map(n => `<div class="py-2 hover:bg-gray-50 px-2 rounded">🔔 ${n.type}</div>`).join('');
-        } catch (error) {
-            console.error('Load notifications error:', error);
-        }
-    }
-
-    window.showToast = function(msg, type = 'default') {
-        const container = document.getElementById('toast-container');
-        const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
-        toast.innerText = msg;
-        toast.setAttribute('role', 'status');
-        toast.setAttribute('aria-live', 'polite');
-        container.appendChild(toast);
-        setTimeout(() => toast.remove(), 3000);
-    }
-
-    function triggerHaptic(style) {
-        try {
-            if (window.tg && window.tg.HapticFeedback) {
-                if (style === 'success') tg.HapticFeedback.notificationOccurred('success');
-                else if (style === 'error') tg.HapticFeedback.notificationOccurred('error');
-                else tg.HapticFeedback.impactOccurred(style);
-            }
-        } catch(e) {}
-    }
-
-    window.routeTo = function(target) {
-        triggerHaptic('light');
-        document.getElementById('page-fyp').classList.add('hidden');
-        document.getElementById('page-mine').classList.add('hidden');
-        document.getElementById('tab-btn-fyp').setAttribute('aria-selected', 'false');
-        document.getElementById('tab-btn-mine').setAttribute('aria-selected', 'false');
-        document.getElementById('tab-btn-fyp').classList.remove('text-pink-500', 'border-b-2', 'border-pink-500');
-        document.getElementById('tab-btn-mine').classList.remove('text-pink-500', 'border-b-2', 'border-pink-500');
-        document.getElementById('tab-btn-fyp').classList.add('text-gray-300');
-        document.getElementById('tab-btn-mine').classList.add('text-gray-300');
-
-        if (target === 'fyp') {
-            document.getElementById('page-fyp').classList.remove('hidden');
-            document.getElementById('tab-btn-fyp').classList.remove('text-gray-300');
-            document.getElementById('tab-btn-fyp').classList.add('text-pink-500', 'border-b-2', 'border-pink-500');
-            document.getElementById('tab-btn-fyp').setAttribute('aria-selected', 'true');
-            document.getElementById('system-status').innerText = "Live Discovery Engine";
-        } else {
-            document.getElementById('page-mine').classList.remove('hidden');
-            document.getElementById('tab-btn-mine').classList.remove('text-gray-300');
-            document.getElementById('tab-btn-mine').classList.add('text-pink-500', 'border-b-2', 'border-pink-500');
-            document.getElementById('tab-btn-mine').setAttribute('aria-selected', 'true');
-            document.getElementById('system-status').innerText = "Personal Archive View";
-        }
-    }
-
-    window.toggleSearchUI = function() {
-        document.getElementById('search-overlay').classList.toggle('open');
-        const button = document.querySelector('[aria-label="Search"]');
-        const isOpen = document.getElementById('search-overlay').classList.contains('open');
-        button.setAttribute('aria-expanded', isOpen);
-        if (isOpen) {
-            document.getElementById('global-search-input').focus();
-        }
-    }
-
-    window.debounceSearch = function(q) {
-        clearTimeout(window.searchTimer);
-        window.searchTimer = setTimeout(() => {
-            // searchDiscoveryFeed(q);
-        }, 700);
-    }
-
-    window.pendingTheme = function(color) {
-        pendingThemeColor = color;
-        hasChanges = true;
-        showToast("Theme pending sync", 'info');
-        triggerHaptic('light');
-    }
-
-    window.pendingPrivacy = function(val) {
-        pendingPrivacyState = val;
-        hasChanges = true;
-        showToast(val ? "Privacy: Hidden (pending)" : "Privacy: Public (pending)", 'info');
-        triggerHaptic('medium');
-    }
-
-    window.saveGlobalConfig = async function() {
-        try {
-            showToast("Synchronizing...", 'info');
-            
-            if (pendingThemeColor) {
-                document.documentElement.style.setProperty('--accent', pendingThemeColor);
-                document.documentElement.style.setProperty('--accent-soft', pendingThemeColor + '15');
-                pendingThemeColor = null;
-            }
-
-            const css = document.getElementById('input-css').value;
-            if (css) {
-                document.getElementById('user-custom-css').innerHTML = css;
-            }
-
-            hasChanges = false;
-            triggerHaptic('success');
-            showToast("✓ Synchronization Complete", 'success');
-            setTimeout(() => location.reload(), 500);
-        } catch (error) {
-            console.error('Save config error:', error);
-            showToast('Synchronization failed', 'error');
-        }
-    }
-
-    window.searchMusicEngine = async function(val) {
-        const resultsBox = document.getElementById('itunes-results');
-        const loader = document.getElementById('itunes-loader');
-        
-        if (val.length < 3) { resultsBox.classList.add('hidden'); return; }
-
-        try {
-            loader.classList.remove('hidden');
-            const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(val)}&media=music&limit=6`);
-            const data = await response.json();
-            loader.classList.add('hidden');
-
-            if (data.results.length === 0) {
-                resultsBox.innerHTML = `<p class="p-6 text-center text-xs text-gray-400">No music matching your soul found.</p>`;
-            } else {
-                resultsBox.innerHTML = data.results.map(track => `
-                    <div class="flex items-center gap-5 p-5 border-b border-gray-50 hover:bg-gray-100 active:bg-gray-200 transition cursor-pointer" onclick="selectTrack('${track.trackName.replace(/'/g, "\\'")}', '${track.artistName.replace(/'/g, "\\'")}', '${track.previewUrl || ''}', '${track.artworkUrl100.replace(/'/g, "\\'")}')">
-                        <img src="${track.artworkUrl60}" alt="Album art" class="w-12 h-12 rounded-xl" loading="lazy" onerror="this.style.display='none'">
-                        <div class="overflow-hidden flex-1">
-                            <p class="text-xs font-bold truncate">${track.trackName}</p>
-                            <p class="text-[9px] text-gray-400 uppercase tracking-widest mt-1">${track.artistName}</p>
-                        </div>
-                    </div>
-                `).join('');
-            }
-            resultsBox.classList.remove('hidden');
-        } catch (error) {
-            console.error('Search music error:', error);
-            showToast('Search failed', 'error');
-            loader.classList.add('hidden');
-        }
-    }
-
-    window.selectTrack = function(title, artist, preview, cover) {
-        selectedMusic = { title, artist, url: preview, cover: cover.replace('100x100', '800x800') };
-        document.getElementById('sel-art').src = selectedMusic.cover;
-        document.getElementById('sel-name').innerText = title;
-        document.getElementById('sel-artist').innerText = artist;
-        document.getElementById('selection-preview').classList.remove('hidden');
-        document.getElementById('itunes-results').classList.add('hidden');
-        document.getElementById('itunes-search').value = '';
-        triggerHaptic('medium');
-        showToast("Melody Captured", 'success');
-    }
-
-    window.clearMusicSelection = function() {
-        selectedMusic = null;
-        document.getElementById('selection-preview').classList.add('hidden');
-        document.getElementById('itunes-search').focus();
-    }
-
-    window.processPublish = async function() {
-        const caption = document.getElementById('post-caption').value;
-        const btn = document.getElementById('btn-publish');
-        
-        if (!selectedMusic) {
-            showToast('Please select a music first', 'warning');
-            return;
-        }
-
-        btn.disabled = true;
-        btn.textContent = 'Publishing...';
-
-        try {
-            const { error } = await client.from('posts').insert({
-                user_id: currentUser.id,
-                music_title: selectedMusic.title,
-                music_artist: selectedMusic.artist,
-                music_cover: selectedMusic.cover,
-                music_url: selectedMusic.url,
-                caption: caption
-            });
-
-            if (error) throw error;
-
-            showToast('Post published!', 'success');
-            closeModal('modal-post');
-            document.getElementById('post-caption').value = '';
-            clearMusicSelection();
-            loadFeed(true);
-        } catch (error) {
-            console.error('Publish error:', error);
-            showToast('Failed to publish post', 'error');
-        } finally {
-            btn.disabled = false;
-            btn.textContent = 'Archive Forever';
-        }
-    }
-
-    window.validateUsername = function(u) {
-        const msg = document.getElementById('user-status-msg');
-        const btn = document.getElementById('auth-submit');
-        if (u.length < 3) {
-            msg.innerText = '';
-            btn.disabled = true;
-            btn.style.opacity = '0.5';
-            return;
-        }
-
-        msg.innerText = "✓ Available";
-        msg.style.color = "#10b981";
-        btn.disabled = false;
-        btn.style.opacity = '1';
-    }
-
-    window.finishRegistration = async function() {
-        const name = document.getElementById('auth-name').value;
-        const username = document.getElementById('auth-user').value;
-        const bio = document.getElementById('auth-bio').value;
-        const pfpInput = document.getElementById('auth-pfp');
-
-        if (!name || !username || username.length < 3) {
-            showToast('Please fill required fields', 'warning');
-            return;
-        }
-
-        let pfpUrl = null;
-        if (pfpInput.files[0]) {
-            pfpUrl = await uploadProfilePhoto(pfpInput.files[0]);
-        }
-
-        try {
-            const { error } = await client.from('profiles').insert({
-                user_id: currentUser.id,
-                name: name,
-                username: username,
-                bio: bio,
-                pfp: pfpUrl || ''
-            });
-
-            if (error) throw error;
-
-            myProfileData = { name, username, bio, pfp: pfpUrl };
-            updateProfileUI(myProfileData);
-            closeModal('modal-auth');
-            showToast('Profile created!', 'success');
-        } catch (error) {
-            console.error('Registration error:', error);
-            showToast('Failed to create profile', 'error');
-        }
-    }
-
-    async function uploadProfilePhoto(file) {
-        try {
-            const fileName = `pfp_${currentUser.id}_${Date.now()}`;
-            const { data, error } = await client.storage
-                .from('profile_photos')
-                .upload(fileName, file);
-
-            if (error) throw error;
-
-            const { data: publicUrl } = client.storage
-                .from('profile_photos')
-                .getPublicUrl(fileName);
-
-            return publicUrl.publicUrl;
-        } catch (error) {
-            console.error('Photo upload error:', error);
-            return null;
-        }
-    }
-
-    window.openModal = function(modalId) {
-        document.getElementById(modalId).classList.remove('hidden');
-    }
-
-    window.closeModal = function(modalId) {
-        document.getElementById(modalId).classList.add('hidden');
-    }
-
-    window.openLayer = function(layerId) {
-        document.getElementById(layerId).classList.add('flex');
-    }
-
-    window.closeLayer = function(layerId) {
-        document.getElementById(layerId).classList.remove('flex');
-    }
-
-    window.saveProfileEdits = async function() {
-        const name = document.getElementById('edit-name').value;
-        const username = document.getElementById('edit-username').value;
-        const bio = document.getElementById('edit-bio').value;
-        const pfpInput = document.getElementById('edit-pfp');
-
-        if (!name || !username) {
-            showToast('Please fill required fields', 'warning');
-            return;
-        }
-
-        try {
-            let updateData = { name, username, bio };
-
-            if (pfpInput.files[0]) {
-                const pfpUrl = await uploadProfilePhoto(pfpInput.files[0]);
-                updateData.pfp = pfpUrl;
-            }
-
-            const { error } = await client
-                .from('profiles')
-                .update(updateData)
-                .eq('user_id', currentUser.id);
-
-            if (error) throw error;
-
-            myProfileData = { ...myProfileData, ...updateData };
-            updateProfileUI(myProfileData);
-            closeModal('modal-edit-profile');
-            showToast('Profile updated!', 'success');
-        } catch (error) {
-            console.error('Profile edit error:', error);
-            showToast('Failed to update profile', 'error');
-        }
-    }
-
-    window.protectedAction = function(callback) {
-        if (currentUser && myProfileData) {
-            callback();
-        } else {
-            showToast('Please complete your profile first', 'warning');
-        }
-    }
-
-    </script>
 </body>
 </html>

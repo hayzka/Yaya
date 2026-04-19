@@ -595,6 +595,17 @@
             background: rgba(0,0,0,0.1);
         }
 
+        .layer,
+.modal-content,
+.modal-confirm {
+  pointer-events: none;
+}
+
+.layer.active,
+.modal-content.active,
+.modal-confirm.active {
+  pointer-events: auto;
+}
     </style>
     <style id="user-custom-css">/* User Custom CSS Space */</style>
 </head>
@@ -855,6 +866,8 @@
     </div>
 
     <script type="module">
+       document.addEventListener("click", () => {}, true);
+       document.addEventListener("touchstart", () => {}, true); 
 
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
@@ -880,8 +893,17 @@
 
     // ============ INITIALIZATION ============
     async function initApp() {
-        document.getElementById('profile-layer').style.display = 'none';
-      try {
+
+  // ✅ TAMBAHKAN INI
+  document.querySelectorAll('.layer, .modal-content, .modal-confirm')
+    .forEach(el => {
+      el.style.display = 'none';
+      el.classList.remove('active');
+    });
+
+  document.getElementById('profile-layer').style.display = 'none';
+     
+        try {
         // Check localStorage first
         const savedUser = localStorage.getItem('auth:userData');
         const savedUserId = localStorage.getItem('auth:userId');

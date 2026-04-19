@@ -2,789 +2,748 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AmonsPath | Digital Archive</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>AmonsPath OS v8.0 | Full Feature Enterprise Archive</title>
     
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@1,400;1,700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <style id="master-base-theme">
-        :root { 
-            --accent: #ec4899; 
-            --accent-soft: #fdf2f8; 
-            --bg-main: #ffffff;
-            --card-bg: #ffffff;
-            --text-primary: #1a1a1a;
-            --text-secondary: #6b7280;
+    <style>
+        /* * ==========================================
+         * 1. GLOBAL SYSTEM ARCHITECTURE (Lines 20-200)
+         * ==========================================
+         */
+        :root {
+            --p-color: #007aff;
+            --p-rgb: 0, 122, 255;
+            --s-color: #34c759;
+            --e-color: #ff3b30;
+            --w-color: #ff9500;
+            --bg-base: #f2f2f7;
+            --bg-elevated: #ffffff;
+            --bg-secondary: #e5e5ea;
+            --text-primary: #000000;
+            --text-secondary: #3a3a3c;
+            --text-muted: #8e8e93;
+            --border-light: #d1d1d6;
+            --radius-small: 10px;
+            --radius-medium: 18px;
+            --radius-large: 24px;
+            --shadow-soft: 0 4px 16px rgba(0,0,0,0.06);
+            --safe-top: env(safe-area-inset-top);
+            --safe-bottom: env(safe-area-inset-bottom);
         }
 
-        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
-        body { 
-            background-color: var(--bg-main); 
-            color: var(--text-primary); 
-            font-family: 'Inter', sans-serif; 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-primary);
             overflow-x: hidden;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-
-        /* HEADER APPLE MUSIC STYLE (November Image) */
-        .apple-header {
-            display: grid;
-            grid-template-columns: 140px 1fr;
-            gap: 24px;
-            padding: 40px 20px;
-            animation: fadeIn 0.8s ease;
-        }
-
-        .apple-cover-wrapper {
-            width: 140px;
-            height: 140px;
-            perspective: 1000px;
-        }
-
-        .apple-cover {
-            width: 100%;
-            height: 100%;
-            border-radius: 12px;
-            object-fit: cover;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
-            transition: transform 0.5s ease;
-        }
-
-        .apple-cover:hover { transform: scale(1.02) rotateY(-5deg); }
-
-        /* TIMELINE POST CARDS */
-        .post-card {
-            display: flex;
-            gap: 16px;
-            background: var(--card-bg);
-            border: 1px solid rgba(0,0,0,0.04);
-            border-radius: 22px;
-            margin: 0 18px 20px 18px;
-            padding: 18px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.01);
-            transition: 0.3s;
-        }
-
-        .post-card:active { transform: scale(0.98); }
-
-        .post-music-img {
-            width: 85px;
-            height: 85px;
-            border-radius: 12px;
-            object-fit: cover;
-            flex-shrink: 0;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-
-        /* VINYL ANIMATION ENGINE */
-        .vinyl-disk {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            border: 2px solid #eee;
-            position: relative;
-            background-size: cover;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            cursor: pointer;
-            z-index: 10;
-        }
-
-        .spinning { animation: rotateVinyl 8s linear infinite; }
-        @keyframes rotateVinyl { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-        /* BUTTONS & INPUTS */
-        .btn-apple {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 14px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 14px;
-            transition: 0.2s;
-        }
-
-        .btn-play { background: var(--accent); color: white; }
-        .btn-shuffle { background: #f3f4f6; color: var(--text-primary); }
-
-        .input-elegant {
-            width: 100%;
-            background: #f5f5f7;
-            border-radius: 14px;
-            padding: 16px;
-            outline: none;
-            border: 1px solid transparent;
-            font-size: 14px;
-            transition: 0.3s;
-        }
-
-        .input-elegant:focus { border-color: var(--accent); background: white; box-shadow: 0 0 0 4px var(--accent-soft); }
-
-        /* MODAL & LAYER SYSTEM */
-        .layer-full {
-            position: fixed;
-            inset: 0;
-            z-index: 500;
-            background: #ffffff;
-            display: none;
-            flex-direction: column;
-            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* CAPTION EXCENT (LONG CAPTION HANDLER) */
-        .caption-truncate {
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            font-size: 13px;
             line-height: 1.6;
-            color: var(--text-secondary);
-            cursor: pointer;
+            user-select: none;
+            -webkit-overflow-scrolling: touch;
         }
 
-        .caption-truncate:after {
-            content: ' ...more';
-            color: var(--accent);
-            font-weight: 600;
+        /* * ==========================================
+         * 2. TYPOGRAPHY ENGINE (Lines 201-350)
+         * ==========================================
+         */
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        .weight-black { font-weight: 800; letter-spacing: -0.8px; }
+        .weight-bold { font-weight: 700; }
+        .text-xs { font-size: 11px; }
+        .text-sm { font-size: 13px; }
+        .text-md { font-size: 15px; }
+        .text-lg { font-size: 18px; }
+        .uppercase { text-transform: uppercase; letter-spacing: 1.2px; }
+
+        /* * ==========================================
+         * 3. LAYOUT COMPONENTS (Lines 351-600)
+         * ==========================================
+         */
+        .app-shell {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: var(--bg-elevated);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 0 40px rgba(0,0,0,0.03);
         }
 
-        /* GLASS NAVIGATION */
-        .glass-nav {
+        .sys-navbar {
             position: sticky;
             top: 0;
-            z-index: 100;
-            background: rgba(255,255,255,0.7);
-            backdrop-filter: blur(25px);
-            border-bottom: 1px solid rgba(0,0,0,0.03);
-            padding: 16px 24px;
+            z-index: 1000;
+            height: 70px;
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 0.5px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
         }
+
+        .tab-switcher {
+            display: flex;
+            padding: 12px 20px;
+            gap: 10px;
+            background: var(--bg-elevated);
+            border-bottom: 0.5px solid var(--border-light);
+        }
+
+        .tab-trigger {
+            flex: 1;
+            padding: 11px;
+            border-radius: var(--radius-small);
+            border: none;
+            background: var(--bg-base);
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .tab-trigger.is-active {
+            background: var(--p-color);
+            color: white;
+            box-shadow: 0 6px 15px rgba(var(--p-rgb), 0.3);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            padding-bottom: 110px; /* Space for FAB */
+        }
+
+        /* * ==========================================
+         * 4. COMPONENT: DATA ARCHIVE CARDS (Lines 601-850)
+         * ==========================================
+         */
+        .archive-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-medium);
+            margin-bottom: 25px;
+            overflow: hidden;
+            transition: transform 0.2s ease;
+        }
+
+        .archive-card:active { transform: scale(0.98); }
+
+        .card-header {
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-base);
+            border: 1px solid var(--border-light);
+        }
+
+        .card-meta p { font-size: 14px; font-weight: 700; }
+        .card-meta span { font-size: 10px; color: var(--text-muted); }
+
+        .card-visual {
+            width: 100%;
+            aspect-ratio: 1;
+            background: #f9f9fb;
+            position: relative;
+        }
+
+        .card-visual img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-body { padding: 18px; }
+        .card-body h3 { font-size: 17px; font-weight: 800; margin-bottom: 8px; line-height: 1.3; }
+        .card-body p { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+
+        .card-footer {
+            padding: 0 18px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* * ==========================================
+         * 5. UI SYSTEM: BUTTONS & INTERFACE (Lines 851-1100)
+         * ==========================================
+         */
+        .btn-system {
+            padding: 12px 22px;
+            border-radius: var(--radius-small);
+            border: none;
+            font-size: 12px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary { background: var(--p-color); color: white; }
+        .btn-secondary { background: var(--bg-base); color: var(--text-secondary); }
+        .btn-danger { color: var(--e-color); font-size: 10px; font-weight: 900; background: none; }
+
+        .fab-button {
+            position: fixed;
+            bottom: 30px;
+            right: 25px;
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            background: var(--p-color);
+            color: white;
+            border: none;
+            box-shadow: 0 10px 25px rgba(var(--p-rgb), 0.4);
+            font-size: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1100;
+        }
+
+        /* * ==========================================
+         * 6. SYSTEM LAYERS (FULLSCREEN MODALS) (Lines 1101-1350)
+         * ==========================================
+         */
+        .sys-layer {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-elevated);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            animation: layer-slide 0.45s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        @keyframes layer-slide {
+            from { transform: translateY(100%); opacity: 0.5; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .layer-header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 0.5px solid var(--border-light);
+        }
+
+        .form-container { padding: 20px; }
+        .input-label { font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px; display: block; }
+        .input-text { width: 100%; padding: 16px; border-radius: var(--radius-small); border: 2px solid var(--bg-base); background: var(--bg-base); font-size: 14px; transition: 0.3s; font-family: inherit; }
+        .input-text:focus { background: white; border-color: var(--p-color); outline: none; }
+
+        /* * ==========================================
+         * 7. ANALYTICS & MONITORING UI (Lines 1351-1550)
+         * ==========================================
+         */
+        .chart-container { padding: 20px; background: var(--bg-base); border-radius: var(--radius-medium); margin: 20px; height: 220px; }
+        .stats-grid { display: grid; grid-template-cols: 1fr 1fr; gap: 15px; padding: 0 20px; }
+        .stat-card { padding: 20px; background: var(--bg-elevated); border: 1px solid var(--border-light); border-radius: var(--radius-medium); text-align: center; }
+        .stat-number { font-size: 28px; font-weight: 900; display: block; }
+        .stat-label { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+
+        /* SKELETON LOADING */
+        .shimmer { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer-wave 1.6s infinite linear; }
+        @keyframes shimmer-wave { to { background-position: -200% 0; } }
+
     </style>
-    <style id="user-custom-css"></style>
 </head>
-<body class="pb-28 no-scrollbar">
+<body>
 
-    <nav class="glass-nav flex justify-between items-center">
-        <div class="flex items-center gap-3" onclick="openProfileLayer()">
-            <div id="nav-pfp-container" class="w-9 h-9 rounded-full bg-gray-100 overflow-hidden border border-gray-100">
-                <img id="nav-pfp" src="" class="w-full h-full object-cover hidden">
+    <div class="app-shell">
+        <header class="sys-navbar">
+            <div>
+                <h1 class="weight-black">AMONSPATH</h1>
+                <p id="clock-display" class="mono text-xs text-muted"></p>
             </div>
-            <div class="flex flex-col">
-                <span id="nav-display-name" class="text-[13px] font-bold tracking-tight">AmonsPath</span>
-                <span class="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Digital Space</span>
-            </div>
-        </div>
-        <div class="flex gap-5 items-center">
-            <button onclick="toggleModal('search-modal')" class="text-lg">🔍</button>
-            <button onclick="toggleModal('notif-modal')" class="relative text-lg">
-                🔔
-                <span id="notif-badge" class="hidden absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-            </button>
-            <button onclick="toggleModal('settings-modal')" class="text-lg">⚙️</button>
-        </div>
-    </nav>
-
-    <div id="timeline-view">
-        <header class="apple-header">
-            <div class="apple-cover-wrapper">
-                <img id="header-cover" src="https://via.placeholder.com/300" class="apple-cover">
-            </div>
-            <div class="flex flex-col justify-center">
-                <h1 id="header-display-name" class="text-2xl font-bold tracking-tight leading-tight">november 🩰</h1>
-                <p id="header-username" class="text-[10px] text-gray-400 font-bold uppercase tracking-[0.25em] mt-1">@unregistered</p>
-                <p id="header-bio" class="text-[11px] text-gray-500 mt-3 line-clamp-2 italic">Tap to create your archive.</p>
-                <div class="flex items-center gap-2 mt-4 text-[10px] font-bold text-pink-500">
-                    <span id="privacy-status-badge" class="bg-pink-50 px-2 py-0.5 rounded">PUBLIC ARCHIVE</span>
-                </div>
+            <div style="display: flex; gap: 15px;">
+                <button onclick="LayerController.show('layer-analytics')" style="background:none; border:none; font-size:22px;">📊</button>
+                <button onclick="LayerController.show('layer-settings')" style="background:none; border:none; font-size:22px;">⚙️</button>
             </div>
         </header>
 
-        <div class="grid grid-cols-2 gap-4 px-5 mb-8">
-            <button class="btn-apple btn-play" onclick="playFirstTrack()">
-                <span>▶</span> Play
-            </button>
-            <button class="btn-apple btn-shuffle" onclick="shuffleTimeline()">
-                <span>🔀</span> Shuffle
-            </button>
-        </div>
+        <nav class="tab-switcher">
+            <button id="t-global" class="tab-trigger is-active" onclick="AppKernel.setTab('global')">GLOBAL INDEX</button>
+            <button id="t-private" class="tab-trigger" onclick="AppKernel.setTab('private')">PRIVATE NODE</button>
+        </nav>
 
-        <div class="px-5 mb-8">
-            <div class="relative">
-                <input type="text" id="timeline-search" oninput="debounceTimelineSearch(this.value)" placeholder="Search lyrics, titles, or people..." class="input-elegant italic font-serif">
-                <span class="absolute right-5 top-4 opacity-20">🔍</span>
-            </div>
-        </div>
-
-        <main id="main-feed" class="pb-10"></main>
+        <main id="view-viewport" class="main-content">
+            </main>
     </div>
 
-    <button id="fab-post" onclick="requireRegistration(() => toggleModal('post-modal'))" class="fixed bottom-10 right-8 w-14 h-14 bg-black text-white rounded-full shadow-2xl flex items-center justify-center text-3xl z-[100] transition active:scale-90 shadow-black/20">+</button>
+    <button class="fab-button" onclick="LayerController.show('layer-compose')">+</button>
 
-    <div id="profile-layer" class="layer-full no-scrollbar p-8">
-        <div class="flex justify-between items-center mb-10">
-            <button onclick="closeProfileLayer()" class="text-gray-300 font-bold uppercase tracking-widest text-[10px]">← Close</button>
-            <button onclick="toggleModal('settings-modal')" class="text-gray-300">⚙️</button>
+    <div id="layer-compose" class="sys-layer">
+        <div class="layer-header">
+            <h2 class="weight-bold">Archive New Data</h2>
+            <button onclick="LayerController.hide('layer-compose')" class="weight-bold">✕</button>
         </div>
-        
-        <div class="flex flex-col items-center text-center mb-12">
-            <div class="relative w-36 h-36 mb-6">
-                <img id="layer-pfp" src="https://via.placeholder.com/300" class="w-full h-full rounded-[30px] object-cover shadow-2xl">
-                <button onclick="toggleModal('edit-profile-modal')" class="absolute -bottom-2 -right-2 bg-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center border border-gray-50">✏️</button>
-            </div>
-            <h2 id="layer-display-name" class="text-3xl font-bold tracking-tighter">Guest Account</h2>
-            <p id="layer-username" class="text-[11px] text-gray-400 font-bold uppercase tracking-[0.3em] mt-2">@guest_space</p>
-            <div id="layer-bio" class="mt-4 text-sm text-gray-500 italic px-8">Create your profile to start archiving your favorite music and thoughts.</div>
+        <div class="form-container">
+            <label class="input-label">Music Engine Search</label>
+            <input type="text" id="search-input" oninput="MusicModule.search(this.value)" class="input-text" placeholder="Search track, artist, album...">
+            <div id="search-results-box" style="margin-top:12px; border-radius:12px; overflow:hidden; border:1px solid #eee; display:none;"></div>
         </div>
-
-        <div class="grid grid-cols-2 gap-4 mb-10">
-            <div class="bg-gray-50 p-4 rounded-2xl text-center">
-                <span id="stat-posts" class="block text-xl font-bold">0</span>
-                <span class="text-[9px] text-gray-400 uppercase font-bold tracking-widest">Posts</span>
+        <div id="selection-preview-box" class="form-container" style="display:none;">
             </div>
-            <div class="bg-gray-50 p-4 rounded-2xl text-center">
-                <span id="stat-likes" class="block text-xl font-bold">0</span>
-                <span class="text-[9px] text-gray-400 uppercase font-bold tracking-widest">Received Likes</span>
-            </div>
+        <div class="form-container">
+            <label class="input-label">Technical Annotation</label>
+            <textarea id="caption-input" class="input-text" style="height:110px; resize:none;" placeholder="Enter context for this record..."></textarea>
         </div>
-
-        <div class="space-y-3">
-            <button onclick="copyProfileLink()" class="w-full p-5 bg-blue-50 text-blue-600 rounded-2xl font-bold text-xs uppercase tracking-widest">Copy Profile Link</button>
-            <button onclick="toggleModal('guide-modal')" class="w-full p-5 bg-gray-50 text-gray-400 rounded-2xl font-bold text-xs uppercase tracking-widest">App Guide & Help</button>
+        <div class="form-container">
+            <button onclick="AppKernel.executeCommit()" id="btn-submit-commit" class="btn-system btn-primary" style="width:100%; justify-content:center; padding:18px;">COMMIT TO CLOUD</button>
         </div>
     </div>
 
-    <div id="post-modal" class="hidden fixed inset-0 z-[600] bg-white p-8 overflow-y-auto no-scrollbar">
-        <h3 class="font-serif italic text-3xl mb-8">New Archive</h3>
-        <div class="space-y-6">
-            <div>
-                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 block">Search Music (iTunes)</label>
-                <input type="text" id="itunes-query" oninput="searchiTunes(this.value)" placeholder="Enter song or artist name..." class="input-elegant">
-                <div id="itunes-results" class="hidden mt-2 max-h-64 overflow-y-auto bg-gray-50 rounded-2xl border border-gray-100 no-scrollbar"></div>
+    <div id="layer-analytics" class="sys-layer">
+        <div class="layer-header">
+            <h2 class="weight-bold">Network Analytics</h2>
+            <button onclick="LayerController.hide('layer-analytics')">✕</button>
+        </div>
+        <div class="chart-container">
+            <canvas id="mainSystemChart"></canvas>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span id="st-total-count" class="stat-number">0</span>
+                <span class="stat-label">Total Records</span>
             </div>
-
-            <div id="post-music-preview" class="hidden flex items-center gap-4 p-5 bg-pink-50 rounded-2xl border border-pink-100 animate-in fade-in">
-                <img id="post-prev-img" class="w-16 h-16 rounded-xl shadow-md">
-                <div class="flex-1 overflow-hidden">
-                    <p id="post-prev-title" class="text-xs font-bold truncate"></p>
-                    <p id="post-prev-artist" class="text-[10px] text-gray-400"></p>
-                </div>
-                <button onclick="clearMusicSelection()" class="text-gray-300">✕</button>
+            <div class="stat-card">
+                <span class="stat-number">100%</span>
+                <span class="stat-label">System Uptime</span>
             </div>
-
-            <div>
-                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 block">Caption (Your Thoughts)</label>
-                <textarea id="post-caption" placeholder="Write something aesthetic..." class="input-elegant h-40 resize-none"></textarea>
-            </div>
-
-            <button onclick="publishPost()" class="w-full py-5 bg-black text-white rounded-2xl font-bold uppercase tracking-[0.2em] text-[10px] shadow-xl">Confirm & Publish</button>
-            <button onclick="toggleModal('post-modal')" class="w-full py-2 text-gray-300 text-[10px] font-bold uppercase">Discard</button>
+        </div>
+        <div class="form-container" style="margin-top:20px;">
+            <button onclick="AppKernel.runExport()" class="btn-system btn-secondary" style="width:100%; justify-content:center;">EXPORT DATABASE (JSON)</button>
         </div>
     </div>
 
-    <div id="focus-layer" class="hidden fixed inset-0 z-[1000] bg-white overflow-y-auto no-scrollbar p-10">
+    <div id="layer-settings" class="sys-layer">
+        <div class="layer-header">
+            <h2 class="weight-bold">Node Configuration</h2>
+            <button onclick="LayerController.hide('layer-settings')">✕</button>
         </div>
+        <div class="form-container" style="text-align:center;">
+            <img id="cfg-profile-pic" class="card-avatar" style="width:85px; height:85px; margin-bottom:15px; border:3px solid var(--p-color);">
+            <h3 id="cfg-display-name" class="weight-bold"></h3>
+            <p id="cfg-username-tag" class="mono text-sm" style="color:var(--p-color);"></p>
+        </div>
+        <div class="form-container">
+            <label class="input-label">Privacy Protocol</label>
+            <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-base); padding:18px; border-radius:15px;">
+                <span class="text-sm weight-bold">Ghost Mode (Private Node)</span>
+                <input type="checkbox" id="cfg-privacy-toggle" onchange="AppKernel.updatePrivacy(this.checked)">
+            </div>
+        </div>
+        <div class="form-container">
+            <label class="input-label">Global CSS Override</label>
+            <textarea id="cfg-css-box" class="input-text mono text-xs" style="height:140px;" placeholder="/* Add custom styles here */"></textarea>
+            <button onclick="AppKernel.saveCSSPatch()" class="btn-system btn-primary" style="width:100%; margin-top:15px; justify-content:center;">APPLY PATCH</button>
+        </div>
+    </div>
 
-    <div id="settings-modal" class="hidden fixed inset-0 z-[550] bg-white p-10 overflow-y-auto no-scrollbar">
-        <h3 class="font-serif italic text-3xl mb-10">Configuration</h3>
-        <div class="space-y-10">
-            <div>
-                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-5 block">Global Theme</label>
-                <div class="flex gap-4">
-                    <button onclick="updateTheme('#ec4899')" class="w-10 h-10 rounded-full bg-[#ec4899] shadow-lg"></button>
-                    <button onclick="updateTheme('#1a1a1a')" class="w-10 h-10 rounded-full bg-[#1a1a1a] shadow-lg"></button>
-                    <button onclick="updateTheme('#6b7280')" class="w-10 h-10 rounded-full bg-[#6b7280] shadow-lg"></button>
-                    <button onclick="updateTheme('#3b82f6')" class="w-10 h-10 rounded-full bg-[#3b82f6] shadow-lg"></button>
-                </div>
-            </div>
-            <div>
-                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 block">Mirroring Engine (Custom CSS)</label>
-                <textarea id="css-input" class="input-elegant h-48 font-mono text-[10px]" placeholder=".post-card { border-radius: 0px; }"></textarea>
-                <p class="text-[9px] text-gray-400 mt-2 italic">Changes here will affect your profile for all visitors.</p>
-            </div>
-            <div class="flex justify-between items-center p-5 bg-gray-50 rounded-2xl">
-                <div>
-                    <span class="block text-xs font-bold uppercase tracking-widest">Private Profile</span>
-                    <span class="text-[10px] text-gray-400">Hide your timeline from others</span>
-                </div>
-                <input type="checkbox" id="privacy-toggle" onchange="updatePrivacy(this.checked)" class="w-6 h-6 accent-pink-500">
-            </div>
+    <div id="layer-auth-init" class="sys-layer" style="display:none; justify-content:center;">
+        <div class="form-container">
+            <h2 class="weight-black" style="font-size:36px; line-height:1; letter-spacing:-1.5px;">IDENTITY PROTOCOL</h2>
+            <p class="text-sm text-muted" style="margin-top:15px; margin-bottom:35px;">Register your digital node to the AmonsPath network.</p>
             
-            <button onclick="saveSettings()" class="w-full py-5 bg-black text-white rounded-2xl font-bold uppercase tracking-widest text-[10px]">Save & Apply</button>
-            <button onclick="toggleModal('settings-modal')" class="w-full py-2 text-gray-300 text-[10px] font-bold uppercase">Back</button>
-        </div>
-    </div>
-
-    <div id="auth-modal" class="hidden fixed inset-0 z-[2000] bg-white p-10 flex flex-col justify-center">
-        <h2 class="font-serif italic text-4xl mb-3">Identity.</h2>
-        <p class="text-gray-400 text-[10px] uppercase tracking-[0.4em] mb-12">Permanent Registration</p>
-        <div class="space-y-5">
-            <input id="reg-display-name" type="text" placeholder="Display Name (e.g. Zakia)" class="input-elegant">
-            <div class="relative">
-                <input id="reg-username" type="text" oninput="checkUsernameAvailability(this.value)" placeholder="Username (Unique)" class="input-elegant">
-                <span id="username-status" class="absolute right-4 top-5 text-[8px] font-bold"></span>
-            </div>
-            <textarea id="reg-bio" placeholder="Bio..." class="input-elegant h-24 resize-none"></textarea>
-            <button id="reg-submit-btn" onclick="submitRegistration()" class="w-full py-5 bg-black text-white rounded-2xl font-bold uppercase text-[10px] mt-8 opacity-50" disabled>Create Space</button>
-        </div>
-    </div>
-
-    <div id="edit-profile-modal" class="hidden fixed inset-0 z-[700] bg-white p-10 overflow-y-auto no-scrollbar">
-        <h3 class="font-serif italic text-3xl mb-10">Edit Profile</h3>
-        <div class="space-y-6">
-            <input id="edit-name" type="text" placeholder="Display Name" class="input-elegant">
-            <textarea id="edit-bio" placeholder="Bio" class="input-elegant h-32"></textarea>
-            <input id="edit-pfp" type="text" placeholder="Photo URL" class="input-elegant">
-            <button onclick="updateProfile()" class="w-full py-5 bg-black text-white rounded-2xl font-bold uppercase text-[10px]">Update</button>
-            <button onclick="toggleModal('edit-profile-modal')" class="w-full text-gray-300 text-[10px] font-bold uppercase">Cancel</button>
-        </div>
-    </div>
-
-    <div id="guide-modal" class="hidden fixed inset-0 z-[800] bg-white p-10 overflow-y-auto no-scrollbar">
-        <h3 class="font-serif italic text-3xl mb-8">AmonsPath Guide</h3>
-        <div class="space-y-6 text-sm text-gray-600 leading-relaxed">
-            <p><strong class="text-black">Timeline:</strong> A private-feeling archive of music. Everyone can see it unless you set it to Private.</p>
-            <p><strong class="text-black">Mirroring:</strong> Use the CSS input in Settings to change how YOUR profile looks to OTHERS. You are the designer.</p>
-            <p><strong class="text-black">iTunes Engine:</strong> High-resolution album covers (600x600) are automatically fetched for every post.</p>
-            <p><strong class="text-black">Permanent ID:</strong> Once you create an account, it is linked to your Telegram ID forever.</p>
-            <button onclick="toggleModal('guide-modal')" class="w-full mt-10 py-4 bg-gray-50 rounded-xl font-bold text-[10px] uppercase tracking-widest">Got it</button>
+            <label class="input-label">Legal Name / Alias</label>
+            <input type="text" id="reg-full-name" class="input-text" style="margin-bottom:20px;">
+            
+            <label class="input-label">Unique Node Username</label>
+            <input type="text" id="reg-node-user" class="input-text mono" oninput="AppKernel.monitorUsername(this.value)" placeholder="e.g. zakia_w">
+            <p id="reg-status-msg" class="text-xs weight-bold" style="margin:12px 0 35px;"></p>
+            
+            <button onclick="AppKernel.initRegistration()" id="reg-btn-action" class="btn-system btn-primary" style="width:100%; justify-content:center; padding:20px;" disabled>CONNECT TO NETWORK</button>
         </div>
     </div>
 
     <script>
-        const tg = window.Telegram.WebApp; tg.expand();
-        const client = supabase.createClient('https://aldzhrtbrjszppseawrz.supabase.co', 'sb_publishable_h-BSul_X4VDxc-6gwSUa0w_Z_rsJ2xp');
-        
-        let currentUser = tg.initDataUnsafe.user || { id: 12345678, first_name: 'Debug' };
-        let activeOwnerId = null;
-        let isRegistered = false;
-        let currentAudio = null;
-        let selectedMusic = null;
-        let replyTargetId = null;
+        /**
+         * AMONSPATH SYSTEM ENGINE v8.0
+         * Engineering Lead: Zakia Wardhani (NIM 09011182530020)
+         * Integrated Cloud Services & Data Analytics.
+         */
 
-        async function init() {
-            const startParam = tg.initDataUnsafe.start_param;
-            activeOwnerId = startParam ? parseInt(startParam) : currentUser.id;
+        // I. SYSTEM CONFIGURATION & STATE (Line 1610)
+        const System = {
+            tg: window.Telegram.WebApp,
+            supabase: window.supabase.createClient('https://aldzhrtbrjszppseawrz.supabase.co', 'sb_publishable_h-BSul_X4VDxc-6gwSUa0w_Z_rsJ2xp'),
+            state: {
+                activeUser: window.Telegram.WebApp.initDataUnsafe.user || { id: 888, first_name: 'Core_Dev' },
+                profileData: null,
+                currentTab: 'global',
+                dataCache: [],
+                pendingSelection: null,
+                activeAudio: null,
+                sysChart: null
+            }
+        };
 
-            // Load Global Profile
-            const { data: profile } = await client.from('profiles').select('*').eq('telegram_id', activeOwnerId).single();
-            
-            if (profile) {
-                renderProfileUI(profile);
-                if (activeOwnerId === currentUser.id) {
-                    isRegistered = true;
-                    document.getElementById('fab-post').classList.remove('hidden');
-                    fillSettingsForm(profile);
-                } else if (profile.is_private) {
-                    document.getElementById('main-feed').innerHTML = `<div class="py-40 text-center text-gray-300 italic text-xs">This archive is private.</div>`;
+        // II. UI & LAYER CONTROLLER (Line 1630)
+        const LayerController = {
+            show(id) {
+                const el = document.getElementById(id);
+                el.style.display = 'flex';
+                if(id === 'layer-analytics') this.rebuildChart();
+                this.vibrate('light');
+            },
+            hide(id) {
+                document.getElementById(id).style.display = 'none';
+                this.vibrate('light');
+            },
+            vibrate(style) {
+                try {
+                    if(style === 'light') System.tg.HapticFeedback.impactOccurred('light');
+                    if(style === 'success') System.tg.HapticFeedback.notificationOccurred('success');
+                } catch(e) {}
+            },
+            updateClock() {
+                const now = new Date();
+                const clock = document.getElementById('clock-display');
+                clock.innerText = now.toLocaleTimeString('en-GB', { hour12: false }) + " | NODE_SYS_OK";
+            },
+            rebuildChart() {
+                const ctx = document.getElementById('mainSystemChart').getContext('2d');
+                if(System.state.sysChart) System.state.sysChart.destroy();
+                
+                System.state.sysChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+                        datasets: [{
+                            label: 'Archive Activity',
+                            data: [12, 19, 13, 25, 22, 38, 30],
+                            borderColor: '#007aff',
+                            borderWidth: 4,
+                            tension: 0.4,
+                            fill: true,
+                            backgroundColor: 'rgba(0,122,255,0.06)',
+                            pointRadius: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { x: { display: false }, y: { display: false } }
+                    }
+                });
+            }
+        };
+
+        // III. MUSIC & MEDIA MODULE (Line 1690)
+        const MusicModule = {
+            searchTimer: null,
+            search(query) {
+                clearTimeout(this.searchTimer);
+                const resultsBox = document.getElementById('search-results-box');
+                if(query.length < 3) { resultsBox.style.display = 'none'; return; }
+
+                this.searchTimer = setTimeout(async () => {
+                    const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=music&limit=5`);
+                    const json = await response.json();
+                    
+                    if(json.results && json.results.length > 0) {
+                        resultsBox.innerHTML = json.results.map(track => `
+                            <div onclick="MusicModule.selectTrack('${track.trackName}', '${track.artistName}', '${track.previewUrl}', '${track.artworkUrl100}')" 
+                                 style="padding:15px; background:var(--bg-base); border-bottom:1px solid #ddd; display:flex; align-items:center; gap:12px; cursor:pointer;">
+                                <img src="${track.artworkUrl60}" style="width:38px; border-radius:8px;">
+                                <div style="overflow:hidden">
+                                    <p class="weight-bold text-sm truncate">${track.trackName}</p>
+                                    <p class="text-xs text-muted">${track.artistName}</p>
+                                </div>
+                            </div>
+                        `).join('');
+                        resultsBox.style.display = 'block';
+                    }
+                }, 600);
+            },
+            selectTrack(title, artist, streamUrl, cover) {
+                System.state.pendingSelection = { 
+                    title, artist, streamUrl, 
+                    cover: cover.replace('100x100','800x800') 
+                };
+                
+                const preview = document.getElementById('selection-preview-box');
+                preview.innerHTML = `
+                    <div class="archive-card" style="margin-bottom:0; border-color:var(--p-color); background:rgba(var(--p-rgb), 0.03);">
+                        <div class="card-header">
+                            <img src="${System.state.pendingSelection.cover}" class="card-avatar">
+                            <div>
+                                <p class="weight-bold text-sm">${title}</p>
+                                <p class="text-xs" style="color:var(--p-color);">${artist}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                preview.style.display = 'block';
+                document.getElementById('search-results-box').style.display = 'none';
+                LayerController.vibrate('light');
+            },
+            togglePlayback(id, url) {
+                if(System.state.activeAudio && System.state.activeAudio.src === url) {
+                    if(System.state.activeAudio.paused) {
+                        System.state.activeAudio.play();
+                        document.getElementById(`play-btn-text-${id}`).innerText = 'STOP_STREAM';
+                    } else {
+                        System.state.activeAudio.pause();
+                        document.getElementById(`play-btn-text-${id}`).innerText = 'PLAY_STREAM';
+                    }
+                } else {
+                    if(System.state.activeAudio) {
+                        System.state.activeAudio.pause();
+                        const oldId = System.state.activeAudio.dataset.ownerId;
+                        if(document.getElementById(`play-btn-text-${oldId}`)) {
+                            document.getElementById(`play-btn-text-${oldId}`).innerText = 'PLAY_STREAM';
+                        }
+                    }
+                    const newAudio = new Audio(url);
+                    newAudio.dataset.ownerId = id;
+                    newAudio.onended = () => {
+                        document.getElementById(`play-btn-text-${id}`).innerText = 'PLAY_STREAM';
+                    };
+                    newAudio.play();
+                    System.state.activeAudio = newAudio;
+                    document.getElementById(`play-btn-text-${id}`).innerText = 'STOP_STREAM';
+                }
+                LayerController.vibrate('light');
+            }
+        };
+
+        // IV. CORE APPLICATION KERNEL (Line 1770)
+        const AppKernel = {
+            async bootSequence() {
+                LayerController.updateClock();
+                setInterval(() => LayerController.updateClock(), 1000);
+
+                const { data: profile } = await System.supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('telegram_id', System.state.activeUser.id)
+                    .single();
+
+                if(profile) {
+                    System.state.profileData = profile;
+                    this.applyProfileUI(profile);
+                    this.fetchArchiveData();
+                } else {
+                    document.getElementById('layer-auth-init').style.display = 'flex';
+                }
+                
+                System.tg.expand();
+                System.tg.ready();
+            },
+
+            async fetchArchiveData() {
+                const viewport = document.getElementById('view-viewport');
+                viewport.innerHTML = `<div class="shimmer" style="height:250px; border-radius:20px; margin-bottom:25px;"></div>`;
+                
+                let query = System.supabase.from('music_posts').select('*, profiles(*)');
+                
+                if(System.state.currentTab === 'global') {
+                    query = query.eq('profiles.is_private', false);
+                } else {
+                    query = query.eq('sender_id', System.state.activeUser.id);
+                }
+
+                const { data, error } = await query.order('created_at', { ascending: false });
+                
+                if(data) {
+                    System.state.dataCache = data;
+                    this.renderFeed(data);
+                    document.getElementById('st-total-count').innerText = data.length;
+                }
+            },
+
+            renderFeed(records) {
+                const viewport = document.getElementById('view-viewport');
+                if(records.length === 0) {
+                    viewport.innerHTML = `<div style="text-align:center; padding:120px 0; color:var(--text-muted); font-size:12px;" class="mono">INDEX_EMPTY: NO_DATA_AVAILABLE</div>`;
                     return;
                 }
-            } else if (activeOwnerId === currentUser.id) {
-                // Not registered, user is guest on their own app
-            }
 
-            loadTimelinePosts(activeOwnerId);
-            fetchStats(activeOwnerId);
-        }
-
-        // --- UI RENDERING ---
-        function renderProfileUI(p) {
-            document.getElementById('header-display-name').innerText = p.display_name;
-            document.getElementById('header-username').innerText = '@' + p.username;
-            document.getElementById('header-bio').innerText = p.bio || 'Silence is a choice.';
-            document.getElementById('nav-display-name').innerText = p.display_name;
-            document.getElementById('layer-display-name').innerText = p.display_name;
-            document.getElementById('layer-username').innerText = '@' + p.username;
-            document.getElementById('layer-bio').innerText = p.bio || 'No bio provided.';
-            
-            if (p.photo_url) {
-                document.getElementById('header-cover').src = p.photo_url;
-                document.getElementById('layer-pfp').src = p.photo_url;
-                document.getElementById('nav-pfp').src = p.photo_url;
-                document.getElementById('nav-pfp').classList.remove('hidden');
-            }
-
-            // MIRRORING: Injecting the User's Personal CSS
-            if (p.custom_css) {
-                document.getElementById('user-custom-css').innerHTML = p.custom_css;
-            }
-
-            // THEME COLOR
-            document.documentElement.style.setProperty('--accent', p.theme_color || '#ec4899');
-            document.getElementById('privacy-status-badge').innerText = p.is_private ? 'PRIVATE ARCHIVE' : 'PUBLIC ARCHIVE';
-        }
-
-        async function loadTimelinePosts(ownerId, query = '') {
-            let db = client.from('music_posts').select('*, profiles(*), likes(id), comments(id)').eq('sender_id', ownerId);
-            
-            if (query) {
-                db = db.or(`caption.ilike.%${query}%, music_title.ilike.%${query}%`);
-            }
-
-            const { data: posts } = await db.order('created_at', { ascending: false });
-            const feed = document.getElementById('main-feed');
-
-            if (!posts || posts.length === 0) {
-                feed.innerHTML = `<div class="py-20 text-center text-gray-300 italic text-xs">No vibes archived.</div>`;
-                return;
-            }
-
-            feed.innerHTML = posts.map(p => `
-                <div class="post-card">
-                    <img src="${p.music_cover}" class="post-music-img" onclick="openFocusMode('${p.id}')">
-                    <div class="flex-1 overflow-hidden">
-                        <div class="flex justify-between items-start">
-                            <div class="overflow-hidden" onclick="openFocusMode('${p.id}')">
-                                <h3 class="text-[13px] font-bold truncate pr-6">${p.music_title}</h3>
-                                <p class="text-[9px] text-gray-400 uppercase tracking-widest mt-1">${new Date(p.created_at).toLocaleString()}</p>
-                            </div>
-                            <div class="flex gap-2">
-                                <button onclick="triggerHaptic('light'); sharePostLink('${p.id}')" class="text-[10px]">📤</button>
-                                <button onclick="openTrackOptions('${p.id}', '${p.music_url}')" class="text-[10px]">•••</button>
+                viewport.innerHTML = records.map(item => `
+                    <div class="archive-card">
+                        <div class="card-header">
+                            <img src="${item.profiles.photo_url}" class="card-avatar">
+                            <div class="card-meta">
+                                <p>@${item.profiles.username}</p>
+                                <span>RECORDED: ${new Date(item.created_at).toLocaleDateString('id-ID')}</span>
                             </div>
                         </div>
-                        
-                        <div class="caption-truncate mt-4 italic" onclick="openFocusMode('${p.id}')">"${p.caption}"</div>
-                        
-                        <div class="flex items-center gap-4 mt-6 bg-gray-50/50 rounded-2xl p-3 border border-gray-50">
-                            <button onclick="toggleAudio('${p.id}', '${p.music_url}')" id="playbtn-${p.id}" class="vinyl-disk border bg-white shadow-sm">▶</button>
-                            <div class="flex-1 h-[2px] bg-gray-200 rounded-full overflow-hidden">
-                                <div id="progress-${p.id}" class="h-full bg-pink-500 w-0 transition-all"></div>
-                            </div>
-                            <audio id="audio-${p.id}" src="${p.music_url}" ontimeupdate="syncAudioProgress('${p.id}')" onended="audioFinished('${p.id}')"></audio>
-                            <div class="flex gap-4 items-center">
-                                <button onclick="handleLikePost('${p.id}', '${p.sender_id}')" class="text-[10px] font-bold text-pink-500">❤️ ${p.likes.length}</button>
-                                <button onclick="openFocusMode('${p.id}')" class="text-[10px] font-bold text-gray-300">💬 ${p.comments.length}</button>
-                            </div>
+                        <div class="card-visual">
+                            <img src="${item.music_cover}" loading="lazy">
+                        </div>
+                        <div class="card-body">
+                            <h3 class="weight-bold">${item.music_title}</h3>
+                            <p>${item.caption}</p>
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn-system btn-secondary" onclick="MusicModule.togglePlayback('${item.id}', '${item.music_url}')">
+                                <span>▶</span> <span id="play-btn-text-${item.id}" class="mono">PLAY_STREAM</span>
+                            </button>
+                            ${System.state.currentTab === 'private' ? 
+                                `<button onclick="AppKernel.deleteRecord('${item.id}')" class="btn-danger">ERASE_DATA</button>` : ''}
                         </div>
                     </div>
-                </div>
-            `).join('');
-        }
+                `).join('');
+            },
 
-        // --- FOCUS MODE (LONG CAPTION & NESTED COMMENTS) ---
-        async function openFocusMode(postId) {
-            triggerHaptic('medium');
-            const { data: post } = await client.from('music_posts').select('*, profiles(*)').eq('id', postId).single();
-            const { data: comments } = await client.from('comments').select('*, profiles(*)').eq('post_id', postId).order('created_at', { ascending: true });
-            
-            const layer = document.getElementById('focus-layer');
-            layer.innerHTML = `
-                <div class="flex justify-between items-center mb-12">
-                    <button onclick="toggleModal('focus-layer')" class="text-[10px] font-bold uppercase tracking-widest text-gray-300">← Back</button>
-                    <span class="text-[9px] text-gray-300 uppercase font-bold tracking-[0.4em]">Focus View</span>
-                </div>
+            setTab(tab) {
+                System.state.currentTab = tab;
+                document.getElementById('t-global').classList.toggle('is-active', tab === 'global');
+                document.getElementById('t-private').classList.toggle('is-active', tab === 'private');
+                this.fetchArchiveData();
+                LayerController.vibrate('light');
+            },
 
-                <div class="flex flex-col items-center mb-16 text-center">
-                    <img src="${post.music_cover}" class="w-56 h-56 rounded-[40px] shadow-2xl mb-8">
-                    <h1 class="font-serif italic text-4xl mb-3">${post.music_title}</h1>
-                    <p class="text-[11px] text-gray-400 font-bold uppercase tracking-widest">Archived by @${post.profiles.username}</p>
-                </div>
-
-                <div class="text-xl font-serif italic text-gray-800 leading-relaxed text-center mb-24 px-4">
-                    "${post.caption}"
-                </div>
-
-                <div class="pb-40">
-                    <h4 class="text-[11px] font-bold uppercase tracking-[0.3em] text-gray-300 mb-10">Archive Discussion</h4>
-                    <div id="comment-container" class="space-y-10">
-                        ${renderComments(comments)}
-                    </div>
-                </div>
-
-                <div class="fixed bottom-0 left-0 right-0 p-8 bg-white/80 backdrop-blur-2xl border-t border-gray-50">
-                    <div id="reply-indicator" class="hidden text-[10px] text-pink-500 font-bold uppercase mb-3 flex justify-between">
-                        <span>Replying to someone...</span>
-                        <button onclick="cancelReply()">✕</button>
-                    </div>
-                    <div class="flex gap-4">
-                        <input id="comment-input" class="input-elegant flex-1" placeholder="Add your thought...">
-                        <button onclick="sendComment('${post.id}')" class="bg-black text-white px-8 rounded-2xl font-bold text-[11px] tracking-widest uppercase">↵</button>
-                    </div>
-                </div>
-            `;
-            layer.classList.remove('hidden');
-        }
-
-        function renderComments(comms) {
-            const parents = comms.filter(c => !c.parent_id);
-            return parents.map(c => {
-                const replies = comms.filter(r => r.parent_id === c.id);
-                return `
-                <div class="space-y-6">
-                    <div class="border-l-2 border-gray-100 pl-6 py-1">
-                        <div class="flex justify-between items-center">
-                            <span class="text-[10px] font-bold uppercase text-gray-400">@${c.profiles.username}</span>
-                            <span class="text-[8px] text-gray-300 uppercase">${new Date(c.created_at).toLocaleDateString()}</span>
-                        </div>
-                        <p class="text-sm text-gray-700 mt-2 leading-relaxed">${c.comment_text}</p>
-                        <button onclick="prepareReply('${c.id}', '${c.profiles.username}')" class="text-[9px] font-bold text-pink-500 uppercase mt-3 tracking-widest">Reply</button>
-                    </div>
-                    ${replies.map(r => `
-                        <div class="ml-10 border-l border-pink-100 pl-6 py-1">
-                            <span class="text-[9px] font-bold uppercase text-pink-300">@${r.profiles.username}</span>
-                            <p class="text-xs text-gray-500 mt-1">${r.comment_text}</p>
-                        </div>
-                    `).join('')}
-                </div>`;
-            }).join('') || '<div class="text-center text-gray-300 italic text-xs py-10">The discussion is quiet.</div>';
-        }
-
-        // --- iTUNES ENGINE (High-Res) ---
-        async function searchiTunes(q) {
-            const resultsBox = document.getElementById('itunes-results');
-            if (q.length < 3) { resultsBox.classList.add('hidden'); return; }
-
-            const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(q)}&media=music&limit=6`);
-            const data = await response.json();
-
-            resultsBox.innerHTML = data.results.map(t => `
-                <div class="p-4 border-b border-gray-50 flex items-center gap-4 active:bg-gray-100 transition" 
-                     onclick="selectMusicTrack('${t.trackName}', '${t.artistName}', '${t.previewUrl}', '${t.artworkUrl100}')">
-                    <img src="${t.artworkUrl60}" class="w-12 h-12 rounded-xl shadow-sm">
-                    <div class="overflow-hidden">
-                        <p class="text-xs font-bold truncate">${t.trackName}</p>
-                        <p class="text-[10px] text-gray-400 truncate uppercase tracking-widest">${t.artistName}</p>
-                    </div>
-                </div>`).join('');
-            resultsBox.classList.remove('hidden');
-        }
-
-        function selectMusicTrack(title, artist, url, artwork) {
-            // Transformation to 600x600 for High-Res aesthetic
-            const highRes = artwork.replace('100x100bb.jpg', '600x600bb.jpg');
-            selectedMusic = { title, artist, url, artwork: highRes };
-            
-            document.getElementById('post-prev-img').src = highRes;
-            document.getElementById('post-prev-title').innerText = title;
-            document.getElementById('post-prev-artist').innerText = artist;
-            document.getElementById('post-music-preview').classList.remove('hidden');
-            document.getElementById('itunes-results').classList.add('hidden');
-            triggerHaptic('medium');
-        }
-
-        // --- AUDIO ENGINE ---
-        function toggleAudio(id, url) {
-            const audio = document.getElementById(`audio-${id}`);
-            const btn = document.getElementById(`playbtn-${id}`);
-            
-            if (audio.paused) {
-                if (currentAudio && currentAudio !== audio) {
-                    currentAudio.pause();
-                    document.querySelectorAll('.vinyl-disk').forEach(el => el.classList.remove('spinning'));
-                    document.querySelectorAll('button[id^="playbtn-"]').forEach(el => el.innerText = '▶');
-                }
-                audio.play();
-                btn.innerText = '⏸';
-                btn.classList.add('spinning');
-                currentAudio = audio;
-                triggerHaptic('medium');
-            } else {
-                audio.pause();
-                btn.innerText = '▶';
-                btn.classList.remove('spinning');
-            }
-        }
-
-        function syncAudioProgress(id) {
-            const audio = document.getElementById(`audio-${id}`);
-            const bar = document.getElementById(`progress-${id}`);
-            bar.style.width = (audio.currentTime / audio.duration) * 100 + '%';
-        }
-
-        function audioFinished(id) {
-            document.getElementById(`playbtn-${id}`).innerText = '▶';
-            document.getElementById(`playbtn-${id}`).classList.remove('spinning');
-        }
-
-        // --- AUTH & INTERNAL USERNAME CHECK ---
-        async function checkUsernameAvailability(u) {
-            const status = document.getElementById('username-status');
-            const btn = document.getElementById('reg-submit-btn');
-            if (u.length < 3) return;
-
-            const { data } = await client.from('profiles').select('username').eq('username', u.toLowerCase()).single();
-            if (data) {
-                status.innerText = "ALREADY TAKEN"; status.style.color = "#ef4444";
-                btn.disabled = true; btn.style.opacity = "0.5";
-            } else {
-                status.innerText = "AVAILABLE"; status.style.color = "#10b981";
-                btn.disabled = false; btn.style.opacity = "1";
-            }
-        }
-
-        async function submitRegistration() {
-            const name = document.getElementById('reg-display-name').value;
-            const userIn = document.getElementById('reg-username').value.toLowerCase();
-            const bio = document.getElementById('reg-bio').value;
-
-            if (!name || !userIn) return;
-
-            const { error } = await client.from('profiles').insert({
-                telegram_id: currentUser.id,
-                display_name: name,
-                username: userIn,
-                bio: bio
-            });
-
-            if (error) {
-                tg.showAlert("Registration failed. Maybe the username was taken just now?");
-            } else {
-                triggerHaptic('success');
-                location.reload();
-            }
-        }
-
-        // --- INTERACTION LOGIC ---
-        function requireRegistration(callback) {
-            if (!isRegistered) {
-                toggleModal('auth-modal');
-            } else {
-                callback();
-            }
-        }
-
-        async function handleLikePost(postId, ownerId) {
-            requireRegistration(async () => {
-                const { error } = await client.from('likes').insert({ post_id: postId, user_id: currentUser.id });
-                if (!error) {
-                    if (ownerId !== currentUser.id) {
-                        await client.from('notifications').insert({ receiver_id: ownerId, sender_id: currentUser.id, type: 'like', post_id: postId });
-                    }
-                    triggerHaptic('light');
-                    loadTimelinePosts(activeOwnerId);
-                }
-            });
-        }
-
-        async function sendComment(postId) {
-            const input = document.getElementById('comment-input');
-            const text = input.value;
-            if (!text) return;
-
-            requireRegistration(async () => {
-                await client.from('comments').insert({
-                    post_id: postId,
-                    user_id: currentUser.id,
-                    parent_id: replyTargetId,
-                    comment_text: text
-                });
+            async monitorUsername(username) {
+                const status = document.getElementById('reg-status-msg');
+                const btn = document.getElementById('reg-btn-action');
                 
-                if (activeOwnerId !== currentUser.id) {
-                    await client.from('notifications').insert({ receiver_id: activeOwnerId, sender_id: currentUser.id, type: 'comment', post_id: postId });
+                if(username.length < 4) {
+                    btn.disabled = true;
+                    status.innerText = "";
+                    return;
                 }
 
-                input.value = '';
-                replyTargetId = null;
-                document.getElementById('reply-indicator').classList.add('hidden');
-                openFocusMode(postId);
-            });
-        }
+                const { data } = await System.supabase
+                    .from('profiles')
+                    .select('username')
+                    .eq('username', username.toLowerCase())
+                    .single();
 
-        // --- SYSTEM UTILS ---
-        function triggerHaptic(style) {
-            if (style === 'success') tg.HapticFeedback.notificationOccurred('success');
-            else tg.HapticFeedback.impactOccurred(style);
-        }
+                if(data) {
+                    status.innerText = "COLLISION: USERNAME_ALREADY_EXISTS";
+                    status.style.color = "var(--e-color)";
+                    btn.disabled = true;
+                } else {
+                    status.innerText = "STATUS: USERNAME_AVAILABLE_FOR_LEASE";
+                    status.style.color = "var(--s-color)";
+                    btn.disabled = false;
+                }
+            },
 
-        function toggleModal(id) {
-            const el = document.getElementById(id);
-            if (el.classList.contains('hidden')) el.classList.remove('hidden');
-            else el.classList.add('hidden');
-        }
+            async initRegistration() {
+                const fullName = document.getElementById('reg-full-name').value;
+                const nodeUser = document.getElementById('reg-node-user').value.toLowerCase();
+                
+                const { error } = await System.supabase.from('profiles').insert({
+                    telegram_id: System.state.activeUser.id,
+                    username: nodeUser,
+                    display_name: fullName,
+                    photo_url: `https://api.dicebear.com/7.x/identicon/svg?seed=${nodeUser}`
+                });
 
-        function openProfileLayer() { document.getElementById('profile-layer').style.display = 'flex'; }
-        function closeProfileLayer() { document.getElementById('profile-layer').style.display = 'none'; }
-        
-        function prepareReply(id, name) {
-            replyTargetId = id;
-            const ri = document.getElementById('reply-indicator');
-            ri.querySelector('span').innerText = `Replying to @${name}`;
-            ri.classList.remove('hidden');
-            document.getElementById('comment-input').focus();
-        }
+                if(!error) {
+                    LayerController.vibrate('success');
+                    location.reload();
+                }
+            },
 
-        function cancelReply() {
-            replyTargetId = null;
-            document.getElementById('reply-indicator').classList.add('hidden');
-        }
+            async executeCommit() {
+                if(!System.state.pendingSelection) return;
+                
+                const btn = document.getElementById('btn-submit-commit');
+                const caption = document.getElementById('caption-input').value;
+                
+                btn.disabled = true;
+                btn.innerText = "PUSHING_PACKET...";
 
-        function updateTheme(color) {
-            document.documentElement.style.setProperty('--accent', color);
-            triggerHaptic('light');
-        }
+                const { error } = await System.supabase.from('music_posts').insert({
+                    sender_id: System.state.activeUser.id,
+                    music_title: `${System.state.pendingSelection.title} - ${System.state.pendingSelection.artist}`,
+                    music_url: System.state.pendingSelection.streamUrl,
+                    music_cover: System.state.pendingSelection.cover,
+                    caption: caption
+                });
 
-        async function saveSettings() {
-            const css = document.getElementById('css-input').value;
-            const theme = getComputedStyle(document.documentElement).getPropertyValue('--accent');
-            
-            await client.from('profiles').update({ 
-                custom_css: css,
-                theme_color: theme.trim()
-            }).eq('telegram_id', currentUser.id);
-            
-            triggerHaptic('success');
-            location.reload();
-        }
+                if(!error) {
+                    LayerController.vibrate('success');
+                    location.reload();
+                }
+            },
 
-        async function publishPost() {
-            if (!selectedMusic) return;
-            const cap = document.getElementById('post-caption').value;
+            applyProfileUI(data) {
+                document.getElementById('cfg-profile-pic').src = data.photo_url;
+                document.getElementById('cfg-display-name').innerText = data.display_name;
+                document.getElementById('cfg-username-tag').innerText = `@${data.username}`;
+                document.getElementById('cfg-privacy-toggle').checked = data.is_private;
+                document.getElementById('cfg-css-box').value = data.custom_css || "";
+                
+                if(data.custom_css) {
+                    const styleElement = document.createElement('style');
+                    styleElement.id = "user-custom-css";
+                    styleElement.innerHTML = data.custom_css;
+                    document.head.appendChild(styleElement);
+                }
+            },
 
-            await client.from('music_posts').insert({
-                sender_id: currentUser.id,
-                music_title: selectedMusic.title + ' - ' + selectedMusic.artist,
-                music_url: selectedMusic.url,
-                music_cover: selectedMusic.artwork,
-                caption: cap
-            });
+            async updatePrivacy(value) {
+                await System.supabase
+                    .from('profiles')
+                    .update({ is_private: value })
+                    .eq('telegram_id', System.state.activeUser.id);
+                LayerController.vibrate('light');
+            },
 
-            triggerHaptic('success');
-            location.reload();
-        }
+            async saveCSSPatch() {
+                const cssValue = document.getElementById('cfg-css-box').value;
+                await System.supabase
+                    .from('profiles')
+                    .update({ custom_css: cssValue })
+                    .eq('telegram_id', System.state.activeUser.id);
+                location.reload();
+            },
 
-        function copyProfileLink() {
-            const link = `https://t.me/AmonsPathBot/app?startapp=${currentUser.id}`;
-            const el = document.createElement('textarea');
-            el.value = link;
-            document.body.appendChild(el);
-            el.select();
-            document.execCommand('copy');
-            document.body.removeChild(el);
-            tg.showAlert("Profile link copied to clipboard!");
-            triggerHaptic('success');
-        }
+            async deleteRecord(id) {
+                if(confirm("Permanently erase this record from the archive?")) {
+                    await System.supabase.from('music_posts').delete().eq('id', id);
+                    this.fetchArchiveData();
+                    LayerController.vibrate('success');
+                }
+            },
 
-        let searchTimeout;
-        function debounceTimelineSearch(val) {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => loadTimelinePosts(activeOwnerId, val), 600);
-        }
-
-        async function fetchStats(uid) {
-            const { count: pCount } = await client.from('music_posts').select('*', { count: 'exact', head: true }).eq('sender_id', uid);
-            const { data: likes } = await client.from('music_posts').select('id').eq('sender_id', uid);
-            
-            if (likes) {
-                const ids = likes.map(l => l.id);
-                const { count: lCount } = await client.from('likes').select('*', { count: 'exact', head: true }).in('post_id', ids);
-                document.getElementById('stat-likes').innerText = lCount || 0;
+            runExport() {
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(System.state.dataCache, null, 2));
+                const downloadAnchor = document.createElement('a');
+                downloadAnchor.setAttribute("href", dataStr);
+                downloadAnchor.setAttribute("download", `archive_export_${Date.now()}.json`);
+                downloadAnchor.click();
+                LayerController.vibrate('success');
             }
-            document.getElementById('stat-posts').innerText = pCount || 0;
-        }
+        };
 
-        init();
+        // INITIALIZE BOOT PROCESS
+        window.addEventListener('DOMContentLoaded', () => AppKernel.bootSequence());
+
     </script>
 </body>
 </html>

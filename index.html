@@ -419,9 +419,9 @@
         }
 
         .icon-large {
-            width: 72px;
-            height: 72px;
-            font-size: 2rem;
+            width: 56px;
+            height: 56px;
+            font-size: 1,6rem;
             border: none;
             background: black;
             color: white;
@@ -903,7 +903,7 @@
           window.appState.userSession = { id: guestId };
           window.appState.currentUser = { id: guestId };
           loadFeed(true);
-          document.getElementById('modal-auth').classList.add('active');
+          
         } else {
           // New user - show signup
           const anonSession = await supabase.auth.signInAnonymously();
@@ -1215,12 +1215,8 @@
     }
 
     window.openProfileLayer = function() {
-      if (!window.appState.isGuest) {
-        document.getElementById('profile-layer').style.display = 'flex';
-      } else {
-        openModal('modal-auth');
-      }
-    };
+  document.getElementById('profile-layer').style.display = 'flex';
+};
 
     // ============ MODALS ============
     window.openModal = function(modalId) {
@@ -1245,13 +1241,12 @@
     };
 
     window.protectedAction = function(callback) {
-      if (window.appState.isGuest) {
-        showToast('Please create an account first', 'info');
-        openModal('modal-auth');
-        return;
-      }
-      callback();
-    };
+  if (window.appState.isGuest) {
+    openModal('modal-auth');
+    return;
+  }
+  callback();
+};
 
     // ============ PROFILE EDITS ============
     document.getElementById('edit-pfp')?.addEventListener('change', function(e) {

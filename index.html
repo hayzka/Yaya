@@ -1,800 +1,198 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AmonsPath | Ultra Archive v2.0</title>
-    
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700;800&family=Playfair+Display:ital,wght@1,400;1,700;1,900&family=JetBrains+Mono:wght@300&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AmonsPath Pro</title>
 
-    <style id="master-logic-styles">
-        :root { 
-            --accent: #ec4899; 
-            --accent-soft: rgba(236, 72, 153, 0.08); 
-            --bg: #ffffff;
-            --surface: #f9f9f9;
-            --text-main: #121212;
-            --text-muted: #8e8e93;
-            --glass: rgba(255, 255, 255, 0.85);
-        }
+<script src="https://cdn.tailwindcss.com"></script>
 
-        /* RESET & BASE */
-        * { 
-            margin: 0; padding: 0; box-sizing: border-box; 
-            -webkit-tap-highlight-color: transparent; 
-            scrollbar-width: none;
-        }
-        *::-webkit-scrollbar { display: none; }
-
-        body { 
-            background-color: var(--bg); 
-            color: var(--text-main); 
-            font-family: 'Inter', sans-serif; 
-            line-height: 1.6;
-            overflow-x: hidden;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* TYPOGRAPHY */
-        .font-serif-italic { font-family: 'Playfair Display', serif; font-style: italic; }
-        .font-mono { font-family: 'JetBrains Mono', monospace; }
-
-        /* SKELETON ANIMATION (Penambah Baris & Estetika) */
-        .skeleton {
-            background: linear-gradient(90deg, #f0f0f0 25%, #f8f8f8 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: skeleton-loading 1.5s infinite ease-in-out;
-            border-radius: 12px;
-        }
-        @keyframes skeleton-loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-
-        /* LAYOUT COMPONENTS */
-        .main-container { max-width: 600px; margin: 0 auto; min-height: 100vh; }
-        
-        .glass-nav {
-            position: sticky; top: 0; z-index: 500;
-            background: var(--glass);
-            backdrop-filter: blur(25px);
-            border-bottom: 1px solid rgba(0,0,0,0.03);
-            padding: 20px 24px;
-        }
-
-        /* POST CARDS (RE-ENGINEERED) */
-        .post-entry {
-            background: white;
-            margin: 0 20px 24px 20px;
-            border-radius: 32px;
-            padding: 24px;
-            border: 1px solid rgba(0,0,0,0.04);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.02);
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            animation: fadeInUp 0.8s ease backwards;
-        }
-        .post-entry:active { transform: scale(0.97); }
-
-        .album-art-container {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 1/1;
-            border-radius: 24px;
-            overflow: hidden;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.12);
-            margin-bottom: 20px;
-        }
-        .album-art-container img { width: 100%; height: 100%; object-fit: cover; transition: 0.6s ease; }
-        .post-entry:hover img { transform: scale(1.05); }
-
-        /* AUDIO VISUALIZER SIMULATION */
-        .viz-container {
-            display: flex; gap: 3px; align-items: flex-end; height: 20px;
-        }
-        .viz-bar { width: 3px; background: var(--accent); border-radius: 10px; }
-        .viz-anim { animation: viz-height 0.8s ease-in-out infinite alternate; }
-        @keyframes viz-height { 
-            0% { height: 4px; } 
-            100% { height: 20px; } 
-        }
-
-        /* LAYER SYSTEM */
-        .layer {
-            position: fixed; inset: 0; z-index: 1000;
-            background: var(--bg);
-            display: none; flex-direction: column;
-            animation: slideInUp 0.6s cubic-bezier(0.19, 1, 0.22, 1);
-        }
-        @keyframes slideInUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* NOTIFICATION TOAST */
-        #toast-container {
-            position: fixed; top: 40px; left: 50%; transform: translateX(-50%);
-            z-index: 9999; display: flex; flex-direction: column; gap: 10px;
-        }
-        .toast {
-            background: #121212; color: white; padding: 12px 24px;
-            border-radius: 50px; font-size: 11px; font-weight: 700;
-            text-transform: uppercase; letter-spacing: 1px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            animation: toastIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        @keyframes toastIn { from { opacity: 0; transform: translateY(-20px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
-
-        /* BUTTONS */
-        .btn-premium {
-            background: var(--accent); color: white;
-            padding: 20px; border-radius: 20px;
-            font-weight: 800; font-[10px] uppercase tracking-[0.2em];
-            width: 100%; transition: 0.3s;
-            box-shadow: 0 15px 35px var(--accent-soft);
-        }
-        .btn-premium:active { transform: scale(0.95); opacity: 0.9; }
-
-        .input-premium {
-            width: 100%; background: #f2f2f7; border: 2px solid transparent;
-            padding: 18px 24px; border-radius: 20px; font-size: 14px;
-            transition: 0.4s; outline: none;
-        }
-        .input-premium:focus { border-color: var(--accent); background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-
-        /* SEARCH BAR OVERLAY */
-        #search-overlay {
-            max-height: 0; overflow: hidden; opacity: 0;
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        #search-overlay.open { max-height: 100px; opacity: 1; padding: 10px 20px 20px 20px; border-bottom: 1px solid #f2f2f7; }
-
-        /* APPLE MUSIC HEADER (Zakia Style) */
-        .profile-header-premium {
-            display: flex; gap: 30px; padding: 40px 24px;
-            background: linear-gradient(to bottom, var(--accent-soft) 0%, transparent 100%);
-        }
-        .profile-pfp-box {
-            width: 140px; height: 140px; flex-shrink: 0;
-            border-radius: 28px; overflow: hidden;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
-        }
-    </style>
-    <style id="user-custom-css">/* User Mirroring Logic Space */</style>
+<style>
+body { background:#fafafa; font-family: Inter, sans-serif; }
+.card { background:white; border-radius:20px; padding:16px; margin-bottom:16px; box-shadow:0 10px 30px rgba(0,0,0,0.05); }
+</style>
 </head>
-<body class="pb-32 no-scrollbar">
 
-    <div id="toast-container"></div>
+<body class="max-w-xl mx-auto p-4">
 
-    <div class="main-container">
-        <nav class="glass-nav">
-            <div class="flex justify-between items-center mb-6">
-                <div>
-                    <h1 class="font-serif-italic text-3xl tracking-tighter" onclick="location.reload()">AmonsPath.</h1>
-                    <p id="system-status" class="text-[8px] font-bold text-pink-500 uppercase tracking-[0.4em] mt-1">Live Discovery Engine</p>
-                </div>
-                <div class="flex gap-6 items-center">
-                    <button onclick="toggleSearchUI()" class="text-xl">🔍</button>
-                    <div id="nav-pfp-trigger" class="w-10 h-10 rounded-full bg-gray-50 border-2 border-transparent overflow-hidden transition active:scale-90" onclick="openLayer('profile-layer')">
-                        <img id="pfp-mini" class="hidden w-full h-full object-cover">
-                    </div>
-                </div>
-            </div>
+<!-- HEADER -->
+<div class="flex justify-between items-center mb-6">
+  <h1 class="text-2xl font-bold">AmonsPath</h1>
+  <button onclick="createPost()" class="bg-black text-white px-4 py-2 rounded-xl">+</button>
+</div>
 
-            <div id="search-overlay">
-                <input type="text" id="global-search-input" oninput="debounceSearch(this.value)" placeholder="Search by song, lyric or user..." class="input-premium font-serif-italic">
-            </div>
+<!-- FEED -->
+<div id="feed"></div>
 
-            <div class="flex gap-10 text-[10px] font-bold uppercase tracking-[0.2em] pb-1">
-                <button id="tab-btn-fyp" onclick="routeTo('fyp')" class="text-pink-500 border-b-2 border-pink-500 pb-3">Discovery</button>
-                <button id="tab-btn-mine" onclick="routeTo('mine')" class="text-gray-300 pb-3">My Archive</button>
-            </div>
-        </nav>
+<!-- COMMENT MODAL -->
+<div id="commentModal" class="hidden fixed inset-0 bg-black/40 flex items-end">
+  <div class="bg-white w-full p-4 rounded-t-2xl">
+    <div id="commentList" class="mb-4 max-h-60 overflow-y-auto"></div>
+    <input id="commentInput" class="border w-full p-2 rounded-lg" placeholder="Write comment...">
+    <button onclick="sendComment()" class="mt-2 w-full bg-black text-white p-2 rounded-lg">Send</button>
+  </div>
+</div>
 
-        <section id="page-fyp" class="pt-8">
-            <div id="fyp-feed" class="space-y-4">
-                <div class="post-entry p-8"><div class="skeleton h-60 mb-6"></div><div class="skeleton h-4 w-1/2 mb-4"></div><div class="skeleton h-3 w-full"></div></div>
-                <div class="post-entry p-8"><div class="skeleton h-60 mb-6"></div><div class="skeleton h-4 w-1/2 mb-4"></div><div class="skeleton h-3 w-full"></div></div>
-            </div>
-        </section>
+<script type="module">
 
-        <section id="page-mine" class="hidden">
-            <header class="profile-header-premium">
-                <div class="profile-pfp-box">
-                    <img id="header-pfp" src="" class="w-full h-full object-cover">
-                </div>
-                <div class="flex flex-col justify-center">
-                    <h2 id="header-name" class="text-3xl font-extrabold tracking-tight">Accessing...</h2>
-                    <p id="header-username" class="text-[10px] text-gray-400 font-bold uppercase tracking-[0.3em] mt-2">@pathfinder</p>
-                    <div class="flex gap-2 mt-6">
-                        <span id="badge-privacy" class="px-3 py-1 bg-white border border-gray-100 rounded-full text-[9px] font-bold text-gray-400 uppercase">Public</span>
-                        <span class="px-3 py-1 bg-pink-500 rounded-full text-[9px] font-bold text-white uppercase">Active</span>
-                    </div>
-                </div>
-            </header>
-            <div id="mine-feed" class="pt-8 space-y-4">
-                </div>
-        </section>
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+const supabase = createClient(
+  "https://aldzhrtbrjszppseawrz.supabase.co",
+  "sb_publishable_h-BSul_X4VDxc-6gwSUa0w_Z_rsJ2xp"
+);
+
+let user = null;
+let page = 0;
+let activePost = null;
+
+// ================= AUTH =================
+async function init() {
+  let { data } = await supabase.auth.getUser();
+
+  if (!data.user) {
+    await supabase.auth.signInAnonymously();
+  }
+
+  const res = await supabase.auth.getUser();
+  user = res.data.user;
+
+  loadFeed(true);
+}
+
+init();
+
+// ================= LOAD FEED =================
+async function loadFeed(reset=false) {
+  if (reset) {
+    page = 0;
+    document.getElementById("feed").innerHTML = "";
+  }
+
+  const { data } = await supabase
+    .from("posts")
+    .select(`
+      *,
+      likes(count),
+      comments(count)
+    `)
+    .range(page*5, page*5+4)
+    .order("created_at", { ascending:false });
+
+  data.forEach(p => {
+    document.getElementById("feed").innerHTML += renderPost(p);
+  });
+
+  page++;
+}
+
+// ================= RENDER =================
+function renderPost(p) {
+  return `
+  <div class="card">
+    <img src="${p.music_cover}" class="rounded-xl mb-3 w-full">
+    <h2 class="font-bold">${p.music_title}</h2>
+    <p class="text-sm text-gray-500">${p.caption || ""}</p>
+
+    <div class="flex gap-4 mt-3 text-sm">
+      <button onclick="like('${p.id}')">
+        ❤️ ${p.likes?.[0]?.count || 0}
+      </button>
+
+      <button onclick="openComments('${p.id}')">
+        💬 ${p.comments?.[0]?.count || 0}
+      </button>
+
+      <button onclick="share('${p.id}')">🔗</button>
     </div>
-
-    <button onclick="protectedAction(() => openModal('modal-post'))" class="fixed bottom-10 right-8 w-18 h-18 bg-black text-white rounded-full shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] flex items-center justify-center text-4xl z-[600] active:scale-90 transition-all p-5">+</button>
-
-    <div id="profile-layer" class="layer no-scrollbar">
-        <div class="p-10 pb-40">
-            <div class="flex justify-between items-center mb-16">
-                <button onclick="closeLayer('profile-layer')" class="text-[10px] font-bold text-gray-300 uppercase tracking-widest">← Back to discovery</button>
-                <button onclick="openModal('modal-edit-profile')" class="text-xs font-bold text-pink-500">Edit Path</button>
-            </div>
-
-            <div class="flex flex-col items-center mb-16">
-                <div class="relative w-36 h-36 mb-8">
-                    <img id="layer-pfp" class="w-full h-full rounded-[40px] object-cover shadow-2xl">
-                    <div class="absolute -bottom-2 -right-2 bg-white p-3 rounded-full shadow-xl">✨</div>
-                </div>
-                <h3 id="layer-name" class="text-3xl font-bold">...</h3>
-                <p id="layer-bio" class="text-sm text-gray-400 mt-5 italic text-center px-10">Searching for meaning in melodies.</p>
-            </div>
-
-            <div class="grid grid-cols-2 gap-6 mb-12">
-                <div class="bg-gray-50 p-8 rounded-[30px] text-center border border-gray-100">
-                    <span id="stat-count-posts" class="block text-3xl font-extrabold">0</span>
-                    <span class="text-[9px] text-gray-300 uppercase font-bold tracking-[0.2em] mt-2 block">Archives</span>
-                </div>
-                <div class="bg-gray-50 p-8 rounded-[30px] text-center border border-gray-100">
-                    <span id="stat-count-likes" class="block text-3xl font-extrabold">0</span>
-                    <span class="text-[9px] text-gray-300 uppercase font-bold tracking-[0.2em] mt-2 block">Interactions</span>
-                </div>
-            </div>
-
-            <div class="space-y-8">
-                <div>
-                    <label class="text-[10px] font-bold text-gray-300 uppercase tracking-widest mb-5 block">Visual Palette (Accent)</label>
-                    <div class="flex gap-4">
-                        <button onclick="applyTheme('#ec4899')" class="w-12 h-12 rounded-full bg-[#ec4899] shadow-lg shadow-pink-200"></button>
-                        <button onclick="applyTheme('#1a1a1a')" class="w-12 h-12 rounded-full bg-[#1a1a1a] shadow-lg shadow-gray-200"></button>
-                        <button onclick="applyTheme('#3b82f6')" class="w-12 h-12 rounded-full bg-[#3b82f6] shadow-lg shadow-blue-200"></button>
-                        <button onclick="applyTheme('#10b981')" class="w-12 h-12 rounded-full bg-[#10b981] shadow-lg shadow-emerald-200"></button>
-                    </div>
-                </div>
-
-                <div class="bg-gray-50 p-8 rounded-[30px] flex justify-between items-center">
-                    <div>
-                        <span class="block text-xs font-bold uppercase tracking-widest">Ghost Mode</span>
-                        <p class="text-[10px] text-gray-400 mt-1">Hide your footprints from discovery</p>
-                    </div>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" id="privacy-toggle" class="sr-only peer" onchange="updatePrivacy(this.checked)">
-                        <div class="w-14 h-8 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-pink-500 after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all"></div>
-                    </label>
-                </div>
-
-                <div>
-                    <label class="text-[10px] font-bold text-gray-300 uppercase tracking-widest mb-5 block">Mirroring Engine (Custom CSS)</label>
-                    <textarea id="input-css" class="input-premium h-48 font-mono text-[11px] leading-relaxed" placeholder="/* .post-entry { border-radius: 0; } */"></textarea>
-                </div>
-
-                <button onclick="saveGlobalConfig()" class="btn-premium mt-8">Synchronize Profile</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="focus-layer" class="layer no-scrollbar">
-        </div>
-
-    <div id="modal-post" class="hidden fixed inset-0 z-[2000] bg-white p-10 overflow-y-auto no-scrollbar">
-        <h3 class="font-serif-italic text-5xl mb-12">New Memory.</h3>
-        
-        <div class="space-y-10">
-            <div>
-                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-5 block">Select Sound</label>
-                <div class="relative">
-                    <input type="text" id="itunes-search" oninput="searchMusicEngine(this.value)" placeholder="Search songs or artists..." class="input-premium">
-                    <div id="itunes-loader" class="hidden absolute right-5 top-5"><div class="animate-spin text-pink-500">⏳</div></div>
-                </div>
-                <div id="itunes-results" class="hidden mt-4 max-h-60 overflow-y-auto bg-gray-50 rounded-3xl border border-gray-100 no-scrollbar"></div>
-            </div>
-
-            <div id="selection-preview" class="hidden p-6 bg-pink-50 rounded-[30px] flex items-center gap-6 border border-pink-100">
-                <img id="sel-art" class="w-24 h-24 rounded-2xl shadow-2xl">
-                <div class="flex-1 overflow-hidden">
-                    <p id="sel-name" class="text-md font-bold truncate"></p>
-                    <p id="sel-artist" class="text-[10px] text-gray-400 uppercase tracking-widest mt-2"></p>
-                    <div class="flex gap-2 mt-4">
-                        <div class="viz-container"><div class="viz-bar viz-anim"></div><div class="viz-bar viz-anim" style="animation-delay: 0.2s"></div><div class="viz-bar viz-anim" style="animation-delay: 0.4s"></div></div>
-                        <span class="text-[8px] font-bold text-pink-500">READY TO SYNC</span>
-                    </div>
-                </div>
-                <button onclick="clearMusicSelection()" class="text-gray-300 p-2">✕</button>
-            </div>
-
-            <div>
-                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-5 block">Entry Caption</label>
-                <textarea id="post-caption" class="input-premium h-44 resize-none leading-relaxed" placeholder="Write your internal monologue here..."></textarea>
-            </div>
-
-            <button id="btn-publish" onclick="processPublish()" class="btn-premium">Archive Forever</button>
-            <button onclick="closeModal('modal-post')" class="w-full text-[10px] font-bold text-gray-300 uppercase tracking-widest mt-4">Discard Memory</button>
-        </div>
-    </div>
-
-    <div id="modal-auth" class="hidden fixed inset-0 z-[5000] bg-white p-12 flex flex-col justify-center">
-        <h2 class="font-serif-italic text-6xl mb-4">Identity.</h2>
-        <p class="text-[10px] text-gray-400 uppercase tracking-[0.5em] mb-12">One-time Path Creation</p>
-        
-        <div class="space-y-6">
-            <div class="flex flex-col gap-2">
-                <span class="text-[9px] font-bold text-gray-300 uppercase ml-2">Display Name</span>
-                <input id="auth-name" type="text" placeholder="Zakia Wardhani" class="input-premium">
-            </div>
-            
-            <div class="flex flex-col gap-2">
-                <span class="text-[9px] font-bold text-gray-300 uppercase ml-2">System Username</span>
-                <div class="relative">
-                    <input id="auth-user" type="text" oninput="validateUsername(this.value)" placeholder="zakia.w" class="input-premium">
-                    <span id="user-status-msg" class="absolute right-6 top-5 text-[9px] font-bold"></span>
-                </div>
-            </div>
-
-            <div class="flex flex-col gap-2">
-                <span class="text-[9px] font-bold text-gray-300 uppercase ml-2">Bio / Philosophy</span>
-                <textarea id="auth-bio" placeholder="Keep it aesthetic..." class="input-premium h-24"></textarea>
-            </div>
-
-            <button id="auth-submit" onclick="finishRegistration()" class="btn-premium opacity-50 mt-10" disabled>Confirm Path</button>
-        </div>
-    </div>
-
-    <script>
-        /**
-         * AMONSPATH CORE ENGINE
-         * Total estimated functional logic: 1000+ Lines (Aggregated)
-         * Author: Gemini Assist x Zakia
-         */
-
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-        tg.enableClosingConfirmation();
-
-        // Database Configuration
-        const supabaseUrl = 'https://aldzhrtbrjszppseawrz.supabase.co';
-        const supabaseKey = 'sb_publishable_h-BSul_X4VDxc-6gwSUa0w_Z_rsJ2xp';
-        const client = supabase.createClient(supabaseUrl, supabaseKey);
-
-        // State Management
-        let userSession = tg.initDataUnsafe.user || { id: 998877, first_name: 'Guest' };
-        let myProfileData = null;
-        let selectedMusic = null;
-        let currentAudio = null;
-        let globalSearchQuery = '';
-        let activeTab = 'fyp';
-
-        /**
-         * INITIALIZATION ENGINE
-         */
-        async function startApp() {
-            logSystem('Booting system...');
-            showToast("Syncing Database...");
-
-            // Check if user exists
-            const { data, error } = await client.from('profiles').select('*').eq('telegram_id', userSession.id).single();
-
-            if (data) {
-                myProfileData = data;
-                renderProfileUI(data);
-                logSystem('Profile Linked: ' + data.username);
-            } else {
-                logSystem('User Unknown. Triggering Identity Modal.');
-                openModal('modal-auth');
-            }
-
-            // Start Initial Feed
-            fetchDiscoveryFeed();
-            fetchUserStats();
-        }
-
-        /**
-         * FEED ENGINE (DISCOVERY & ARCHIVE)
-         */
-        async function fetchDiscoveryFeed(query = '') {
-            const feedContainer = document.getElementById('fyp-feed');
-            
-            // Build Query
-            let queryBuilder = client.from('music_posts').select('*, profiles(*)').eq('profiles.is_private', false);
-            
-            if (query) {
-                queryBuilder = queryBuilder.or(`music_title.ilike.%${query}%, caption.ilike.%${query}%`);
-            }
-
-            const { data: posts, error } = await queryBuilder.order('created_at', { ascending: false });
-
-            if (!posts || posts.length === 0) {
-                feedContainer.innerHTML = `<div class="py-40 text-center text-gray-300 italic text-sm">No echoes found in the path.</div>`;
-                return;
-            }
-
-            feedContainer.innerHTML = posts.map((post, index) => renderPostCard(post, index)).join('');
-        }
-
-        async function fetchUserArchive() {
-            const container = document.getElementById('mine-feed');
-            const { data: posts } = await client.from('music_posts').select('*, profiles(*)').eq('sender_id', userSession.id).order('created_at', { ascending: false });
-
-            if (!posts || posts.length === 0) {
-                container.innerHTML = `<div class="py-20 text-center text-gray-300 italic text-xs">Your archive is empty.</div>`;
-                return;
-            }
-
-            container.innerHTML = posts.map(post => renderPostCard(post, 0, true)).join('');
-        }
-
-        function renderPostCard(p, index, isArchive = false) {
-            // High Res Processor (iTunes 600px Logic)
-            const artUrl = p.music_cover.replace('100x100bb.jpg', '600x600bb.jpg');
-            
-            return `
-                <div class="post-entry" style="animation-delay: ${index * 0.1}s">
-                    <div class="flex justify-between items-center mb-5">
-                        <div class="flex items-center gap-3">
-                            <img src="${p.profiles.photo_url || 'https://via.placeholder.com/50'}" class="w-8 h-8 rounded-full border">
-                            <span class="text-[9px] font-bold uppercase tracking-widest text-pink-500">@${p.profiles.username}</span>
-                        </div>
-                        ${isArchive ? `<button onclick="deleteArchiveItem('${p.id}')" class="text-xs">🗑️</button>` : `<span class="text-[8px] text-gray-300 font-mono">${formatDate(p.created_at)}</span>`}
-                    </div>
-
-                    <div class="album-art-container" onclick="viewFocusDeep('${p.id}')">
-                        <img src="${artUrl}" loading="lazy">
-                    </div>
-
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="overflow-hidden pr-4" onclick="viewFocusDeep('${p.id}')">
-                            <h3 class="text-md font-extrabold truncate">${p.music_title}</h3>
-                        </div>
-                        <button id="play-trigger-${p.id}" onclick="handleAudioPlay('${p.id}', '${p.music_url}')" class="w-12 h-12 rounded-full border-2 border-gray-100 flex items-center justify-center bg-white shadow-xl active:scale-90 transition">
-                            <span id="play-icon-${p.id}" class="text-xs">▶</span>
-                        </button>
-                    </div>
-
-                    <p class="text-[13px] text-gray-600 italic line-clamp-2 leading-relaxed mb-6" onclick="viewFocusDeep('${p.id}')">
-                        "${p.caption}"
-                    </p>
-
-                    <div class="flex gap-6 border-t border-gray-50 pt-5">
-                        <button onclick="triggerHaptic('light'); handleLikePost('${p.id}', '${p.sender_id}')" class="flex items-center gap-2 text-[10px] font-bold text-gray-400">
-                            <span id="like-icon-${p.id}">❤️</span> <span id="like-count-${p.id}">Like</span>
-                        </button>
-                        <button onclick="viewFocusDeep('${p.id}')" class="flex items-center gap-2 text-[10px] font-bold text-gray-400">
-                            <span>💬</span> Discussion
-                        </button>
-                    </div>
-                    
-                    <audio id="player-${p.id}" src="${p.music_url}" onended="onAudioEnded('${p.id}')"></audio>
-                </div>
-            `;
-        }
-
-        /**
-         * DEEP INTERACTION (FOCUS LAYER)
-         */
-        async function viewFocusDeep(postId) {
-            triggerHaptic('medium');
-            const { data: post } = await client.from('music_posts').select('*, profiles(*)').eq('id', postId).single();
-            const { data: comments } = await client.from('comments').select('*, profiles(*)').eq('post_id', postId).order('created_at', { ascending: true });
-
-            const layer = document.getElementById('focus-layer');
-            layer.innerHTML = `
-                <div class="p-10 pb-52 overflow-y-auto no-scrollbar h-full">
-                    <div class="flex justify-between items-center mb-16">
-                        <button onclick="closeLayer('focus-layer')" class="text-[10px] font-bold text-gray-300 uppercase tracking-[0.3em]">← Discovery</button>
-                        <button onclick="shareLink('${post.id}')" class="text-xl">📤</button>
-                    </div>
-
-                    <div class="flex flex-col items-center mb-16 text-center">
-                        <div class="w-72 h-72 rounded-[50px] overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,0.2)] mb-12">
-                            <img src="${post.music_cover.replace('100x100', '1000x1000')}" class="w-full h-full object-cover">
-                        </div>
-                        <h2 class="font-serif-italic text-4xl mb-3">${post.music_title}</h2>
-                        <p class="text-[10px] text-pink-500 font-bold uppercase tracking-[0.4em]">Archived by @${post.profiles.username}</p>
-                    </div>
-
-                    <div class="font-serif-italic text-2xl text-center text-gray-700 leading-relaxed italic px-6 mb-24">
-                        "${post.caption}"
-                    </div>
-
-                    <div id="comment-engine" class="space-y-12">
-                        <h4 class="text-[9px] font-bold text-gray-300 uppercase tracking-widest border-b pb-4">Thread Discussions</h4>
-                        <div id="comment-thread-list">
-                            ${renderCommentSystem(comments)}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-3xl border-t border-gray-100 p-8 pt-4">
-                    <div id="reply-metadata" class="hidden flex justify-between items-center mb-4 text-[9px] font-bold text-pink-500 uppercase">
-                        <span id="reply-user-target"></span>
-                        <button onclick="resetReply()" class="text-gray-300">✕</button>
-                    </div>
-                    <div class="flex gap-4">
-                        <input id="comment-input-box" class="input-premium flex-1" placeholder="Share your echo...">
-                        <button onclick="postNewComment('${post.id}')" class="bg-black text-white px-8 rounded-2xl font-bold uppercase text-[10px] tracking-widest active:scale-95 transition">Post</button>
-                    </div>
-                </div>
-            `;
-            layer.style.display = 'flex';
-        }
-
-        function renderCommentSystem(comms) {
-            const rootComms = comms.filter(c => !c.parent_id);
-            return rootComms.map(c => {
-                const replies = comms.filter(r => r.parent_id === c.id);
-                return `
-                    <div class="comment-block mb-10 border-l-2 border-gray-50 pl-6">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-[9px] font-bold uppercase text-gray-400">@${c.profiles.username}</span>
-                            <span class="text-[8px] font-mono text-gray-200">${formatDate(c.created_at)}</span>
-                        </div>
-                        <p class="text-sm text-gray-800">${c.comment_text}</p>
-                        <button onclick="setupReply('${c.id}', '${c.profiles.username}')" class="text-[8px] font-bold text-pink-500 uppercase mt-4 tracking-widest">Reply Link</button>
-                        
-                        ${replies.map(r => `
-                            <div class="mt-6 border-l-2 border-pink-50 pl-5">
-                                <span class="text-[8px] font-bold uppercase text-pink-300">@${r.profiles.username}</span>
-                                <p class="text-[13px] text-gray-500 mt-1">${r.comment_text}</p>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-            }).join('') || `<div class="text-center py-10 text-gray-200 text-xs italic">The conversation hasn't started yet.</div>`;
-        }
-
-        /**
-         * iTUNES MUSIC ENGINE
-         */
-        async function searchMusicEngine(val) {
-            const resultsBox = document.getElementById('itunes-results');
-            const loader = document.getElementById('itunes-loader');
-            
-            if (val.length < 3) { resultsBox.classList.add('hidden'); return; }
-
-            loader.classList.remove('hidden');
-            const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(val)}&media=music&limit=6`);
-            const data = await response.json();
-            loader.classList.add('hidden');
-
-            if (data.results.length === 0) {
-                resultsBox.innerHTML = `<p class="p-6 text-center text-xs text-gray-400 italic">No music matching your soul found.</p>`;
-            } else {
-                resultsBox.innerHTML = data.results.map(track => `
-                    <div class="flex items-center gap-5 p-5 border-b border-gray-50 active:bg-gray-100 transition" onclick="selectTrack('${track.trackName}', '${track.artistName}', '${track.previewUrl}', '${track.artworkUrl100}')">
-                        <img src="${track.artworkUrl60}" class="w-12 h-12 rounded-xl">
-                        <div class="overflow-hidden">
-                            <p class="text-xs font-bold truncate">${track.trackName}</p>
-                            <p class="text-[9px] text-gray-400 uppercase tracking-widest mt-1">${track.artistName}</p>
-                        </div>
-                    </div>
-                `).join('');
-            }
-            resultsBox.classList.remove('hidden');
-        }
-
-        function selectTrack(title, artist, preview, cover) {
-            selectedMusic = { title, artist, url: preview, cover: cover.replace('100x100', '800x800') };
-            document.getElementById('sel-art').src = selectedMusic.cover;
-            document.getElementById('sel-name').innerText = title;
-            document.getElementById('sel-artist').innerText = artist;
-            document.getElementById('selection-preview').classList.remove('hidden');
-            document.getElementById('itunes-results').classList.add('hidden');
-            document.getElementById('itunes-search').value = '';
-            triggerHaptic('medium');
-            showToast("Melody Captured");
-        }
-
-        /**
-         * AUTH & SYSTEM UI ENGINE
-         */
-        function renderProfileUI(p) {
-            document.getElementById('pfp-mini').src = p.photo_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${p.username}`;
-            document.getElementById('pfp-mini').classList.remove('hidden');
-            document.getElementById('nav-pfp-trigger').style.borderColor = p.theme_color || '#ec4899';
-            
-            document.getElementById('header-pfp').src = p.photo_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${p.username}`;
-            document.getElementById('header-name').innerText = p.display_name;
-            document.getElementById('header-username').innerText = '@' + p.username;
-            document.getElementById('badge-privacy').innerText = p.is_private ? 'Private' : 'Public';
-            
-            document.getElementById('layer-name').innerText = p.display_name;
-            document.getElementById('layer-bio').innerText = p.bio || 'The sound of silence.';
-            document.getElementById('layer-pfp').src = p.photo_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${p.username}`;
-            
-            document.getElementById('privacy-toggle').checked = p.is_private;
-            document.getElementById('input-css').value = p.custom_css || '';
-            
-            if (p.theme_color) applyTheme(p.theme_color, false);
-            if (p.custom_css) document.getElementById('user-custom-css').innerHTML = p.custom_css;
-        }
-
-        async function finishRegistration() {
-            const name = document.getElementById('auth-name').value;
-            const user = document.getElementById('auth-user').value.toLowerCase().replace(/[^a-z0-9_.]/g, '');
-            const bio = document.getElementById('auth-bio').value;
-
-            if (name.length < 2 || user.length < 3) return;
-
-            showToast("Building Path...");
-            const { error } = await client.from('profiles').insert({
-                telegram_id: userSession.id,
-                username: user,
-                display_name: name,
-                bio: bio,
-                photo_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${user}`
-            });
-
-            if (!error) {
-                triggerHaptic('success');
-                location.reload();
-            } else {
-                showToast("Identity Error");
-            }
-        }
-
-        /**
-         * UTILITY & SYSTEM FUNCTIONS (The Fillers of 1000 Lines)
-         */
-        function showToast(msg) {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.innerText = msg;
-            container.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
-        }
-
-        function triggerHaptic(style) {
-            try {
-                if (style === 'success') tg.HapticFeedback.notificationOccurred('success');
-                else if (style === 'error') tg.HapticFeedback.notificationOccurred('error');
-                else tg.HapticFeedback.impactOccurred(style);
-            } catch(e) {}
-        }
-
-        function routeTo(target) {
-            triggerHaptic('light');
-            document.getElementById('page-fyp').classList.add('hidden');
-            document.getElementById('page-mine').classList.add('hidden');
-            document.getElementById('tab-btn-fyp').className = "text-gray-300 pb-3";
-            document.getElementById('tab-btn-mine').className = "text-gray-300 pb-3";
-
-            if (target === 'fyp') {
-                document.getElementById('page-fyp').classList.remove('hidden');
-                document.getElementById('tab-btn-fyp').className = "text-pink-500 border-b-2 border-pink-500 pb-3";
-                document.getElementById('system-status').innerText = "Live Discovery Engine";
-                fetchDiscoveryFeed();
-            } else {
-                document.getElementById('page-mine').classList.remove('hidden');
-                document.getElementById('tab-btn-mine').className = "text-pink-500 border-b-2 border-pink-500 pb-3";
-                document.getElementById('system-status').innerText = "Personal Archive View";
-                fetchUserArchive();
-            }
-        }
-
-        function handleAudioPlay(id, url) {
-            const audio = document.getElementById(`player-${id}`);
-            const btn = document.getElementById(`play-trigger-${id}`);
-            const icon = document.getElementById(`play-icon-${id}`);
-
-            if (audio.paused) {
-                if (currentAudio && currentAudio !== audio) {
-                    currentAudio.pause();
-                    const oldId = currentAudio.id.split('-')[1];
-                    document.getElementById(`play-icon-${oldId}`).innerText = '▶';
-                    document.getElementById(`play-trigger-${oldId}`).style.borderColor = '#f3f4f6';
-                }
-                audio.play();
-                icon.innerText = '⏸';
-                btn.style.borderColor = 'var(--accent)';
-                currentAudio = audio;
-                triggerHaptic('medium');
-            } else {
-                audio.pause();
-                icon.innerText = '▶';
-                btn.style.borderColor = '#f3f4f6';
-            }
-        }
-
-        function onAudioEnded(id) {
-            document.getElementById(`play-icon-${id}`).innerText = '▶';
-            document.getElementById(`play-trigger-${id}`).style.borderColor = '#f3f4f6';
-        }
-
-        async function processPublish() {
-            if (!selectedMusic) return;
-            const cap = document.getElementById('post-caption').value;
-            
-            showToast("Archiving Melody...");
-            const { error } = await client.from('music_posts').insert({
-                sender_id: userSession.id,
-                music_title: selectedMusic.title + " — " + selectedMusic.artist,
-                music_url: selectedMusic.url,
-                music_cover: selectedMusic.cover,
-                caption: cap
-            });
-
-            if (!error) {
-                triggerHaptic('success');
-                location.reload();
-            }
-        }
-
-        function toggleSearchUI() {
-            document.getElementById('search-overlay').classList.toggle('open');
-            if (document.getElementById('search-overlay').classList.contains('open')) {
-                document.getElementById('global-search-input').focus();
-            }
-        }
-
-        function debounceSearch(q) {
-            clearTimeout(window.searchTimer);
-            window.searchTimer = setTimeout(() => {
-                fetchDiscoveryFeed(q);
-            }, 700);
-        }
-
-        function applyTheme(color, save = true) {
-            document.documentElement.style.setProperty('--accent', color);
-            document.documentElement.style.setProperty('--accent-soft', color + '15');
-            if (save) {
-                client.from('profiles').update({ theme_color: color }).eq('telegram_id', userSession.id).then();
-                triggerHaptic('light');
-                showToast("Palette Synchronized");
-            }
-        }
-
-        async function updatePrivacy(val) {
-            await client.from('profiles').update({ is_private: val }).eq('telegram_id', userSession.id);
-            showToast(val ? "Archive Hidden" : "Archive Public");
-            triggerHaptic('medium');
-        }
-
-        async function validateUsername(u) {
-            const msg = document.getElementById('user-status-msg');
-            const btn = document.getElementById('auth-submit');
-            if (u.length < 3) return;
-
-            const { data } = await client.from('profiles').select('username').eq('username', u.toLowerCase()).single();
-            if (data) {
-                msg.innerText = "Taken"; msg.style.color = "#ef4444";
-                btn.disabled = true; btn.style.opacity = 0.5;
-            } else {
-                msg.innerText = "Available"; msg.style.color = "#10b981";
-                btn.disabled = false; btn.style.opacity = 1;
-            }
-        }
-
-        async function saveGlobalConfig() {
-            const css = document.getElementById('input-css').value;
-            showToast("Syncing Mirroring Engine...");
-            await client.from('profiles').update({ custom_css: css }).eq('telegram_id', userSession.id);
-            location.reload();
-        }
-
-        // Stats Engine
-        async function fetchUserStats() {
-            const { count: postCount } = await client.from('music_posts').select('*', { count: 'exact', head: true }).eq('sender_id', userSession.id);
-            document.getElementById('stat-count-posts').innerText = postCount || 0;
-            // Additional stats logic...
-        }
-
-        // Global Helpers
-        function formatDate(d) { return new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }); }
-        function openLayer(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeLayer(id) { document.getElementById(id).style.display = 'none'; }
-        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
-        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-        function protectedAction(cb) { if (!myProfileData) openModal('modal-auth'); else cb(); }
-        function logSystem(m) { console.log(`[AmonsPath System] ${m}`); }
-
-        // Start App
-        startApp();
-
-    </script>
+  </div>
+  `;
+}
+
+// ================= LIKE =================
+window.like = async (id) => {
+  const { data } = await supabase
+    .from("likes")
+    .select("*")
+    .eq("post_id", id)
+    .eq("user_id", user.id)
+    .single();
+
+  if (data) {
+    await supabase.from("likes").delete().eq("id", data.id);
+  } else {
+    await supabase.from("likes").insert({ post_id:id, user_id:user.id });
+  }
+
+  loadFeed(true);
+};
+
+// ================= POST =================
+window.createPost = async () => {
+  const title = prompt("Title:");
+  const img = prompt("Image URL:");
+  const cap = prompt("Caption:");
+
+  if (!title || !img) return;
+
+  await supabase.from("posts").insert({
+    user_id:user.id,
+    music_title:title,
+    music_cover:img,
+    caption:cap
+  });
+
+  loadFeed(true);
+};
+
+// ================= COMMENTS =================
+window.openComments = async (id) => {
+  activePost = id;
+  document.getElementById("commentModal").classList.remove("hidden");
+
+  const { data } = await supabase
+    .from("comments")
+    .select("*")
+    .eq("post_id", id)
+    .order("created_at");
+
+  const list = document.getElementById("commentList");
+  list.innerHTML = data.map(c => `<p class="text-sm mb-2">💬 ${c.text}</p>`).join("");
+};
+
+window.sendComment = async () => {
+  const text = document.getElementById("commentInput").value;
+
+  await supabase.from("comments").insert({
+    post_id:activePost,
+    user_id:user.id,
+    text
+  });
+
+  document.getElementById("commentInput").value = "";
+  openComments(activePost);
+};
+
+// ================= SHARE =================
+window.share = (id) => {
+  navigator.clipboard.writeText(location.href + "?post=" + id);
+  alert("Copied!");
+};
+
+// ================= SCROLL =================
+window.addEventListener("scroll", () => {
+  if (window.innerHeight + scrollY >= document.body.offsetHeight - 100) {
+    loadFeed();
+  }
+});
+
+// ================= REALTIME =================
+supabase.channel("posts")
+.on("postgres_changes",{event:"*",schema:"public",table:"posts"},()=>{
+  loadFeed(true);
+})
+.subscribe();
+
+</script>
 </body>
 </html>

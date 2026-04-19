@@ -421,7 +421,7 @@
         .icon-large {
             width: 56px;
             height: 56px;
-            font-size: 1,6rem;
+            font-size: 1.5rem;
             border: none;
             background: black;
             color: white;
@@ -880,6 +880,7 @@
 
     // ============ INITIALIZATION ============
     async function initApp() {
+        document.getElementById('profile-layer').style.display = 'none';
       try {
         // Check localStorage first
         const savedUser = localStorage.getItem('auth:userData');
@@ -1220,17 +1221,20 @@
 
     // ============ MODALS ============
     window.openModal = function(modalId) {
-      document.getElementById(modalId)?.classList.add('active');
-    };
+  const el = document.getElementById(modalId);
+  if (!el) return;
+
+  el.classList.add('active');
+  el.style.display = 'flex';
+};
 
     window.closeModal = function(modalId) {
-      document.getElementById(modalId)?.classList.remove('active');
-      if (modalId === 'modal-post') {
-        document.getElementById('itunes-search').value = '';
-        document.getElementById('post-caption').value = '';
-        clearMusicSelection();
-      }
-    };
+  const el = document.getElementById(modalId);
+  if (!el) return;
+
+  el.classList.remove('active');
+  el.style.display = 'none';
+};
 
     window.openLayer = function(layerId) {
       document.getElementById(layerId)?.style.display = 'flex';
@@ -1568,12 +1572,6 @@
         }
       }
     });
-        
-setTimeout(() => {
-  document.querySelectorAll('.modal-content, .modal-overlay, .layer')
-    .forEach(el => el.style.display = 'none');
-}, 1000);
-
         
     </script>
 

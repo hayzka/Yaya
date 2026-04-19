@@ -10,11 +10,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@1,400;1,700;1,900&family=JetBrains+Mono:wght@300&display=swap" rel="stylesheet">
     
     <style>
-        /* Konfigurasi CSS dari index.css & Profile.tsx */
+        /* ===== ROOT CONFIGURATION ===== */
         :root {
             --accent-color: #ec4899;
             --bg-color: #ffffff;
             --text-color: #111111;
+            --bg-rgb: 255, 255, 255;
             --font-sans: 'Inter', sans-serif;
             --font-serif: 'Playfair Display', serif;
             --font-mono: 'JetBrains Mono', monospace;
@@ -24,12 +25,14 @@
         .dark {
             --bg-color: #0f0f0f;
             --text-color: #ffffff;
+            --bg-rgb: 15, 15, 15;
         }
 
         .theme-black {
             --accent-color: #ffffff;
             --bg-color: #000000;
             --text-color: #ffffff;
+            --bg-rgb: 0, 0, 0;
         }
 
         * {
@@ -48,9 +51,24 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Typography & Utility Classes */
-        .font-serif-italic { font-family: var(--font-serif); font-style: italic; }
-        .font-mono { font-family: var(--font-mono); }
+        /* ===== TYPOGRAPHY & UTILITIES ===== */
+        .font-serif-italic { 
+            font-family: var(--font-serif); 
+            font-style: italic; 
+        }
+        
+        .font-mono { 
+            font-family: var(--font-mono); 
+        }
+        
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
         
         .shadow-huge {
             box-shadow: 0 30px 60px -12px rgba(0,0,0,0.25);
@@ -61,9 +79,12 @@
             border-radius: 3rem;
             transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .dark .archive-node { border-color: rgba(255,255,255,0.05); }
+        
+        .dark .archive-node { 
+            border-color: rgba(255,255,255,0.05); 
+        }
 
-        /* Navigation & Layers */
+        /* ===== LAYERS & NAVIGATION ===== */
         .layer {
             position: fixed;
             inset: 0;
@@ -74,21 +95,24 @@
             padding-bottom: 120px;
         }
 
-        .layer.active { display: block; animation: layerSlide 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        .layer.active { 
+            display: block; 
+            animation: layerSlide 0.5s cubic-bezier(0.16, 1, 0.3, 1); 
+        }
 
         @keyframes layerSlide {
             from { transform: translateY(30px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
 
-        /* Chat Wallpaper System (from Chat.tsx) */
+        /* ===== CHAT WALLPAPER ===== */
         .chat-container {
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
         }
 
-        /* Music Player Animation */
+        /* ===== MUSIC ANIMATIONS ===== */
         .playing-active {
             animation: pulse-border 2s infinite;
         }
@@ -98,11 +122,22 @@
             70% { box-shadow: 0 0 0 20px rgba(236, 72, 153, 0); }
             100% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0); }
         }
+        
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .animate-spin-slow {
+            animation: spin-slow 3s linear infinite;
+        }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 0px; }
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar { 
+            width: 0px; 
+        }
 
-        /* Navbar Blur */
+        /* ===== NAVBAR ===== */
         .nav-blur {
             background: rgba(var(--bg-rgb), 0.85);
             backdrop-filter: blur(25px);
@@ -115,6 +150,7 @@
 <body class="dark">
 
 <div id="app-root">
+    <!-- ===== AUTH SCREEN ===== -->
     <div id="screen-auth" class="min-h-screen flex flex-col items-center justify-center p-8 bg-white dark:bg-[#0f0f0f]">
         <header class="text-center space-y-4 mb-20">
             <h1 class="font-serif-italic text-8xl tracking-tighter leading-none mb-1">AmonsPath.</h1>
@@ -122,8 +158,8 @@
         </header>
         <div class="w-full max-w-sm space-y-8">
             <input id="auth-username" type="text" placeholder="Your unique path..." 
-                   class="w-full bg-gray-50 dark:bg-white/5 border-none rounded-[2.5rem] px-10 py-7 text-[15px] font-bold text-center shadow-huge transition-all focus:ring-4 focus:ring-pink-500/10">
-            <button onclick="handleLogin()" class="w-full bg-pink-500 text-white rounded-[2.5rem] py-7 text-[11px] font-extrabold uppercase tracking-[0.4em] shadow-2xl shadow-pink-500/30 hover:scale-[1.02] active:scale-95 transition-all">
+                   class="w-full bg-gray-50 dark:bg-white/5 border-none rounded-[2.5rem] px-10 py-7 text-[15px] font-bold text-center shadow-huge transition-all focus:ring-4 focus:ring-pink-500/30" />
+            <button onclick="handleLogin()" class="w-full bg-pink-500 text-white rounded-[2.5rem] py-7 text-[11px] font-extrabold uppercase tracking-[0.4em] shadow-2xl shadow-pink-500/30 hover:scale-105 transition-transform">
                 Commence Journey
             </button>
             <div class="flex items-center gap-4 py-4">
@@ -137,12 +173,14 @@
         </div>
     </div>
 
+    <!-- ===== MAIN APPLICATION ===== -->
     <div id="main-ui" style="display: none;">
+        <!-- HEADER -->
         <header id="global-header" class="fixed top-0 left-0 right-0 z-[60] px-8 pt-12 pb-6 bg-transparent transition-all">
             <div class="flex justify-between items-center max-w-xl mx-auto">
-                <h1 onclick="scrollToTop()" class="font-serif-italic text-5xl tracking-tighter cursor-pointer">Archives.</h1>
+                <h1 onclick="scrollToTop()" class="font-serif-italic text-5xl tracking-tighter cursor-pointer hover:text-pink-500 transition-colors">Archives.</h1>
                 <div class="flex gap-4">
-                    <button onclick="openLayer('notifications')" class="p-4 bg-gray-100 dark:bg-white/5 rounded-3xl relative">
+                    <button onclick="openLayer('notifications')" class="p-4 bg-gray-100 dark:bg-white/5 rounded-3xl relative hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">
                         <div id="notif-dot" class="w-2 h-2 bg-pink-500 rounded-full absolute top-3 right-3 hidden"></div>
                         <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
                     </button>
@@ -150,15 +188,16 @@
             </div>
         </header>
 
-        <main id="feed-scroll" class="pt-40 pb-40 px-6 space-y-32 max-w-xl mx-auto">
-            </main>
+        <!-- MAIN FEED -->
+        <main id="feed-scroll" class="pt-40 pb-40 px-6 space-y-32 max-w-xl mx-auto"></main>
 
+        <!-- SEARCH LAYER -->
         <div id="layer-search" class="layer px-8 pt-24">
             <div class="max-w-xl mx-auto space-y-12">
                 <h2 class="font-serif-italic text-6xl tracking-tighter">Search.</h2>
                 <div class="relative">
                     <input type="text" id="search-input" oninput="handleSearch(this.value)" placeholder="Filter frequencies..." 
-                           class="w-full bg-gray-100 dark:bg-white/5 p-7 rounded-[2.5rem] outline-none font-bold text-lg">
+                           class="w-full bg-gray-100 dark:bg-white/5 p-7 rounded-[2.5rem] outline-none font-bold text-lg" />
                 </div>
                 <div class="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
                     <button class="px-8 py-3 bg-pink-500 text-white rounded-2xl text-[10px] font-bold uppercase tracking-widest">Posts</button>
@@ -169,27 +208,38 @@
             </div>
         </div>
 
+        <!-- PROFILE LAYER -->
         <div id="layer-profile" class="layer">
             <div id="profile-content"></div>
         </div>
 
+        <!-- CHAT LIST LAYER -->
         <div id="layer-chat" class="layer pt-24">
             <div class="max-w-xl mx-auto px-8">
                 <h2 class="font-serif-italic text-6xl tracking-tighter mb-12">Transmissions.</h2>
                 <div id="chat-list" class="space-y-4"></div>
             </div>
         </div>
+
+        <!-- NOTIFICATIONS LAYER -->
+        <div id="layer-notifications" class="layer pt-24">
+            <div class="max-w-xl mx-auto px-8">
+                <h2 class="font-serif-italic text-6xl tracking-tighter mb-12">Notifications.</h2>
+                <div id="notif-list" class="space-y-4"></div>
+            </div>
+        </div>
         
+        <!-- CHAT ROOM -->
         <div id="chat-room" class="layer z-[150]">
-            <div id="chat-room-content" class="h-full flex flex-col">
-                </div>
+            <div id="chat-room-content" class="h-full flex flex-col"></div>
         </div>
 
+        <!-- MUSIC PLAYER -->
         <div id="global-player" class="fixed bottom-32 left-4 right-4 z-[200] max-w-lg mx-auto bg-white/10 backdrop-blur-3xl border border-white/10 rounded-[3rem] p-5 hidden shadow-huge overflow-hidden">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-5 flex-1 min-w-0">
                     <div class="w-14 h-14 rounded-[1.8rem] overflow-hidden shadow-2xl relative">
-                        <img id="player-art" src="" class="w-full h-full object-cover">
+                        <img id="player-art" src="https://picsum.photos/56/56?random=1" class="w-full h-full object-cover" alt="Album art">
                         <div id="player-visualizer" class="absolute inset-0 bg-pink-500/20 hidden flex items-center justify-center">
                             <div class="flex gap-1">
                                 <div class="w-1 h-4 bg-white animate-bounce"></div>
@@ -214,1208 +264,768 @@
             </div>
         </div>
 
+        <!-- BOTTOM NAVIGATION -->
         <nav class="fixed bottom-0 left-0 right-0 h-28 nav-blur border-t border-white/5 z-[300] px-10 pb-6">
             <div class="max-w-xl mx-auto h-full flex items-center justify-between">
-                <button onclick="navigate('feed')" class="nav-btn active text-pink-500 transition-all">
+                <button onclick="navigate('feed')" class="nav-btn active text-pink-500 transition-all hover:scale-110">
                     <svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
                 </button>
-                <button onclick="navigate('search')" class="nav-btn text-gray-500">
+                <button onclick="navigate('search')" class="nav-btn text-gray-500 transition-all hover:scale-110">
                     <svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
                 </button>
-                <button onclick="navigate('chat')" class="nav-btn text-gray-500 relative">
+                <button onclick="navigate('chat')" class="nav-btn text-gray-500 relative transition-all hover:scale-110">
                     <svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
                 </button>
                 <button onclick="navigate('profile')" class="w-9 h-9 rounded-2xl overflow-hidden border-2 border-gray-500 transition-all hover:border-pink-500">
-                    <img id="nav-pfp" src="" class="w-full h-full object-cover">
+                    <img id="nav-pfp" src="https://ui-avatars.com/api/?name=User" class="w-full h-full object-cover" alt="Profile">
                 </button>
             </div>
         </nav>
         
-        <button id="fab-post" onclick="togglePostModal(true)" class="fixed bottom-32 right-8 z-[250] w-16 h-16 bg-pink-500 text-white rounded-[1.8rem] shadow-huge flex items-center justify-center active:scale-90 transition-all">
+        <!-- FAB POST BUTTON -->
+        <button id="fab-post" onclick="togglePostModal(true)" class="fixed bottom-32 right-8 z-[250] w-16 h-16 bg-pink-500 text-white rounded-[1.8rem] shadow-huge flex items-center justify-center hover:scale-110 transition-transform">
             <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 5v14M5 12h14"/></svg>
         </button>
     </div>
 </div>
 
 <script>
-const tg = window.Telegram.WebApp;
-tg.expand();
+    // ===== TELEGRAM INTEGRATION =====
+    const tg = window.Telegram?.WebApp || {};
+    if (tg.expand) tg.expand();
 
-// DATABASE & STATE (From Types.ts & Contexts)
-const AMONS_KERNEL = {
-    currentUser: null,
-    isGuest: false,
-    activeScreen: 'feed',
-    isPlaying: false,
-    currentTrack: null,
-    audio: new Audio(),
-    
-    // MOCK_USERS (AuthContext.tsx)
-    users: [
-        {
-            id: 'zain_dev',
-            username: 'zain',
-            name: 'Zain',
-            bio: 'Engineering Lead @ AMONSPATH OS. Finding beauty in digital noise.',
-            pfp: 'https://picsum.photos/seed/zain/400',
-            header: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe',
-            themeColor: '#ec4899',
-            isDarkMode: true,
-            followers: 1200,
-            following: 450,
-            customCSS: `.archive-node:hover { border-color: #ec4899; }`,
-            wallpapers: { 'adnan': 'https://images.unsplash.com/photo-1614850523459-c2f4c699c52e' }
-        },
-        {
-            id: 'adnan_user',
-            username: 'adnan',
-            name: 'Adnan',
-            bio: 'Archiving every rhythm. Catching echoes.',
-            pfp: 'https://picsum.photos/seed/adnan/400',
-            header: 'https://images.unsplash.com/photo-1557683316-973673baf926',
-            themeColor: '#6366f1'
-        }
-    ],
-
-    // MOCK_POSTS (PostContext.tsx)
-    posts: [
-        {
-            id: 'p1',
-            userId: 'zain_dev',
-            type: 'music',
-            music: {
-                id: 'm1',
-                name: 'Vignette',
-                artist: 'Archiver',
-                artwork: 'https://picsum.photos/seed/music1/600',
-                url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
+    // ===== CORE STATE MANAGEMENT =====
+    const AMONS_KERNEL = {
+        currentUser: null,
+        isGuest: false,
+        activeScreen: 'feed',
+        isPlaying: false,
+        currentTrack: null,
+        audio: new Audio(),
+        messages: {},
+        
+        users: [
+            {
+                id: 'zain_dev',
+                username: 'zain',
+                name: 'Zain',
+                bio: 'Engineering Lead @ AMONSPATH OS. Finding beauty in digital noise.',
+                pfp: 'https://picsum.photos/seed/zain/400',
+                header: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe',
+                themeColor: '#ec4899',
+                isDarkMode: true,
+                followers: 1200,
+                following: 450,
+                customCSS: `.archive-node:hover { border-color: #ec4899; }`,
+                wallpapers: { 'adnan': 'https://images.unsplash.com/photo-1614850523459-c2f4c699c52e' }
             },
-            caption: 'Welcome to the path. Testing Kernel v15.0 @adnan',
-            likes: ['adnan_user'],
-            comments: [
-                { 
-                    id: 'c1', 
-                    userId: 'adnan_user', 
-                    text: 'This frequency feels right, Zain.', 
-                    timestamp: '2m ago',
-                    replies: [
-                        { id: 'r1', userId: 'zain_dev', text: 'Steady as always.', timestamp: '1m ago' }
-                    ]
-                }
-            ],
-            timestamp: 'Just now'
-        }
-    ]
-};
+            {
+                id: 'adnan_user',
+                username: 'adnan',
+                name: 'Adnan',
+                bio: 'Archiving every rhythm. Catching echoes.',
+                pfp: 'https://picsum.photos/seed/adnan/400',
+                header: 'https://images.unsplash.com/photo-1557683316-973673baf926',
+                themeColor: '#6366f1',
+                isDarkMode: true,
+                followers: 850,
+                following: 320,
+                wallpapers: {}
+            }
+        ],
 
-// CORE FUNCTIONS
-function haptic(style = 'light') {
-    tg.HapticFeedback.impactOccurred(style);
-}
-
-function handleLogin() {
-    const input = document.getElementById('auth-username').value;
-    if (!input) return;
-    
-    AMONS_KERNEL.currentUser = AMONS_KERNEL.users[0]; // Auto-login as Zain for demo
-    AMONS_KERNEL.currentUser.username = input;
-    startApp();
-    haptic('medium');
-}
-
-function handleGuest() {
-    AMONS_KERNEL.isGuest = true;
-    AMONS_KERNEL.currentUser = { name: 'Guest', username: 'spectator', pfp: 'https://ui-avatars.com/api/?name=G' };
-    startApp();
-}
-
-function startApp() {
-    document.getElementById('screen-auth').style.display = 'none';
-    document.getElementById('main-ui').style.display = 'block';
-    document.getElementById('nav-pfp').src = AMONS_KERNEL.currentUser.pfp;
-    
-    // Inject User CSS
-    if (AMONS_KERNEL.currentUser.customCSS) {
-        document.getElementById('user-injected-css').innerHTML = AMONS_KERNEL.currentUser.customCSS;
-    }
-    
-    renderFeed();
-}
-
-// NAVIGATION ENGINE
-function navigate(screen) {
-    haptic();
-    document.querySelectorAll('.layer').forEach(l => l.classList.remove('active'));
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('text-pink-500'));
-    
-    if (screen === 'feed') {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else {
-        document.getElementById(`layer-${screen}`).classList.add('active');
-    }
-    
-    // Update Nav Icons
-    event?.currentTarget?.classList.add('text-pink-500');
-    
-    if (screen === 'profile') renderProfile(AMONS_KERNEL.currentUser.username);
-    if (screen === 'chat') renderChatList();
-}
-
-// RENDER ENGINE: FEED (PostCard.tsx logic)
-function renderFeed() {
-    const container = document.getElementById('feed-scroll');
-    container.innerHTML = AMONS_KERNEL.posts.map(post => {
-        const user = AMONS_KERNEL.users.find(u => u.id === post.userId) || post.user;
-        const hasLiked = post.likes.includes(AMONS_KERNEL.currentUser?.id);
-        
-        return `
-            <div class="archive-node bg-gray-50 dark:bg-white/5 p-8 space-y-8 shadow-2xl overflow-hidden relative group">
-                <div class="flex justify-between items-center">
-                    <div class="flex items-center gap-4 cursor-pointer" onclick="renderProfile('${user.username}')">
-                        <img src="${user.pfp}" class="w-14 h-14 rounded-2xl object-cover border border-white/5">
-                        <div>
-                            <p class="font-extrabold text-sm tracking-tight">${user.name}</p>
-                            <p class="text-[9px] uppercase tracking-[0.2em] text-gray-500">@${user.username} • ${post.timestamp}</p>
-                        </div>
-                    </div>
-                    <button class="text-gray-400"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg></button>
-                </div>
-
-                <div class="relative aspect-square rounded-[2.5rem] overflow-hidden shadow-huge cursor-pointer" onclick="handleTrackAction('${post.id}')">
-                    <img src="${post.music.artwork}" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
-                        <div class="w-20 h-20 bg-white/10 backdrop-blur-2xl rounded-full flex items-center justify-center border border-white/20">
-                            <svg width="32" height="32" fill="white" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                        </div>
-                    </div>
-                    <div class="absolute bottom-6 right-6 w-12 h-12 bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center border border-white/10">
-                         <svg width="18" height="18" class="text-pink-500 animate-spin-slow" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14.5c-2.49 0-4.5-2.01-4.5-4.5S9.51 7.5 12 7.5s4.5 2.01 4.5 4.5-2.01 4.5-4.5 4.5zm0-5.5c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z"/></svg>
-                    </div>
-                </div>
-
-                <div class="space-y-4">
-                    <h3 class="text-2xl font-black tracking-tighter">${post.music.name} <span class="text-pink-500 font-normal text-sm ml-2 italic">/ ${post.music.artist}</span></h3>
-                    <p class="text-sm text-gray-500 leading-relaxed font-medium">${renderCaption(post.caption)}</p>
-                </div>
-
-                <div class="flex items-center gap-8 pt-4">
-                    <button onclick="handleLike('${post.id}')" class="flex items-center gap-2 ${hasLiked ? 'text-pink-500' : 'text-gray-400'} transition-all hover:scale-110">
-                        <svg width="22" height="22" fill="${hasLiked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-                        <span class="text-[10px] font-black">${post.likes.length}</span>
-                    </button>
-                    <button onclick="openComments('${post.id}')" class="flex items-center gap-2 text-gray-400">
-                        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-                        <span class="text-[10px] font-black">${post.comments.length}</span>
-                    </button>
-                    <button class="ml-auto text-gray-400"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2v16z"/></svg></button>
-                </div>
-            </div>
-        `;
-    }).join('');
-}
-
-function renderCaption(text) {
-    return text.replace(/@(\w+)/g, '<span class="text-pink-500 font-bold cursor-pointer hover:underline">@$1</span>');
-}
-
-// Lanjut ke Bagian 3: Komentar, Chat Room, & Profile (Sangat Detail)...
-
-
-// --- INTERACTION & COMMENT SYSTEM (PostDetail.tsx & PostContext.tsx Logic) ---
-
-function openComments(postId) {
-    haptic('medium');
-    const post = AMONS_KERNEL.posts.find(p => p.id === postId);
-    const commentLayer = document.createElement('div');
-    commentLayer.id = 'comment-overlay';
-    commentLayer.className = 'layer active z-[400] bg-white dark:bg-[#0f0f0f]';
-    
-    commentLayer.innerHTML = `
-        <div class="max-w-xl mx-auto p-8 pb-40">
-            <div class="flex items-center gap-6 mb-12">
-                <button onclick="closeComments()" class="p-4 bg-gray-100 dark:bg-white/5 rounded-2xl">
-                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                </button>
-                <h2 class="font-serif-italic text-4xl tracking-tighter">Echoes.</h2>
-            </div>
-            
-            <div id="comment-list" class="space-y-10">
-                ${renderComments(post.comments)}
-            </div>
-        </div>
-        
-        <div class="fixed bottom-0 left-0 right-0 p-6 bg-white/80 dark:bg-black/80 backdrop-blur-2xl border-t border-white/5 z-[410]">
-            <div class="max-w-xl mx-auto relative">
-                <input type="text" id="comment-input" placeholder="Add to the frequency..." 
-                       class="w-full bg-gray-100 dark:bg-white/5 p-6 rounded-[2rem] outline-none font-bold">
-                <button onclick="submitComment('${postId}')" class="absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 bg-pink-500 text-white rounded-2xl flex items-center justify-center">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-                </button>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(commentLayer);
-}
-
-function renderComments(comments) {
-    return comments.map(c => {
-        const user = AMONS_KERNEL.users.find(u => u.id === c.userId);
-        return `
-            <div class="space-y-6">
-                <div class="flex gap-4">
-                    <img src="${user?.pfp}" class="w-10 h-10 rounded-xl object-cover">
-                    <div class="flex-1">
-                        <div class="bg-gray-100 dark:bg-white/5 p-5 rounded-[1.5rem] rounded-tl-none">
-                            <p class="text-[10px] font-black uppercase tracking-widest text-pink-500 mb-1">${user?.name}</p>
-                            <p class="text-sm font-medium leading-relaxed">${c.text}</p>
-                        </div>
-                        <div class="flex gap-4 mt-2 px-2">
-                            <span class="text-[9px] font-bold text-gray-500 uppercase">${c.timestamp}</span>
-                            <button class="text-[9px] font-black text-pink-500 uppercase tracking-widest">Reply</button>
-                        </div>
-                    </div>
-                </div>
-                ${c.replies ? `<div class="ml-12 border-l-2 border-white/5 pl-6 space-y-6">${renderComments(c.replies)}</div>` : ''}
-            </div>
-        `;
-    }).join('');
-}
-
-function closeComments() {
-    const el = document.getElementById('comment-overlay');
-    if (el) el.remove();
-}
-
-// --- CHAT SYSTEM (Chat.tsx Logic) ---
-
-function renderChatList() {
-    const container = document.getElementById('chat-list');
-    const contacts = AMONS_KERNEL.users.filter(u => u.id !== AMONS_KERNEL.currentUser.id);
-    
-    container.innerHTML = contacts.map(contact => `
-        <div onclick="openChatRoom('${contact.username}')" class="flex items-center justify-between p-6 bg-gray-50 dark:bg-white/5 rounded-[2.5rem] cursor-pointer hover:scale-[1.02] transition-all">
-            <div class="flex items-center gap-5">
-                <div class="w-16 h-16 rounded-[1.8rem] overflow-hidden border-2 border-white/10">
-                    <img src="${contact.pfp}" class="w-full h-full object-cover">
-                </div>
-                <div>
-                    <p class="font-black text-lg tracking-tight">${contact.name}</p>
-                    <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Active Frequency</p>
-                </div>
-            </div>
-            <div class="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg>
-            </div>
-        </div>
-    `).join('');
-}
-
-function openChatRoom(username) {
-    const targetUser = AMONS_KERNEL.users.find(u => u.username === username);
-    const wallpaper = AMONS_KERNEL.currentUser.wallpapers?.[username] || 'https://images.unsplash.com/photo-1614850523459-c2f4c699c52e';
-    
-    const room = document.getElementById('chat-room');
-    room.classList.add('active');
-    
-    document.getElementById('chat-room-content').innerHTML = `
-        <div class="chat-container h-full flex flex-col" style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('${wallpaper}')">
-            <div class="p-8 pt-16 flex items-center gap-6 nav-blur border-b border-white/5">
-                <button onclick="closeChatRoom()" class="text-white">
-                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                </button>
-                <div class="flex items-center gap-4">
-                    <img src="${targetUser.pfp}" class="w-12 h-12 rounded-2xl object-cover">
-                    <div>
-                        <p class="text-white font-black tracking-tight">${targetUser.name}</p>
-                        <p class="text-[9px] text-pink-500 font-bold uppercase tracking-[0.3em]">Encrypted Path</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div id="message-flow" class="flex-1 overflow-y-auto p-8 space-y-6">
-                <div class="flex justify-center my-10">
-                    <span class="px-6 py-2 bg-black/40 backdrop-blur-md rounded-full text-[9px] font-bold text-gray-400 uppercase tracking-widest">Beginning of Archive</span>
-                </div>
-            </div>
-
-            <div class="p-8 pb-12 bg-black/20 backdrop-blur-3xl border-t border-white/5">
-                <div class="flex gap-4">
-                    <input type="text" id="msg-input" placeholder="Transmit..." 
-                           class="flex-1 bg-white/10 border border-white/10 rounded-[2rem] px-8 py-5 text-white outline-none">
-                    <button onclick="sendMessage()" class="w-16 h-16 bg-pink-500 text-white rounded-full flex items-center justify-center shadow-huge">
-                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-    `;
-}
-
-function closeChatRoom() {
-    document.getElementById('chat-room').classList.remove('active');
-}
-
-// --- PROFILE ENGINE (Profile.tsx Logic) ---
-
-function renderProfile(username) {
-    const user = AMONS_KERNEL.users.find(u => u.username === username);
-    const isOwn = user.id === AMONS_KERNEL.currentUser.id;
-    const container = document.getElementById('profile-content');
-    
-    container.innerHTML = `
-        <div class="relative">
-            <div class="h-[40vh] relative overflow-hidden">
-                <img src="${user.header || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe'}" class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-gradient-to-b from-transparent to-[var(--bg-color)]"></div>
-            </div>
-            
-            <div class="px-8 -mt-32 relative z-10 space-y-8">
-                <div class="flex justify-between items-end">
-                    <div class="w-32 h-32 rounded-[2.5rem] border-8 border-[var(--bg-color)] overflow-hidden shadow-huge">
-                        <img src="${user.pfp}" class="w-full h-full object-cover">
-                    </div>
-                    ${isOwn ? 
-                        `<button onclick="openSettings()" class="bg-white/10 backdrop-blur-md border border-white/10 px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest">Settings</button>` :
-                        `<button class="bg-pink-500 text-white px-10 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-huge">Follow</button>`
+        posts: [
+            {
+                id: 'p1',
+                userId: 'zain_dev',
+                type: 'music',
+                music: {
+                    id: 'm1',
+                    name: 'Vignette',
+                    artist: 'Archiver',
+                    artwork: 'https://picsum.photos/seed/music1/600',
+                    url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
+                },
+                caption: 'Welcome to the path. Testing Kernel v15.0 @adnan',
+                likes: ['adnan_user'],
+                comments: [
+                    { 
+                        id: 'c1', 
+                        userId: 'adnan_user', 
+                        text: 'This frequency feels right, Zain.', 
+                        timestamp: '2m ago',
+                        replies: [
+                            { id: 'r1', userId: 'zain_dev', text: 'Steady as always.', timestamp: '1m ago' }
+                        ]
                     }
-                </div>
-                
-                <div class="space-y-2">
-                    <h2 class="font-serif-italic text-6xl tracking-tighter">${user.name}.</h2>
-                    <p class="text-pink-500 font-bold text-xs uppercase tracking-[0.4em]">@${user.username}</p>
-                </div>
-                
-                <p class="text-gray-500 font-medium leading-relaxed max-w-md">${user.bio}</p>
-                
-                <div class="flex gap-12 pt-4">
-                    <div>
-                        <p class="text-2xl font-black">${user.followers}</p>
-                        <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Followers</p>
-                    </div>
-                    <div>
-                        <p class="text-2xl font-black">${user.following}</p>
-                        <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Following</p>
-                    </div>
-                </div>
+                ],
+                timestamp: 'Just now'
+            },
+            {
+                id: 'p2',
+                userId: 'adnan_user',
+                type: 'music',
+                music: {
+                    id: 'm2',
+                    name: 'Neon Static',
+                    artist: 'Signal Flow',
+                    artwork: 'https://picsum.photos/seed/music2/600',
+                    url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3'
+                },
+                caption: 'New frequencies unlocked. Join the archive.',
+                likes: ['zain_dev'],
+                comments: [],
+                timestamp: '1h ago'
+            }
+        ]
+    };
 
-                <div class="flex border-b border-white/5 gap-10 overflow-x-auto no-scrollbar pt-10">
-                    <button class="pb-6 border-b-2 border-pink-500 text-[10px] font-black uppercase tracking-widest">Music</button>
-                    <button class="pb-6 border-transparent text-gray-500 text-[10px] font-black uppercase tracking-widest">Notes</button>
-                    <button class="pb-6 border-transparent text-gray-500 text-[10px] font-black uppercase tracking-widest">Archive</button>
-                </div>
-
-                <div id="profile-grid" class="grid grid-cols-2 gap-6 pb-20">
-                    ${renderProfileGrid(user.id)}
-                </div>
-            </div>
-        </div>
-    `;
-}
-
-function renderProfileGrid(userId) {
-    const userPosts = AMONS_KERNEL.posts.filter(p => p.userId === userId);
-    if (userPosts.length === 0) return `<div class="col-span-2 py-20 text-center text-gray-600 text-[10px] uppercase font-bold tracking-[0.5em]">No Echoes Found</div>`;
-    
-    return userPosts.map(p => `
-        <div onclick="handleTrackAction('${p.id}')" class="aspect-square rounded-[2rem] overflow-hidden relative group cursor-pointer shadow-lg">
-            <img src="${p.music.artwork}" class="w-full h-full object-cover transition-transform group-hover:scale-110">
-            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center">
-                <svg width="24" height="24" fill="white" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-            </div>
-        </div>
-    `).join('');
-}
-
-// --- MUSIC PLAYER ENGINE (MusicContext.tsx Logic) ---
-
-function handleTrackAction(postId) {
-    const post = AMONS_KERNEL.posts.find(p => p.id === postId);
-    const track = post.music;
-    
-    if (AMONS_KERNEL.currentTrack?.id === track.id) {
-        toggleMusic();
-    } else {
-        playTrack(track);
-    }
-}
-
-function playTrack(track) {
-    haptic('heavy');
-    AMONS_KERNEL.currentTrack = track;
-    AMONS_KERNEL.audio.src = track.url;
-    AMONS_KERNEL.audio.play();
-    AMONS_KERNEL.isPlaying = true;
-    
-    updatePlayerUI();
-}
-
-function toggleMusic() {
-    if (!AMONS_KERNEL.currentTrack) return;
-    
-    if (AMONS_KERNEL.isPlaying) {
-        AMONS_KERNEL.audio.pause();
-        AMONS_KERNEL.isPlaying = false;
-    } else {
-        AMONS_KERNEL.audio.play();
-        AMONS_KERNEL.isPlaying = true;
-    }
-    updatePlayerUI();
-}
-
-function updatePlayerUI() {
-    const player = document.getElementById('global-player');
-    const track = AMONS_KERNEL.currentTrack;
-    
-    if (!track) {
-        player.style.display = 'none';
-        return;
-    }
-    
-    player.style.display = 'block';
-    document.getElementById('player-art').src = track.artwork;
-    document.getElementById('player-title').innerText = track.name;
-    document.getElementById('player-artist').innerText = track.artist;
-    
-    const icon = document.getElementById('play-pause-icon');
-    if (AMONS_KERNEL.isPlaying) {
-        icon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
-        document.getElementById('player-visualizer').classList.remove('hidden');
-    } else {
-        icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
-        document.getElementById('player-visualizer').classList.add('hidden');
-    }
-}
-
-// Initialize
-window.onload = () => {
-    // Jika data localstorage ada, bisa auto-login disini
-};
-
-
-
-// --- NOTIFICATION ENGINE (Notifications.tsx Logic) ---
-
-function renderNotifications() {
-    const container = document.getElementById('notif-list');
-    const NOTIFS = [
-        { id: '1', type: 'like', user: 'Adnan', action: 'bookmarked your archive', timestamp: '2m' },
-        { id: '2', type: 'follow', user: 'Archiver', action: 'started following your path', timestamp: '1h' },
-        { id: '3', type: 'comment', user: 'Karlee', action: 'echoed in your journal', timestamp: '3h' }
-    ];
-
-    container.innerHTML = NOTIFS.map(n => `
-        <div class="flex items-center gap-6 p-6 bg-gray-50 dark:bg-[#1a1a1a] rounded-[2rem] border border-black/5 dark:border-white/5 transition-transform hover:scale-[1.01]">
-            <div class="w-14 h-14 rounded-[1.5rem] bg-white dark:bg-black/20 flex items-center justify-center text-pink-500 shadow-sm">
-                ${n.type === 'like' ? '<svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>' : ''}
-                ${n.type === 'follow' ? '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M8.5 7a4 4 0 110-8 4 4 0 010 8zm11 1v6m-3-3h6"/></svg>' : ''}
-                ${n.type === 'comment' ? '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>' : ''}
-            </div>
-            <div class="flex flex-col flex-1">
-                <span class="text-[14px] font-bold tracking-tight">
-                    ${n.user} <span class="font-normal text-gray-400">${n.action}</span>
-                </span>
-                <span class="text-[9px] text-gray-400 uppercase tracking-widest mt-1">${n.timestamp} ago</span>
-            </div>
-        </div>
-    `).join('');
-}
-
-// --- SETTINGS & CUSTOMIZATION (Settings.tsx Logic) ---
-
-function applyCustomTheme(user) {
-    if (!user) return;
-    
-    // Inject Custom CSS jika ada
-    if (user.customCSS) {
-        let styleTag = document.getElementById('user-custom-css');
-        if (!styleTag) {
-            styleTag = document.createElement('style');
-            styleTag.id = 'user-custom-css';
-            document.head.appendChild(styleTag);
+    // ===== UTILITY FUNCTIONS =====
+    function haptic(style = 'light') {
+        if (tg.HapticFeedback?.impactOccurred) {
+            tg.HapticFeedback.impactOccurred(style);
         }
-        styleTag.innerHTML = user.customCSS;
-    }
-
-    // Apply Theme Colors
-    document.documentElement.style.setProperty('--accent-color', user.themeColor || '#ec4899');
-    document.documentElement.classList.toggle('dark', user.isDarkMode);
-}
-
-// --- SEARCH LOGIC (Search.tsx) ---
-
-function handleSearch(query) {
-    const q = query.toLowerCase();
-    const filteredUsers = AMONS_KERNEL.users.filter(u => 
-        u.name.toLowerCase().includes(q) || u.username.toLowerCase().includes(q)
-    );
-    
-    const resultsContainer = document.getElementById('search-results');
-    if (q === '') {
-        resultsContainer.innerHTML = `<p class="text-center text-[11px] font-black text-gray-300 uppercase tracking-[0.8em] py-20">Spectral Silence</p>`;
-        return;
-    }
-
-    resultsContainer.innerHTML = filteredUsers.map(u => `
-        <div onclick="navigateTo('profile', '${u.username}')" class="flex items-center justify-between p-6 bg-gray-50 dark:bg-white/5 rounded-[2rem] border border-black/5 dark:border-white/5 group">
-            <div class="flex items-center gap-4">
-                <img src="${u.pfp}" class="w-12 h-12 rounded-2xl object-cover">
-                <span class="text-[13px] font-bold">${u.name}</span>
-            </div>
-            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg>
-        </div>
-    `).join('');
-}
-
-// --- BOOT SEQUENCE (System Initialization) ---
-
-function bootSystem() {
-    console.log("AMONSPATH OS KERNEL v15.0: Initializing...");
-    
-    // Check session
-    const savedUser = localStorage.getItem('amons_user');
-    if (savedUser) {
-        const userData = JSON.parse(savedUser);
-        AMONS_KERNEL.currentUser = userData;
-        applyCustomTheme(userData);
-        navigateTo('feed');
-    } else {
-        navigateTo('auth');
-    }
-
-    // Global Event Listeners
-    document.addEventListener('click', (e) => {
-        // Haptic feedback simulation
-        if (e.target.tagName === 'BUTTON') {
-            haptic('light');
+        if (window.navigator.vibrate) {
+            const ms = style === 'heavy' ? 50 : style === 'medium' ? 20 : 10;
+            window.navigator.vibrate(ms);
         }
-    });
-}
-
-// Global Haptic Helper
-function haptic(intensity) {
-    if (window.navigator.vibrate) {
-        const ms = intensity === 'heavy' ? 50 : intensity === 'medium' ? 20 : 10;
-        window.navigator.vibrate(ms);
-    }
-}
-
-bootSystem();
-
-// --- ENHANCED MUSIC LIBRARY (Data Extension) ---
-
-const VIRTUAL_LIBRARY = [
-    { 
-        id: 'v1', 
-        name: 'Vignette', 
-        artist: 'Archiver', 
-        artwork: 'https://picsum.photos/seed/archive1/600', 
-        url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-        source: 'spotify',
-        genre: 'Ambient'
-    },
-    { 
-        id: 'v2', 
-        name: 'Afterthought', 
-        artist: 'Zain', 
-        artwork: 'https://picsum.photos/seed/archive2/600', 
-        url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-        source: 'local',
-        genre: 'Experimental'
-    },
-    { 
-        id: 'v3', 
-        name: 'Neon Static', 
-        artist: 'Signal Flow', 
-        artwork: 'https://picsum.photos/seed/archive3/600', 
-        url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3',
-        source: 'youtube',
-        genre: 'Synthwave'
-    },
-    { 
-        id: 'v4', 
-        name: 'Midnight Protocol', 
-        artist: 'Kernel Ghost', 
-        artwork: 'https://picsum.photos/seed/archive4/600', 
-        url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3',
-        source: 'spotify',
-        genre: 'Cyberpunk'
-    },
-    { 
-        id: 'v5', 
-        name: 'Soft Reset', 
-        artist: 'Lofi Arch', 
-        artwork: 'https://picsum.photos/seed/archive5/600', 
-        url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
-        source: 'apple',
-        genre: 'Lofi'
-    }
-];
-
-// --- SEARCH & FILTER MUSIC LOGIC ---
-
-function renderMusicDiscovery(filterGenre = 'All') {
-    const container = document.getElementById('search-results');
-    const filtered = filterGenre === 'All' 
-        ? VIRTUAL_LIBRARY 
-        : VIRTUAL_LIBRARY.filter(t => t.genre === filterGenre);
-
-    container.innerHTML = `
-        <div class="flex gap-4 mb-10 overflow-x-auto no-scrollbar pb-2">
-            ${['All', 'Ambient', 'Synthwave', 'Lofi', 'Cyberpunk'].map(g => `
-                <button onclick="renderMusicDiscovery('${g}')" 
-                        class="px-6 py-2 rounded-full border ${filterGenre === g ? 'bg-pink-500 border-pink-500 text-white' : 'border-white/10 text-gray-400'} text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all">
-                    ${g}
-                </button>
-            `).join('')}
-        </div>
-        <div class="grid grid-cols-1 gap-4">
-            ${filtered.map(track => `
-                <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-white/5 rounded-3xl group hover:bg-white/10 transition-all">
-                    <div class="flex items-center gap-4">
-                        <div class="relative w-14 h-14 overflow-hidden rounded-2xl">
-                            <img src="${track.artwork}" class="w-full h-full object-cover">
-                            <button onclick="playTrack(${JSON.stringify(track).replace(/"/g, '&quot;')})" 
-                                    class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                <svg width="20" height="20" fill="white" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                            </button>
-                        </div>
-                        <div>
-                            <p class="font-bold text-sm tracking-tight">${track.name}</p>
-                            <p class="text-[9px] text-gray-500 uppercase font-black tracking-widest">${track.artist} • ${track.source}</p>
-                        </div>
-                    </div>
-                    <button class="p-3 text-gray-400 hover:text-pink-500">
-                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                    </button>
-                </div>
-            `).join('')}
-        </div>
-    `;
-}
-
-// Tambahkan listener untuk input pencarian musik jika diperlukan
-
-// --- EXTENDED TRACK DATA (Arsip Musik v15.0) ---
-
-const MASTER_ARCHIVE = [
-    { id: 't1', name: 'Vignette', artist: 'Archiver', artwork: 'https://picsum.photos/seed/arch1/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', source: 'spotify', genre: 'Ambient' },
-    { id: 't2', name: 'Afterthought', artist: 'Zain', artwork: 'https://picsum.photos/seed/arch2/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3', source: 'local', genre: 'Experimental' },
-    { id: 't3', name: 'Neon Static', artist: 'Signal Flow', artwork: 'https://picsum.photos/seed/arch3/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3', source: 'youtube', genre: 'Synthwave' },
-    { id: 't4', name: 'Midnight Protocol', artist: 'Kernel Ghost', artwork: 'https://picsum.photos/seed/arch4/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3', source: 'spotify', genre: 'Cyberpunk' },
-    { id: 't5', name: 'Soft Reset', artist: 'Lofi Arch', artwork: 'https://picsum.photos/seed/arch5/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3', source: 'apple', genre: 'Lofi' },
-    { id: 't6', name: 'Ether', artist: 'Zain', artwork: 'https://picsum.photos/seed/arch6/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3', source: 'local', genre: 'Ambient' },
-    { id: 't7', name: 'Rhythm of Noise', artist: 'V.V', artwork: 'https://picsum.photos/seed/arch7/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3', source: 'itunes', genre: 'Experimental' }
-];
-
-// --- PLAYLIST LOGIC ---
-
-let myPlaylists = {
-    'Late Night': ['t1', 't4', 't6'],
-    'Work Mode': ['t3', 't5']
-};
-
-function renderMusicSection(tab = 'library') {
-    const container = document.getElementById('search-results'); // Gunakan container search untuk demo
-    
-    let html = `
-        <div class="flex gap-8 mb-12 border-b border-white/5 pb-4">
-            <button onclick="renderMusicSection('library')" class="text-[10px] font-black uppercase tracking-[0.3em] ${tab === 'library' ? 'text-pink-500' : 'text-gray-500'}">Library</button>
-            <button onclick="renderMusicSection('playlists')" class="text-[10px] font-black uppercase tracking-[0.3em] ${tab === 'playlists' ? 'text-pink-500' : 'text-gray-500'}">Playlists</button>
-        </div>
-    `;
-
-    if (tab === 'library') {
-        html += renderTrackList(MASTER_ARCHIVE);
-    } else {
-        html += renderPlaylistCards();
     }
 
-    container.innerHTML = html;
-}
+    function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
-function renderTrackList(tracks) {
-    return `
-        <div class="grid grid-cols-1 gap-4">
-            ${tracks.map(track => `
-                <div class="group flex items-center justify-between p-5 bg-gray-50 dark:bg-white/5 rounded-[2rem] border border-transparent hover:border-pink-500/30 transition-all">
-                    <div class="flex items-center gap-5">
-                        <div class="relative w-16 h-16 rounded-2xl overflow-hidden shadow-lg">
-                            <img src="${track.artwork}" class="w-full h-full object-cover">
-                            <button onclick='playTrack(${JSON.stringify(track)})' class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                <svg width="24" height="24" fill="white" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                            </button>
+    function saveToLocalStorage(key, value) {
+        try {
+            localStorage.setItem(key, JSON.stringify(value));
+        } catch (e) {
+            console.warn('LocalStorage failed:', e);
+        }
+    }
+
+    function getFromLocalStorage(key) {
+        try {
+            const item = localStorage.getItem(key);
+            return item ? JSON.parse(item) : null;
+        } catch (e) {
+            console.warn('LocalStorage read failed:', e);
+            return null;
+        }
+    }
+
+    // ===== AUTHENTICATION =====
+    function handleLogin() {
+        const input = document.getElementById('auth-username').value?.trim();
+        if (!input || input.length < 3) {
+            alert('Please enter a valid username (minimum 3 characters)');
+            return;
+        }
+        
+        AMONS_KERNEL.currentUser = { ...AMONS_KERNEL.users[0] };
+        AMONS_KERNEL.currentUser.username = input.toLowerCase();
+        saveToLocalStorage('amons_user', AMONS_KERNEL.currentUser);
+        startApp();
+        haptic('medium');
+    }
+
+    function handleGuest() {
+        AMONS_KERNEL.isGuest = true;
+        AMONS_KERNEL.currentUser = { 
+            id: 'guest',
+            name: 'Guest', 
+            username: 'spectator', 
+            pfp: 'https://ui-avatars.com/api/?name=Guest',
+            isDarkMode: true,
+            followers: 0,
+            following: 0
+        };
+        startApp();
+        haptic('light');
+    }
+
+    function startApp() {
+        document.getElementById('screen-auth').style.display = 'none';
+        document.getElementById('main-ui').style.display = 'block';
+        document.getElementById('nav-pfp').src = AMONS_KERNEL.currentUser.pfp || 'https://ui-avatars.com/api/?name=User';
+        
+        if (AMONS_KERNEL.currentUser.customCSS) {
+            document.getElementById('user-injected-css').innerHTML = AMONS_KERNEL.currentUser.customCSS;
+        }
+        
+        renderFeed();
+    }
+
+    // ===== NAVIGATION ENGINE =====
+    function navigate(screen) {
+        haptic('light');
+        document.querySelectorAll('.layer').forEach(l => l.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('text-pink-500', 'text-gray-400'));
+        
+        if (screen === 'feed') {
+            scrollToTop();
+        } else if (screen === 'notifications') {
+            openLayer('notifications');
+            renderNotifications();
+        } else {
+            const layerId = `layer-${screen}`;
+            const layer = document.getElementById(layerId);
+            if (layer) layer.classList.add('active');
+        }
+        
+        if (screen !== 'feed') {
+            event?.currentTarget?.classList.add('text-pink-500');
+        }
+        
+        if (screen === 'profile') renderProfile(AMONS_KERNEL.currentUser.username);
+        if (screen === 'chat') renderChatList();
+    }
+
+    function openLayer(layerName) {
+        const layer = document.getElementById(`layer-${layerName}`);
+        if (layer) {
+            layer.classList.add('active');
+        }
+    }
+
+    // ===== FEED RENDERING =====
+    function renderFeed() {
+        const container = document.getElementById('feed-scroll');
+        
+        if (!container) return;
+        
+        container.innerHTML = AMONS_KERNEL.posts.map(post => {
+            const user = AMONS_KERNEL.users.find(u => u.id === post.userId);
+            if (!user) return '';
+            
+            const hasLiked = post.likes.includes(AMONS_KERNEL.currentUser?.id);
+            
+            return `
+                <div class="archive-node bg-gray-50 dark:bg-white/5 p-8 space-y-8 shadow-2xl overflow-hidden relative group">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-4 cursor-pointer" onclick="renderProfile('${user.username}')">
+                            <img src="${user.pfp}" class="w-14 h-14 rounded-2xl object-cover border border-white/5" alt="${user.name}">
+                            <div>
+                                <p class="font-extrabold text-sm tracking-tight">${user.name}</p>
+                                <p class="text-[9px] uppercase tracking-[0.2em] text-gray-500">@${user.username} • ${post.timestamp}</p>
+                            </div>
                         </div>
-                        <div>
-                            <h4 class="font-bold text-sm tracking-tight">${track.name}</h4>
-                            <p class="text-[9px] text-gray-400 font-black uppercase tracking-widest mt-1">${track.artist} • ${track.genre}</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <span class="text-[8px] font-bold text-gray-500 uppercase tracking-tighter bg-white/5 px-3 py-1 rounded-full">${track.source}</span>
                         <button class="text-gray-400 hover:text-pink-500 transition-colors">
-                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+                            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="relative aspect-square rounded-[2.5rem] overflow-hidden shadow-huge cursor-pointer" onclick="handleTrackAction('${post.id}')">
+                        <img src="${post.music.artwork}" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt="${post.music.name}">
+                        <div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
+                            <div class="w-20 h-20 bg-white/10 backdrop-blur-2xl rounded-full flex items-center justify-center border border-white/20">
+                                <svg width="32" height="32" fill="white" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            </div>
+                        </div>
+                        <div class="absolute bottom-6 right-6 w-12 h-12 bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center border border-white/10">
+                            <svg width="18" height="18" class="text-pink-500 animate-spin-slow" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <h3 class="text-2xl font-black tracking-tighter">${post.music.name} <span class="text-pink-500 font-normal text-sm ml-2 italic">/ ${post.music.artist}</span></h3>
+                        <p class="text-sm text-gray-500 leading-relaxed font-medium">${renderCaption(post.caption)}</p>
+                    </div>
+
+                    <div class="flex items-center gap-8 pt-4">
+                        <button onclick="handleLike('${post.id}')" class="flex items-center gap-2 ${hasLiked ? 'text-pink-500' : 'text-gray-400'} transition-all hover:scale-110">
+                            <svg width="22" height="22" fill="${hasLiked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2.5">
+                                <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+                            </svg>
+                            <span class="text-[10px] font-black">${post.likes.length}</span>
+                        </button>
+                        <button onclick="openComments('${post.id}')" class="flex items-center gap-2 text-gray-400 hover:text-pink-500 transition-all hover:scale-110">
+                            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                            </svg>
+                            <span class="text-[10px] font-black">${post.comments.length}</span>
+                        </button>
+                        <button class="ml-auto text-gray-400 hover:text-pink-500 transition-all hover:scale-110">
+                            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2v16z"/>
+                            </svg>
                         </button>
                     </div>
                 </div>
-            `).join('')}
-        </div>
-    `;
-}
+            `;
+        }).join('');
+    }
 
-function renderPlaylistCards() {
-    return `
-        <div class="grid grid-cols-2 gap-6">
-            ${Object.keys(myPlaylists).map(name => {
-                const firstTrack = MASTER_ARCHIVE.find(t => t.id === myPlaylists[name][0]);
-                return `
-                    <div class="relative aspect-square rounded-[2.5rem] overflow-hidden group cursor-pointer shadow-huge">
-                        <img src="${firstTrack.artwork}" class="w-full h-full object-cover grayscale-[50%] group-hover:grayscale-0 transition-all duration-500">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-6 flex flex-col justify-end">
-                            <p class="text-[10px] font-black text-pink-500 uppercase tracking-[0.3em] mb-1">Archive</p>
-                            <h3 class="text-white font-serif-italic text-2xl tracking-tighter">${name}.</h3>
-                            <p class="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-2">${myPlaylists[name].length} Tracks</p>
-                        </div>
-                    </div>
-                `;
-            }).join('')}
-            <div class="aspect-square rounded-[2.5rem] border-2 border-dashed border-white/10 flex flex-col items-center justify-center gap-4 hover:border-pink-500/50 transition-colors cursor-pointer">
-                <div class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center">
-                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-                </div>
-                <span class="text-[9px] font-black uppercase tracking-widest text-gray-500">New Path</span>
-            </div>
-        </div>
-    `;
-}
+    function renderCaption(text) {
+        if (!text) return '';
+        return text.replace(/@(\w+)/g, '<span class="text-pink-500 font-bold cursor-pointer hover:underline">@$1</span>');
+    }
 
-// --- VISUALIZER LOGIC (UI Placeholder) ---
-
-function updateVisualizer() {
-    if (!AMONS_KERNEL.isPlaying) return;
-    
-    // Secara teknis ini akan menggunakan Web Audio API, 
-    // tapi untuk versi kernel ini kita gunakan animasi CSS haptic
-    const bars = document.querySelectorAll('.visualizer-bar');
-    bars.forEach(bar => {
-        const height = Math.random() * 100;
-        bar.style.height = `${height}%`;
-    });
-    
-    requestAnimationFrame(updateVisualizer);
-}
-
-// --- CHAT SYSTEM (Chat.tsx Logic) ---
-
-const MOCK_MESSAGES = [
-    { id: 'm1', senderId: 'zain', text: 'Identity stabilized in the archive.', timestamp: '10:00' },
-    { id: 'm2', senderId: 'adnan', text: 'Copy that. Frequency feels right.', timestamp: '10:02' }
-];
-
-function renderChat(targetUsername) {
-    const chatContainer = document.getElementById('chat-window');
-    const targetUser = AMONS_KERNEL.users.find(u => u.username === targetUsername);
-    
-    if (!targetUser) return;
-
-    // Apply specific chat wallpaper from user settings
-    const wallpaper = AMONS_KERNEL.currentUser?.chatWallpapers?.[targetUsername] || 'https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?q=80';
-    
-    chatContainer.style.backgroundImage = `url(${wallpaper})`;
-    chatContainer.innerHTML = `
-        <div class="flex flex-col h-full bg-black/40 backdrop-blur-sm p-6">
-            <header class="flex items-center gap-4 mb-8">
-                <button onclick="navigateTo('chat-list')" class="p-2 bg-white/10 rounded-full text-white">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 19l-7-7 7-7"/></svg>
-                </button>
-                <img src="${targetUser.pfp}" class="w-10 h-10 rounded-2xl object-cover">
-                <span class="font-bold text-white text-sm">${targetUser.name}</span>
-            </header>
-
-            <div class="flex-1 overflow-y-auto space-y-4 no-scrollbar">
-                ${MOCK_MESSAGES.map(msg => `
-                    <div class="flex ${msg.senderId === 'zain' ? 'justify-end' : 'justify-start'}">
-                        <div class="${msg.senderId === 'zain' ? 'bg-pink-500 text-white' : 'bg-white/10 text-white'} p-4 rounded-[1.5rem] max-w-[80%] shadow-xl">
-                            <p class="text-sm">${msg.text}</p>
-                            <span class="text-[8px] opacity-50 uppercase mt-2 block font-black">${msg.timestamp}</span>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-
-            <footer class="mt-6 relative">
-                <input type="text" placeholder="Add to the echo..." 
-                       class="w-full bg-white/10 border-none rounded-3xl py-5 pl-8 pr-16 text-white text-sm outline-none focus:ring-2 focus:ring-pink-500/50 transition-all">
-                <button class="absolute right-3 top-1/2 -translate-y-1/2 p-3 bg-pink-500 text-white rounded-2xl">
-                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-                </button>
-            </footer>
-        </div>
-    `;
-}
-
-// --- PROFILE CUSTOMIZATION (Identity Persistence) ---
-
-function renderUserProfile(username) {
-    const profileUser = AMONS_KERNEL.users.find(u => u.username === username);
-    const container = document.getElementById('main-content');
-
-    if (!profileUser) return;
-
-    // INJECT CUSTOM CSS (Fitur Utama Zain)
-    if (profileUser.customCSS) {
-        const styleId = `css-${profileUser.username}`;
-        if (!document.getElementById(styleId)) {
-            const style = document.createElement('style');
-            style.id = styleId;
-            style.innerHTML = profileUser.customCSS;
-            document.head.appendChild(style);
+    function handleLike(postId) {
+        const post = AMONS_KERNEL.posts.find(p => p.id === postId);
+        if (!post) return;
+        
+        const userIndex = post.likes.indexOf(AMONS_KERNEL.currentUser.id);
+        if (userIndex > -1) {
+            post.likes.splice(userIndex, 1);
+        } else {
+            post.likes.push(AMONS_KERNEL.currentUser.id);
+            haptic('light');
         }
+        
+        renderFeed();
     }
 
-    container.innerHTML = `
-        <div class="animate-fade-in">
-            <div class="relative h-64 w-full rounded-[3rem] overflow-hidden mb-[-4rem] z-0">
-                <img src="${profileUser.headerImage}" class="w-full h-full object-cover grayscale-[30%]">
-                <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black/60"></div>
-            </div>
-
-            <div class="px-6 z-10 relative">
-                <div class="flex items-end justify-between mb-8">
-                    <img src="${profileUser.pfp}" class="w-32 h-32 rounded-[2.5rem] border-8 border-white dark:border-[#0f0f0f] shadow-huge object-cover">
-                    <button class="mb-2 px-8 py-3 bg-pink-500 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg shadow-pink-500/20">Follow Path</button>
+    // ===== COMMENTS SYSTEM =====
+    function openComments(postId) {
+        haptic('medium');
+        const post = AMONS_KERNEL.posts.find(p => p.id === postId);
+        if (!post) return;
+        
+        const commentLayer = document.createElement('div');
+        commentLayer.id = 'comment-overlay';
+        commentLayer.className = 'layer active z-[400] bg-white dark:bg-[#0f0f0f]';
+        
+        commentLayer.innerHTML = `
+            <div class="max-w-xl mx-auto p-8 pb-40">
+                <div class="flex items-center gap-6 mb-12">
+                    <button onclick="closeComments()" class="p-4 bg-gray-100 dark:bg-white/5 rounded-2xl hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    <h2 class="font-serif-italic text-4xl tracking-tighter">Echoes.</h2>
                 </div>
-
-                <h1 class="font-serif-italic text-5xl tracking-tighter">${profileUser.name}.</h1>
-                <p class="text-gray-400 text-sm mt-4 max-w-md leading-relaxed">${profileUser.bio}</p>
-
-                <div class="grid grid-cols-3 gap-4 mt-10 border-y border-black/5 dark:border-white/5 py-8">
-                    <div class="text-center">
-                        <span class="block font-black text-xl">12</span>
-                        <span class="text-[9px] text-gray-400 uppercase tracking-[0.2em]">Archives</span>
-                    </div>
-                    <div class="text-center">
-                        <span class="block font-black text-xl">${profileUser.followers.length}</span>
-                        <span class="text-[9px] text-gray-400 uppercase tracking-[0.2em]">Observers</span>
-                    </div>
-                    <div class="text-center">
-                        <span class="block font-black text-xl">${profileUser.following.length}</span>
-                        <span class="text-[9px] text-gray-400 uppercase tracking-[0.2em]">Following</span>
-                    </div>
+                
+                <div id="comment-list" class="space-y-10">
+                    ${renderComments(post.comments)}
                 </div>
-
-                <div class="mt-12 space-y-8" id="profile-tabs-content">
-                    <p class="text-center text-[11px] font-bold uppercase tracking-[0.5em] text-gray-300 py-20">No archived frequency found</p>
-                </div>
-            </div>
-        </div>
-    `;
-}
-
-// --- FINAL APP INITIALIZATION ---
-
-function initializeKernel() {
-    // 1. Setup Navigation
-    const navItems = document.querySelectorAll('.nav-link');
-    navItems.forEach(item => {
-        item.addEventListener('click', (e) => {
-            const path = e.currentTarget.dataset.path;
-            navigateTo(path);
-        });
-    });
-
-    // 2. Start Global Player background visualizer
-    setInterval(() => {
-        if (AMONS_KERNEL.isPlaying) {
-            // Animasi bar kecil di navbar atau player
-        }
-    }, 100);
-
-    console.log("AMONSPATH OS KERNEL v15.0: All Modules Loaded Successfully.");
-}
-
-// Jalankan sistem
-initializeKernel();
-
-// --- DATABASE SYNC LOGIC ---
-
-const AMONS_STORAGE_KEY = 'AMONSPATH_DATA_V15';
-
-// Fungsi untuk menyimpan seluruh state kernel ke storage
-function persistSystemState() {
-    const stateToSave = {
-        currentUser: AMONS_KERNEL.currentUser,
-        users: AMONS_KERNEL.users,
-        posts: AMONS_KERNEL.posts,
-        lastSync: new Date().toISOString()
-    };
-    localStorage.setItem(AMONS_STORAGE_KEY, JSON.stringify(stateToSave));
-    console.log("Kernel: State persisted to local archive.");
-}
-
-// Fungsi untuk memuat data saat startup
-function loadSystemState() {
-    const savedData = localStorage.getItem(AMONS_STORAGE_KEY);
-    if (savedData) {
-        const parsed = JSON.parse(savedData);
-        AMONS_KERNEL.users = parsed.users;
-        AMONS_KERNEL.posts = parsed.posts;
-        AMONS_KERNEL.currentUser = parsed.currentUser;
-        return true;
-    }
-    return false;
-}
-
-// --- IDENTITY PERSISTENCE (Update Profile Logic) ---
-
-function updateIdentity(newData) {
-    if (!AMONS_KERNEL.currentUser) return;
-
-    // Update current user state
-    AMONS_KERNEL.currentUser = { ...AMONS_KERNEL.currentUser, ...newData };
-
-    // Update in global users list
-    const userIndex = AMONS_KERNEL.users.findIndex(u => u.id === AMONS_KERNEL.currentUser.id);
-    if (userIndex !== -1) {
-        AMONS_KERNEL.users[userIndex] = AMONS_KERNEL.currentUser;
-    }
-
-    // Re-apply visual changes
-    applyCustomTheme(AMONS_KERNEL.currentUser);
-    
-    // Save to storage
-    persistSystemState();
-    
-    console.log("Identity Stabilized: Changes applied successfully.");
-}
-
-// --- POSTING ENGINE (Adding new echoes) ---
-
-function createNewEcho(content, type = 'notes', musicData = null) {
-    const newPost = {
-        id: `p_${Date.now()}`,
-        userId: AMONS_KERNEL.currentUser.id,
-        user: {
-            name: AMONS_KERNEL.currentUser.name,
-            username: AMONS_KERNEL.currentUser.username,
-            pfp: AMONS_KERNEL.currentUser.pfp
-        },
-        type: type,
-        music: musicData,
-        caption: content,
-        timestamp: new Date().toISOString(),
-        likes: [],
-        comments: []
-    };
-
-    AMONS_KERNEL.posts.unshift(newPost); // Tambah ke paling atas
-    persistSystemState();
-    navigateTo('feed');
-    
-    // Trigger visual feedback
-    haptic('heavy');
-}
-
-// --- INITIALIZE SYSTEM ---
-
-document.addEventListener('DOMContentLoaded', () => {
-    const hasData = loadSystemState();
-    
-    if (!hasData) {
-        console.log("Kernel: No previous archive found. Initializing default state.");
-        persistSystemState();
-    }
-    
-    bootSystem(); // Memanggil fungsi boot dari Bagian 4
-});
-
-// --- GLOBAL OVERLAY MANAGER ---
-
-function renderGlobalPlayer() {
-    const playerContainer = document.getElementById('global-player-overlay');
-    const track = AMONS_KERNEL.currentTrack;
-
-    if (!track) {
-        playerContainer.classList.add('translate-y-40', 'opacity-0');
-        return;
-    }
-
-    playerContainer.classList.remove('translate-y-40', 'opacity-0');
-    playerContainer.innerHTML = `
-        <div class="fixed bottom-[100px] left-4 right-4 z-50 bg-white/80 dark:bg-black/80 backdrop-blur-2xl border border-black/5 dark:border-white/10 rounded-[2.5rem] p-4 flex items-center justify-between shadow-huge overflow-hidden animate-slide-up">
-            <div class="flex items-center gap-4 flex-1 min-w-0">
-                <div class="w-12 h-12 rounded-2xl overflow-hidden shadow-lg flex-shrink-0 animate-pulse-slow">
-                    <img src="${track.artwork}" class="w-full h-full object-cover">
-                </div>
-                <div class="flex flex-col min-w-0">
-                    <span class="text-[11px] font-bold tracking-tight truncate">${track.name}</span>
-                    <span class="text-[9px] text-gray-400 uppercase tracking-widest truncate">${track.artist}</span>
-                </div>
-            </div>
-
-            <div class="flex items-center gap-2">
-                <button onclick="togglePlay()" class="w-10 h-10 flex items-center justify-center bg-pink-500 text-white rounded-full shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-transform">
-                    ${AMONS_KERNEL.isPlaying ? 
-                        '<svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>' : 
-                        '<svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>'}
-                </button>
-                <button onclick="stopTrack()" class="w-10 h-10 flex items-center justify-center bg-gray-50 dark:bg-[#1a1a1a] text-gray-400 rounded-full">
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg>
-                </button>
             </div>
             
-            <div class="absolute bottom-0 left-0 right-0 h-1 flex gap-1 px-4">
-                ${Array(20).fill(0).map(() => `<div class="visualizer-bar flex-1 bg-pink-500/30 transition-all duration-300"></div>`).join('')}
+            <div class="fixed bottom-0 left-0 right-0 p-6 bg-white/80 dark:bg-black/80 backdrop-blur-2xl border-t border-white/5 z-[410]">
+                <div class="max-w-xl mx-auto relative">
+                    <input type="text" id="comment-input" placeholder="Add to the frequency..." 
+                           class="w-full bg-gray-100 dark:bg-white/5 p-6 rounded-[2rem] outline-none font-bold" />
+                    <button onclick="submitComment('${postId}')" class="absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 bg-pink-500 text-white rounded-2xl flex items-center justify-center hover:scale-110 transition-transform">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
-        </div>
-    `;
-}
-
-// --- SYSTEM FEEDBACK (Haptics & Sound Effects) ---
-
-const SYSTEM_SFX = {
-    boot: 'https://assets.mixkit.co/sfx/preview/mixkit-digital-quick-tone-2121.mp3',
-    notif: 'https://assets.mixkit.co/sfx/preview/mixkit-software-interface-start-2574.mp3'
-};
-
-function playSystemSound(type) {
-    const audio = new Audio(SYSTEM_SFX[type]);
-    audio.volume = 0.2;
-    audio.play().catch(() => {}); // Autoplay policy protection
-}
-
-// --- THE "ZAIN" EASTER EGG (Kernel Command) ---
-
-window.amonsCommand = function(cmd) {
-    if (cmd === 'stabilize') {
-        document.body.style.filter = 'contrast(1.1) brightness(1.1)';
-        playSystemSound('boot');
-        console.log("Kernel: Frequency Stabilized.");
+        `;
+        document.body.appendChild(commentLayer);
     }
-};
 
-// --- WRAP UP INITIALIZATION ---
+    function renderComments(comments) {
+        if (!comments || comments.length === 0) return '<p class="text-gray-500 text-center py-10">No echoes yet...</p>';
+        
+        return comments.map(c => {
+            const user = AMONS_KERNEL.users.find(u => u.id === c.userId);
+            if (!user) return '';
+            
+            return `
+                <div class="space-y-6">
+                    <div class="flex gap-4">
+                        <img src="${user.pfp}" class="w-10 h-10 rounded-xl object-cover" alt="${user.name}">
+                        <div class="flex-1">
+                            <div class="bg-gray-100 dark:bg-white/5 p-5 rounded-[1.5rem] rounded-tl-none">
+                                <p class="text-[10px] font-black uppercase tracking-widest text-pink-500 mb-1">${user.name}</p>
+                                <p class="text-sm font-medium leading-relaxed">${c.text}</p>
+                            </div>
+                            <div class="flex gap-4 mt-2 px-2">
+                                <span class="text-[9px] font-bold text-gray-500 uppercase">${c.timestamp}</span>
+                                <button class="text-[9px] font-black text-pink-500 uppercase tracking-widest hover:underline">Reply</button>
+                            </div>
+                        </div>
+                    </div>
+                    ${c.replies ? `<div class="ml-12 border-l-2 border-white/5 pl-6 space-y-6">${renderComments(c.replies)}</div>` : ''}
+                </div>
+            `;
+        }).join('');
+    }
 
-function finalizeSystem() {
-    renderGlobalPlayer();
-    
-    // Listen to changes in the kernel state
-    setInterval(() => {
-        if (AMONS_KERNEL.isPlaying) {
-            const bars = document.querySelectorAll('.visualizer-bar');
-            bars.forEach(bar => {
-                bar.style.height = `${Math.random() * 100}%`;
+    function submitComment(postId) {
+        const input = document.getElementById('comment-input');
+        const text = input?.value?.trim();
+        
+        if (!text) return;
+        
+        const post = AMONS_KERNEL.posts.find(p => p.id === postId);
+        if (post) {
+            post.comments.push({
+                id: 'c' + Date.now(),
+                userId: AMONS_KERNEL.currentUser.id,
+                text: text,
+                timestamp: 'now',
+                replies: []
             });
+            closeComments();
+            haptic('medium');
+            openComments(postId);
         }
-    }, 150);
-}
+    }
 
-finalizeSystem();
+    function closeComments() {
+        const el = document.getElementById('comment-overlay');
+        if (el) el.remove();
+    }
 
-    <div id="amons-root" class="min-h-screen bg-white dark:bg-[#0f0f0f] text-black dark:text-white transition-colors duration-500">
-    
-    <div class="fixed top-0 left-0 right-0 h-1 z-[100] bg-pink-500/20">
-        <div id="system-load-bar" class="h-full bg-pink-500 w-0 transition-all duration-1000"></div>
-    </div>
-
-    <main id="main-content" class="max-w-xl mx-auto px-6 pt-20 pb-40">
-        </main>
-
-    <div id="global-player-overlay"></div>
-
-    <nav class="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-black/80 backdrop-blur-xl border-t border-black/5 dark:border-white/5 z-40 px-6 pb-8">
-        <div class="max-w-xl mx-auto h-20 flex items-center justify-between">
-            <button onclick="navigateTo('feed')" class="nav-link flex flex-col items-center gap-1 text-gray-400 hover:text-pink-500 transition-all">
-                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/></svg>
-                <span class="text-[8px] font-black uppercase tracking-widest">Archives</span>
-            </button>
-            <button onclick="navigateTo('search')" class="nav-link flex flex-col items-center gap-1 text-gray-400 hover:text-pink-500">
-                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-                <span class="text-[8px] font-black uppercase tracking-widest">Search</span>
-            </button>
-            <button onclick="navigateTo('chat')" class="nav-link flex flex-col items-center gap-1 text-gray-400 hover:text-pink-500">
-                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 11-7.6-11.7 8.38 8.38 0 013.8.9L21 3z"/></svg>
-                <span class="text-[8px] font-black uppercase tracking-widest">Chat</span>
-            </button>
-            <button onclick="renderUserProfile('zain')" class="nav-link flex flex-col items-center gap-1 text-gray-400 hover:text-pink-500">
-                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                <span class="text-[8px] font-black uppercase tracking-widest">Identity</span>
-            </button>
-        </div>
-    </nav>
-
-    <div id="modal-root"></div>
-</div>
-
-<script>
-// --- FINAL BOOT SEQUENCE ---
-
-function bootSystem() {
-    console.log("Starting AmonsPath Bootloader...");
-    
-    // Simulate system loading
-    const loadBar = document.getElementById('system-load-bar');
-    loadBar.style.width = '100%';
-    
-    setTimeout(() => {
-        // Load default view
-        navigateTo('feed');
+    // ===== CHAT SYSTEM =====
+    function renderChatList() {
+        const container = document.getElementById('chat-list');
+        if (!container) return;
         
-        // Initial feedback
-        playSystemSound('boot');
+        const contacts = AMONS_KERNEL.users.filter(u => u.id !== AMONS_KERNEL.currentUser.id);
         
-        // Hide load bar after finish
-        setTimeout(() => loadBar.style.opacity = '0', 500);
-    }, 1000);
-}
+        container.innerHTML = contacts.map(contact => `
+            <div onclick="openChatRoom('${contact.username}')" class="flex items-center justify-between p-6 bg-gray-50 dark:bg-white/5 rounded-[2.5rem] cursor-pointer hover:scale-[1.02] transition-all border border-transparent hover:border-pink-500/30">
+                <div class="flex items-center gap-5">
+                    <div class="w-16 h-16 rounded-[1.8rem] overflow-hidden border-2 border-white/10">
+                        <img src="${contact.pfp}" class="w-full h-full object-cover" alt="${contact.name}">
+                    </div>
+                    <div>
+                        <p class="font-black text-lg tracking-tight">${contact.name}</p>
+                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Active Frequency</p>
+                    </div>
+                </div>
+                <div class="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 5l7 7-7 7"/>
+                    </svg>
+                </div>
+            </div>
+        `).join('');
+    }
 
-// Global initialization
-window.onload = bootSystem;
+    function openChatRoom(username) {
+        const targetUser = AMONS_KERNEL.users.find(u => u.username === username);
+        if (!targetUser) return;
+        
+        const wallpaper = AMONS_KERNEL.currentUser.wallpapers?.[username] || 'https://images.unsplash.com/photo-1614850523459-c2f4c699c52e';
+        
+        const room = document.getElementById('chat-room');
+        room.classList.add('active');
+        
+        document.getElementById('chat-room-content').innerHTML = `
+            <div class="chat-container h-full flex flex-col" style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('${wallpaper}')">
+                <div class="p-8 pt-16 flex items-center gap-6 nav-blur border-b border-white/5">
+                    <button onclick="closeChatRoom()" class="text-white hover:text-pink-500 transition-colors">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    <div class="flex items-center gap-4">
+                        <img src="${targetUser.pfp}" class="w-12 h-12 rounded-2xl object-cover" alt="${targetUser.name}">
+                        <div>
+                            <p class="text-white font-black tracking-tight">${targetUser.name}</p>
+                            <p class="text-[9px] text-pink-500 font-bold uppercase tracking-[0.3em]">Encrypted Path</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="message-flow" class="flex-1 overflow-y-auto p-8 space-y-6">
+                    <div class="flex justify-center my-10">
+                        <span class="px-6 py-2 bg-black/40 backdrop-blur-md rounded-full text-[9px] font-bold text-gray-400 uppercase tracking-widest">Beginning of Archive</span>
+                    </div>
+                    ${renderChatMessages(username)}
+                </div>
 
-/**
- * AMONSPATH OS KERNEL v15.0 - ARCHIVE COMPLETION
- * Status: STABLE | Identity: VERIFIED | Frequency: SYNCHRONIZED
- * -------------------------------------------------------------
- * Designed for the digital observers and architects.
- */
+                <div class="p-8 pb-12 bg-black/20 backdrop-blur-3xl border-t border-white/5">
+                    <div class="flex gap-4">
+                        <input type="text" id="msg-input" placeholder="Transmit..." 
+                               class="flex-1 bg-white/10 border border-white/10 rounded-[2rem] px-8 py-5 text-white outline-none focus:border-pink-500/50 transition-colors" />
+                        <button onclick="sendMessage('${username}')" class="w-16 h-16 bg-pink-500 text-white rounded-full flex items-center justify-center shadow-huge hover:scale-110 transition-transform">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
 
-const AMONS_FINALIZER = {
-    version: "15.0.0-FINAL",
-    buildDate: new Date().toISOString(),
-    engine: "AmonsPath Vanilla-Core",
-    architect: "Zain (Engineering Lead)",
-    
-    lockAndSeal: function() {
-        // 1. Memastikan semua state tersimpan sebelum sesi ditutup
-        if (typeof persistSystemState === 'function') {
-            persistSystemState();
+    function renderChatMessages(username) {
+        const messages = AMONS_KERNEL.messages[username] || [];
+        if (messages.length === 0) return '';
+        
+        return messages.map((msg, i) => `
+            <div class="flex ${msg.sent ? 'justify-end' : 'justify-start'}">
+                <div class="max-w-xs ${msg.sent ? 'bg-pink-500' : 'bg-white/10'} rounded-3xl px-6 py-3">
+                    <p class="text-white text-sm break-words">${msg.text}</p>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function sendMessage(username) {
+        const input = document.getElementById('msg-input');
+        const text = input?.value?.trim();
+        
+        if (!text) return;
+        
+        if (!AMONS_KERNEL.messages[username]) {
+            AMONS_KERNEL.messages[username] = [];
         }
+        
+        AMONS_KERNEL.messages[username].push({
+            text: text,
+            sent: true,
+            timestamp: new Date().toLocaleTimeString()
+        });
+        
+        input.value = '';
+        openChatRoom(username);
+        haptic('light');
+    }
 
-        // 2. Memberikan pesan sambutan di Konsol (Easter Egg)
-        console.clear();
-        console.log(
-            `%c AMONSPATH OS KERNEL v15.0 %c\n%c The Sound Archive is now operational. %c`,
-            "color: #ffffff; background: #ec4899; padding: 5px 10px; font-weight: bold; border-radius: 4px;",
-            "color: initial; background: initial;",
-            "color: #ec4899; font-style: italic; font-family: serif;",
-            "color: initial; font-style: initial;"
+    function closeChatRoom() {
+        document.getElementById('chat-room').classList.remove('active');
+    }
+
+    // ===== PROFILE ENGINE =====
+    function renderProfile(username) {
+        const user = AMONS_KERNEL.users.find(u => u.username === username);
+        if (!user) return;
+        
+        const isOwn = user.id === AMONS_KERNEL.currentUser.id;
+        const container = document.getElementById('profile-content');
+        
+        container.innerHTML = `
+            <div class="relative">
+                <div class="h-[40vh] relative overflow-hidden">
+                    <img src="${user.header || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe'}" class="w-full h-full object-cover" alt="Header">
+                    <div class="absolute inset-0 bg-gradient-to-b from-transparent to-[var(--bg-color)]"></div>
+                </div>
+                
+                <div class="px-8 -mt-32 relative z-10 space-y-8">
+                    <div class="flex justify-between items-end">
+                        <div class="w-32 h-32 rounded-[2.5rem] border-8 border-[var(--bg-color)] overflow-hidden shadow-huge">
+                            <img src="${user.pfp}" class="w-full h-full object-cover" alt="${user.name}">
+                        </div>
+                        ${isOwn ? 
+                            `<button onclick="openSettings()" class="bg-white/10 backdrop-blur-md border border-white/10 px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white/20 transition-colors">Settings</button>`
+                            : `<button class="bg-pink-500 text-white px-10 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-huge hover:scale-105 transition-transform">Follow</button>`
+                        }
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <h2 class="font-serif-italic text-6xl tracking-tighter">${user.name}.</h2>
+                        <p class="text-pink-500 font-bold text-xs uppercase tracking-[0.4em]">@${user.username}</p>
+                    </div>
+                    
+                    <p class="text-gray-500 font-medium leading-relaxed max-w-md">${user.bio}</p>
+                    
+                    <div class="flex gap-12 pt-4">
+                        <div>
+                            <p class="text-2xl font-black">${user.followers}</p>
+                            <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Followers</p>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-black">${user.following}</p>
+                            <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Following</p>
+                        </div>
+                    </div>
+
+                    <div class="flex border-b border-white/5 gap-10 overflow-x-auto no-scrollbar pt-10">
+                        <button class="pb-6 border-b-2 border-pink-500 text-[10px] font-black uppercase tracking-widest whitespace-nowrap">Music</button>
+                        <button class="pb-6 border-transparent text-gray-500 text-[10px] font-black uppercase tracking-widest whitespace-nowrap hover:text-gray-400 transition-colors">Notes</button>
+                        <button class="pb-6 border-transparent text-gray-500 text-[10px] font-black uppercase tracking-widest whitespace-nowrap hover:text-gray-400 transition-colors">Archive</button>
+                    </div>
+
+                    <div id="profile-grid" class="grid grid-cols-2 gap-6 pb-20">
+                        ${renderProfileGrid(user.id)}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderProfileGrid(userId) {
+        const userPosts = AMONS_KERNEL.posts.filter(p => p.userId === userId);
+        if (userPosts.length === 0) return `<div class="col-span-2 py-20 text-center text-gray-600 text-[10px] uppercase font-bold tracking-[0.5em]">No Echoes Found</div>`;
+        
+        return userPosts.map(p => `
+            <div onclick="handleTrackAction('${p.id}')" class="aspect-square rounded-[2rem] overflow-hidden relative group cursor-pointer shadow-lg hover:shadow-2xl transition-shadow">
+                <img src="${p.music.artwork}" class="w-full h-full object-cover transition-transform group-hover:scale-110" alt="${p.music.name}">
+                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center">
+                    <svg width="24" height="24" fill="white" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                    </svg>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // ===== MUSIC PLAYER ENGINE =====
+    function handleTrackAction(postId) {
+        const post = AMONS_KERNEL.posts.find(p => p.id === postId);
+        if (!post) return;
+        
+        const track = post.music;
+        
+        if (AMONS_KERNEL.currentTrack?.id === track.id) {
+            toggleMusic();
+        } else {
+            playTrack(track);
+        }
+    }
+
+    function playTrack(track) {
+        if (!track || !track.url) return;
+        
+        haptic('heavy');
+        AMONS_KERNEL.currentTrack = track;
+        AMONS_KERNEL.audio.src = track.url;
+        AMONS_KERNEL.audio.play().catch(e => console.warn('Playback failed:', e));
+        AMONS_KERNEL.isPlaying = true;
+        
+        updatePlayerUI();
+    }
+
+    function toggleMusic() {
+        if (!AMONS_KERNEL.currentTrack) return;
+        
+        if (AMONS_KERNEL.isPlaying) {
+            AMONS_KERNEL.audio.pause();
+            AMONS_KERNEL.isPlaying = false;
+        } else {
+            AMONS_KERNEL.audio.play().catch(e => console.warn('Playback failed:', e));
+            AMONS_KERNEL.isPlaying = true;
+        }
+        updatePlayerUI();
+    }
+
+    function updatePlayerUI() {
+        const player = document.getElementById('global-player');
+        const track = AMONS_KERNEL.currentTrack;
+        
+        if (!track) {
+            player.style.display = 'none';
+            return;
+        }
+        
+        player.style.display = 'block';
+        document.getElementById('player-art').src = track.artwork;
+        document.getElementById('player-title').innerText = track.name || 'Unknown Track';
+        document.getElementById('player-artist').innerText = track.artist || 'Unknown Artist';
+        
+        const icon = document.getElementById('play-pause-icon');
+        const visualizer = document.getElementById('player-visualizer');
+        
+        if (AMONS_KERNEL.isPlaying) {
+            icon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+            visualizer?.classList.remove('hidden');
+            player.classList.add('playing-active');
+        } else {
+            icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+            visualizer?.classList.add('hidden');
+            player.classList.remove('playing-active');
+        }
+    }
+
+    function closePlayer() {
+        document.getElementById('global-player').style.display = 'none';
+        AMONS_KERNEL.audio.pause();
+        AMONS_KERNEL.isPlaying = false;
+        AMONS_KERNEL.currentTrack = null;
+        updatePlayerUI();
+    }
+
+    // ===== NOTIFICATIONS =====
+    function renderNotifications() {
+        const container = document.getElementById('notif-list');
+        if (!container) return;
+        
+        const NOTIFS = [
+            { id: '1', type: 'like', user: 'Adnan', action: 'bookmarked your archive', timestamp: '2m' },
+            { id: '2', type: 'follow', user: 'Archiver', action: 'started following your path', timestamp: '1h' },
+            { id: '3', type: 'comment', user: 'Karlee', action: 'echoed in your journal', timestamp: '3h' }
+        ];
+
+        container.innerHTML = NOTIFS.map(n => `
+            <div class="flex items-center gap-6 p-6 bg-gray-50 dark:bg-[#1a1a1a] rounded-[2rem] border border-black/5 dark:border-white/5 transition-transform hover:scale-[1.01]">
+                <div class="w-14 h-14 rounded-[1.5rem] bg-white dark:bg-black/20 flex items-center justify-center text-pink-500 shadow-sm flex-shrink-0">
+                    ${n.type === 'like' ? '<svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>' : ''}
+                    ${n.type === 'follow' ? '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M8.5 7a4 4 0 110-8 4 4 0 010 8z"/></svg>' : ''}
+                    ${n.type === 'comment' ? '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>' : ''}
+                </div>
+                <div class="flex flex-col flex-1 min-w-0">
+                    <span class="text-[14px] font-bold tracking-tight">
+                        ${n.user} <span class="font-normal text-gray-400">${n.action}</span>
+                    </span>
+                    <span class="text-[9px] text-gray-400 uppercase tracking-widest mt-1">${n.timestamp} ago</span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // ===== SEARCH =====
+    function handleSearch(query) {
+        const q = query.toLowerCase();
+        const filteredUsers = AMONS_KERNEL.users.filter(u => 
+            u.name.toLowerCase().includes(q) || u.username.toLowerCase().includes(q)
         );
         
-        console.table({
-            Status: "Ready",
-            Modules: "Loaded (8/8)",
-            Memory: "Persistent",
-            Visuals: "Custom CSS Engine Active"
-        });
+        const resultsContainer = document.getElementById('search-results');
+        if (!resultsContainer) return;
+        
+        if (q === '') {
+            resultsContainer.innerHTML = `<p class="text-center text-[11px] font-black text-gray-300 uppercase tracking-[0.8em] py-20">Spectral Silence</p>`;
+            return;
+        }
 
-        // 3. Efek Visual Penutup (Subtle contrast stabilization)
-        if (typeof amonsCommand === 'function') {
-            amonsCommand('stabilize');
+        resultsContainer.innerHTML = filteredUsers.map(u => `
+            <div onclick="renderProfile('${u.username}')" class="flex items-center justify-between p-6 bg-gray-50 dark:bg-white/5 rounded-[2rem] border border-black/5 dark:border-white/5 group cursor-pointer hover:scale-[1.01] transition-all">
+                <div class="flex items-center gap-4">
+                    <img src="${u.pfp}" class="w-12 h-12 rounded-2xl object-cover" alt="${u.name}">
+                    <span class="text-[13px] font-bold">${u.name}</span>
+                </div>
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 5l7 7-7 7"/>
+                </svg>
+            </div>
+        `).join('');
+    }
+
+    // ===== SETTINGS =====
+    function openSettings() {
+        alert('Settings panel - coming soon!');
+    }
+
+    function togglePostModal(open) {
+        haptic('light');
+        if (open) {
+            alert('Post creation modal - coming soon!');
         }
     }
-};
 
-// Menjalankan finalisasi sistem
-AMONS_FINALIZER.lockAndSeal();
+    // ===== SYSTEM BOOT =====
+    function bootSystem() {
+        console.log("🎵 AMONSPATH OS KERNEL v15.0: Initializing...");
+        
+        const savedUser = getFromLocalStorage('amons_user');
+        if (savedUser) {
+            AMONS_KERNEL.currentUser = savedUser;
+            startApp();
+        }
+        
+        // Global keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeComments();
+                closeChatRoom();
+            }
+        });
+    }
 
-// Ekspor modul jika menggunakan sistem modul (opsional)
-// export default AMONS_FINALIZER;
+    // ===== INITIALIZATION =====
+    window.addEventListener('load', bootSystem);
+</script>
+
+</body>
+</html>

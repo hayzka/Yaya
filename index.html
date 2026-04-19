@@ -99,18 +99,24 @@
 
         .post-entry {
             background: var(--surface);
-            margin: 16px 20px 32px 20px;
-            border-radius: 32px;
-            padding: 24px;
+            margin: 12px 16px;
+            border-radius: 20px;
+            padding: 12px;
             border: 1px solid rgba(0,0,0,0.04);
-            box-shadow: var(--shadow-md);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            animation: fadeInUp 0.8s ease backwards;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
             cursor: pointer;
             display: block;
             position: relative;
         }
+
+        .album-art-container {
+            border-radius: 14px;
+            margin-bottom: 10px;
+        }
+        
         .post-entry:hover { 
+            transform: scale(1.02);
             transform: translateY(-4px);
             box-shadow: var(--shadow-lg);
         }
@@ -561,9 +567,10 @@
         }
 
         .profile-editable-content {
-            pointer-events: none;
-            opacity: 0.6;
+            pointer-events: auto;
+            opacity: 1;
         }
+        
 
         .profile-editable-content.enabled {
             pointer-events: auto;
@@ -584,7 +591,7 @@
                 </div>
                 <div class="flex gap-4 items-center">
                     <button onclick="toggleSearchUI()" class="icon-small hover:opacity-70 transition">🔍</button>
-                    <button onclick="openLayer('profile-layer')" class="icon-small hover:opacity-70 transition">⚙️</button>
+                    <button onclick="openNotifications()">🔔</button>
                     <div id="nav-pfp-trigger" class="w-10 h-10 rounded-full bg-gray-50 border-2 border-transparent overflow-hidden transition active:scale-90 cursor-pointer hover:opacity-75" onclick="openLayer('profile-layer')">
                         <img id="pfp-mini" class="hidden w-full h-full object-cover" alt="User profile">
                         <div id="pfp-initial" class="w-full h-full flex items-center justify-center font-bold text-pink-500">👤</div>
@@ -888,6 +895,10 @@
             layer.style.display = 'flex';
         }
 
+        function openNotifications() {
+            showToast("No notifications yet", "info");
+        }
+
         function closeLayer(id) {
             const layer = document.getElementById(id);
             layer.style.display = 'none';
@@ -915,6 +926,7 @@
                 mineBtn.classList.remove('text-gray-300');
                 fypBtn.classList.remove('text-pink-500', 'border-b-2', 'border-pink-500');
                 fypBtn.classList.add('text-gray-300');
+                loadFeed(); 
                 loadUserProfile();
             }
         }
@@ -1020,6 +1032,7 @@
 
         function selectMusic(track) {
             window.appState.selectedMusic = {
+                spotifyUrl: track.trackViewUrl
                 name: track.trackName,
                 artist: track.artistName,
                 artwork: track.artworkUrl600,
@@ -1086,6 +1099,14 @@
             });
         }
 
+        ${post.music.spotifyUrl ? `
+        <iframe style="margin-top:10px;border-radius:12px" 
+        src="https://open.spotify.com/embed/track/${extractSpotifyId(post.music.spotifyUrl)}" 
+        width="100%" height="80" frameborder="0" 
+        allow="autoplay; clipboard-write; encrypted-media;">
+        </iframe>
+        ` : ''}
+
         function loadFeed() {
             const feed = document.getElementById(window.appState.page === 'fyp' ? 'fyp-feed' : 'mine-feed');
             const posts = JSON.parse(localStorage.getItem('posts:' + window.appState.currentUser.id) || '[]');
@@ -1097,8 +1118,17 @@
                 return;
             }
 
+            ${post.music.spotifyUrl ? `
+            <iframe style="margin-top:10px;border-radius:12px" 
+            src="https://open.spotify.com/embed/track/${extractSpotifyId(post.music.spotifyUrl)}" 
+            width="100%" height="80" frameborder="0" 
+            allow="autoplay; clipboard-write; encrypted-media;">
+            </iframe>
+            ` : ''}
+
             posts.forEach(post => {
                 const postEl = document.createElement('div');
+                postEl.onclick = () => openPostDetail(post);
                 postEl.className = 'post-entry';
                 postEl.innerHTML = `
                     <button class="post-delete-btn" onclick="deletePost(${post.id})">×</button>
@@ -1114,7 +1144,67 @@
             });
         }
 
+        function extractSpotifyId(url) {
+            if (!url) return '';
+            const match = url.match(/track\/([a-zA-Z0-9]+)/);
+            return match ? match[1] : '';
+        }
+
         // ============ PROFILE MANAGEMENT ============
+        function openPostDetail(post) {
+            const modal = document.createElement('div');
+            modal.className = 'modal-content active';
+    
+            modal.innerHTML = `
+            
+                <div class="modal-header">
+                    <button onclick="this.parentElement.parentElement.remove()">← Back</button>
+                </div>
+                <div class="modal-body">
+                    <img src="${post.music.artwork}" style="width:100%; border-radius:20px;">
+                    <h2>${post.music.name}</h2>
+                    <p>${post.music.artist}</p>
+                    <p>${post.caption}</p>
+
+                <div style="margin-top:20px; display:flex; gap:10px;">
+                    <button onclick="likePost(${post.id})">❤️ ${post.likes}</button>
+                    <button onclick="openComment(${post.id})">💬</button>
+                    <button onclick="sharePost('${post.id}')">🔗</button>
+                </div>
+
+                <div id="comments-${post.id}"></div>
+                </div>
+        `;
+
+    document.body.appendChild(modal);
+}
+    
+     function likePost(id) {
+         let posts = JSON.parse(localStorage.getItem('posts:' + window.appState.currentUser.id));
+         posts = posts.map(p => {
+             if (p.id === id) p.likes++;
+             return p;
+          });
+          localStorage.setItem('posts:' + window.appState.currentUser.id, JSON.stringify(posts));
+          loadFeed();
+       }
+
+       function openComment(postId) {
+           const text = prompt("Write comment");
+           if (!text) return;
+
+           let comments = JSON.parse(localStorage.getItem('comments:' + postId) || '[]');
+           comments.push({ text, replies: [] });
+
+            localStorage.setItem('comments:' + postId, JSON.stringify(comments));
+        }
+
+        function sharePost(id) {
+            navigator.clipboard.writeText("Post ID: " + id);
+            showToast("Link copied!", "success");
+        }
+
+        
         function loadUserProfile() {
             if (!window.appState.myProfileData) {
                 return;
@@ -1297,7 +1387,7 @@
 
         function protectedAction(callback) {
             if (window.appState.isGuest) {
-                showToast('Please register to use this feature', 'warning');
+                openModal('modal-auth');
                 return;
             }
             callback();

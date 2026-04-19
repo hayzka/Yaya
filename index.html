@@ -3,747 +3,361 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>AmonsPath OS v8.0 | Full Feature Enterprise Archive</title>
-    
+    <meta name="theme-color" content="#007aff">
+    <title>AmonsPath OS v15.0</title>
+
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
 
     <style>
-        /* * ==========================================
-         * 1. GLOBAL SYSTEM ARCHITECTURE (Lines 20-200)
-         * ==========================================
-         */
         :root {
-            --p-color: #007aff;
-            --p-rgb: 0, 122, 255;
-            --s-color: #34c759;
-            --e-color: #ff3b30;
-            --w-color: #ff9500;
-            --bg-base: #f2f2f7;
-            --bg-elevated: #ffffff;
-            --bg-secondary: #e5e5ea;
-            --text-primary: #000000;
-            --text-secondary: #3a3a3c;
-            --text-muted: #8e8e93;
-            --border-light: #d1d1d6;
-            --radius-small: 10px;
-            --radius-medium: 18px;
-            --radius-large: 24px;
-            --shadow-soft: 0 4px 16px rgba(0,0,0,0.06);
-            --safe-top: env(safe-area-inset-top);
-            --safe-bottom: env(safe-area-inset-bottom);
+            --accent: #007aff;
+            --accent-glow: rgba(0, 122, 255, 0.4);
+            --accent-soft: rgba(0, 122, 255, 0.1);
+            --bg-deep: #050505;
+            --bg-card: #0f0f0f;
+            --bg-elevated: #1a1a1a;
+            --text-main: #ffffff;
+            --text-dim: #8e8e93;
+            --border: 1px solid rgba(255, 255, 255, 0.08);
+            --glass: blur(25px) saturate(180%);
+            --radius-l: 32px;
+            --radius-m: 18px;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg-base);
-            color: var(--text-primary);
-            overflow-x: hidden;
-            line-height: 1.6;
-            user-select: none;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        /* * ==========================================
-         * 2. TYPOGRAPHY ENGINE (Lines 201-350)
-         * ==========================================
-         */
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-deep); color: var(--text-main); overflow-x: hidden; }
         .mono { font-family: 'JetBrains Mono', monospace; }
-        .weight-black { font-weight: 800; letter-spacing: -0.8px; }
-        .weight-bold { font-weight: 700; }
-        .text-xs { font-size: 11px; }
-        .text-sm { font-size: 13px; }
-        .text-md { font-size: 15px; }
-        .text-lg { font-size: 18px; }
-        .uppercase { text-transform: uppercase; letter-spacing: 1.2px; }
+        .weight-800 { font-weight: 800; letter-spacing: -1px; }
 
-        /* * ==========================================
-         * 3. LAYOUT COMPONENTS (Lines 351-600)
-         * ==========================================
-         */
-        .app-shell {
-            width: 100%;
-            max-width: 500px;
-            margin: 0 auto;
-            min-height: 100vh;
-            background: var(--bg-elevated);
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            box-shadow: 0 0 40px rgba(0,0,0,0.03);
-        }
+        /* CORE LAYOUT */
+        .app-shell { width: 100%; max-width: 500px; margin: 0 auto; min-height: 100vh; position: relative; border-left: var(--border); border-right: var(--border); background: var(--bg-deep); display: flex; flex-direction: column; }
 
-        .sys-navbar {
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            height: 70px;
-            background: rgba(255, 255, 255, 0.82);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 0.5px solid var(--border-light);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-        }
+        .sys-header { position: sticky; top: 0; z-index: 1000; padding: 20px; background: rgba(5, 5, 5, 0.8); backdrop-filter: var(--glass); -webkit-backdrop-filter: var(--glass); border-bottom: var(--border); display: flex; justify-content: space-between; align-items: center; }
+        
+        .pfp-node { width: 45px; height: 45px; border-radius: 15px; border: var(--border); object-fit: cover; background: var(--bg-elevated); transition: 0.3s; }
 
-        .tab-switcher {
-            display: flex;
-            padding: 12px 20px;
-            gap: 10px;
-            background: var(--bg-elevated);
-            border-bottom: 0.5px solid var(--border-light);
-        }
+        /* NAVIGATION */
+        .nav-tabs { display: flex; padding: 15px 20px; gap: 10px; }
+        .tab-item { flex: 1; padding: 12px; border-radius: 14px; border: var(--border); background: var(--bg-card); color: var(--text-dim); font-size: 11px; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: 0.4s; }
+        .tab-item.active { background: var(--accent); color: white; border-color: var(--accent); box-shadow: 0 10px 25px var(--accent-glow); }
 
-        .tab-trigger {
-            flex: 1;
-            padding: 11px;
-            border-radius: var(--radius-small);
-            border: none;
-            background: var(--bg-base);
-            color: var(--text-muted);
-            font-size: 11px;
-            font-weight: 700;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        /* MUSIC NODES (APPLE STYLE) */
+        .feed-node { background: var(--bg-card); border-radius: var(--radius-l); margin: 0 20px 25px; border: var(--border); overflow: hidden; position: relative; }
+        .node-header { padding: 18px; display: flex; align-items: center; justify-content: space-between; }
+        .node-meta { display: flex; align-items: center; gap: 12px; }
+        
+        .artwork-container { width: 100%; aspect-ratio: 1; background: #000; position: relative; }
+        .artwork-container img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
+        .play-btn { position: absolute; bottom: 20px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: var(--accent); border: none; color: white; font-size: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 
-        .tab-trigger.is-active {
-            background: var(--p-color);
-            color: white;
-            box-shadow: 0 6px 15px rgba(var(--p-rgb), 0.3);
-        }
+        .node-body { padding: 22px; }
+        .node-body h3 { font-size: 20px; font-weight: 800; color: var(--accent); margin-bottom: 5px; }
+        .node-body p { font-size: 13px; color: #ccc; line-height: 1.6; }
 
-        .main-content {
-            flex: 1;
-            padding: 20px;
-            padding-bottom: 110px; /* Space for FAB */
-        }
+        /* INTERACTION LAYERS */
+        .sys-layer { position: fixed; inset: 0; background: var(--bg-deep); z-index: 2000; display: none; flex-direction: column; animation: layerUp 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes layerUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-        /* * ==========================================
-         * 4. COMPONENT: DATA ARCHIVE CARDS (Lines 601-850)
-         * ==========================================
-         */
-        .archive-card {
-            background: var(--bg-elevated);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-medium);
-            margin-bottom: 25px;
-            overflow: hidden;
-            transition: transform 0.2s ease;
-        }
+        .layer-head { padding: 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: var(--border); }
+        .form-content { padding: 20px; flex: 1; overflow-y: auto; }
+        .input-sys { width: 100%; padding: 18px; border-radius: 18px; background: var(--bg-elevated); border: var(--border); color: white; font-family: inherit; margin-bottom: 25px; }
+        .input-sys:focus { border-color: var(--accent); }
 
-        .archive-card:active { transform: scale(0.98); }
+        .btn-main { width: 100%; padding: 18px; border-radius: 18px; border: none; font-weight: 800; font-size: 12px; text-transform: uppercase; cursor: pointer; transition: 0.3s; }
+        .btn-accent { background: var(--accent); color: white; box-shadow: 0 15px 35px var(--accent-glow); }
 
-        .card-header {
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        .fab { position: fixed; bottom: 40px; right: 25px; width: 65px; height: 65px; border-radius: 22px; background: var(--accent); color: white; border: none; font-size: 32px; z-index: 1100; box-shadow: 0 15px 40px var(--accent-glow); display: flex; align-items: center; justify-content: center; }
 
-        .card-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--bg-base);
-            border: 1px solid var(--border-light);
-        }
-
-        .card-meta p { font-size: 14px; font-weight: 700; }
-        .card-meta span { font-size: 10px; color: var(--text-muted); }
-
-        .card-visual {
-            width: 100%;
-            aspect-ratio: 1;
-            background: #f9f9fb;
-            position: relative;
-        }
-
-        .card-visual img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .card-body { padding: 18px; }
-        .card-body h3 { font-size: 17px; font-weight: 800; margin-bottom: 8px; line-height: 1.3; }
-        .card-body p { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
-
-        .card-footer {
-            padding: 0 18px 18px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* * ==========================================
-         * 5. UI SYSTEM: BUTTONS & INTERFACE (Lines 851-1100)
-         * ==========================================
-         */
-        .btn-system {
-            padding: 12px 22px;
-            border-radius: var(--radius-small);
-            border: none;
-            font-size: 12px;
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-primary { background: var(--p-color); color: white; }
-        .btn-secondary { background: var(--bg-base); color: var(--text-secondary); }
-        .btn-danger { color: var(--e-color); font-size: 10px; font-weight: 900; background: none; }
-
-        .fab-button {
-            position: fixed;
-            bottom: 30px;
-            right: 25px;
-            width: 65px;
-            height: 65px;
-            border-radius: 50%;
-            background: var(--p-color);
-            color: white;
-            border: none;
-            box-shadow: 0 10px 25px rgba(var(--p-rgb), 0.4);
-            font-size: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1100;
-        }
-
-        /* * ==========================================
-         * 6. SYSTEM LAYERS (FULLSCREEN MODALS) (Lines 1101-1350)
-         * ==========================================
-         */
-        .sys-layer {
-            position: fixed;
-            inset: 0;
-            background: var(--bg-elevated);
-            z-index: 2000;
-            display: none;
-            flex-direction: column;
-            animation: layer-slide 0.45s cubic-bezier(0.19, 1, 0.22, 1);
-        }
-
-        @keyframes layer-slide {
-            from { transform: translateY(100%); opacity: 0.5; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .layer-header {
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 0.5px solid var(--border-light);
-        }
-
-        .form-container { padding: 20px; }
-        .input-label { font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px; display: block; }
-        .input-text { width: 100%; padding: 16px; border-radius: var(--radius-small); border: 2px solid var(--bg-base); background: var(--bg-base); font-size: 14px; transition: 0.3s; font-family: inherit; }
-        .input-text:focus { background: white; border-color: var(--p-color); outline: none; }
-
-        /* * ==========================================
-         * 7. ANALYTICS & MONITORING UI (Lines 1351-1550)
-         * ==========================================
-         */
-        .chart-container { padding: 20px; background: var(--bg-base); border-radius: var(--radius-medium); margin: 20px; height: 220px; }
-        .stats-grid { display: grid; grid-template-cols: 1fr 1fr; gap: 15px; padding: 0 20px; }
-        .stat-card { padding: 20px; background: var(--bg-elevated); border: 1px solid var(--border-light); border-radius: var(--radius-medium); text-align: center; }
-        .stat-number { font-size: 28px; font-weight: 900; display: block; }
-        .stat-label { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
-
-        /* SKELETON LOADING */
-        .shimmer { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer-wave 1.6s infinite linear; }
-        @keyframes shimmer-wave { to { background-position: -200% 0; } }
-
+        /* NOTIFICATION POPUP */
+        #notifier { position: fixed; top: 100px; left: 50%; transform: translateX(-50%); padding: 12px 25px; background: var(--accent); color: white; border-radius: 30px; font-size: 11px; font-weight: 800; z-index: 9999; display: none; box-shadow: 0 10px 30px var(--accent-glow); }
     </style>
 </head>
 <body>
 
+    <div id="notifier">SYSTEM_NOTIFICATION</div>
+
     <div class="app-shell">
-        <header class="sys-navbar">
-            <div>
-                <h1 class="weight-black">AMONSPATH</h1>
-                <p id="clock-display" class="mono text-xs text-muted"></p>
+        <header class="sys-header">
+            <div id="header-ident" style="display: flex; align-items: center; gap: 14px;">
+                <img src="https://api.dicebear.com/7.x/identicon/svg?seed=ghost" class="pfp-node" id="sys-pfp">
+                <div>
+                    <h2 class="weight-800" style="font-size: 16px;" id="sys-name">GHOST_NODE</h2>
+                    <p class="mono" style="font-size: 9px; color: var(--accent);" id="sys-user">@anonymous</p>
+                </div>
             </div>
             <div style="display: flex; gap: 15px;">
-                <button onclick="LayerController.show('layer-analytics')" style="background:none; border:none; font-size:22px;">📊</button>
-                <button onclick="LayerController.show('layer-settings')" style="background:none; border:none; font-size:22px;">⚙️</button>
+                <button onclick="View.open('lyr-stats')" style="background:none; border:none; font-size:22px;">📊</button>
+                <button onclick="View.open('lyr-cfg')" style="background:none; border:none; font-size:22px;">⚙️</button>
             </div>
         </header>
 
-        <nav class="tab-switcher">
-            <button id="t-global" class="tab-trigger is-active" onclick="AppKernel.setTab('global')">GLOBAL INDEX</button>
-            <button id="t-private" class="tab-trigger" onclick="AppKernel.setTab('private')">PRIVATE NODE</button>
+        <nav class="nav-tabs">
+            <button id="t-pub" class="tab-item active" onclick="Kernel.tab('global')">Public Index</button>
+            <button id="t-own" class="tab-item" onclick="Kernel.tab('mine')">My Archive</button>
         </nav>
 
-        <main id="view-viewport" class="main-content">
+        <main id="viewport" style="flex:1; padding-top: 10px;">
             </main>
     </div>
 
-    <button class="fab-button" onclick="LayerController.show('layer-compose')">+</button>
+    <button class="fab" onclick="Gatekeeper.verifyAccess('lyr-new')">+</button>
 
-    <div id="layer-compose" class="sys-layer">
-        <div class="layer-header">
-            <h2 class="weight-bold">Archive New Data</h2>
-            <button onclick="LayerController.hide('layer-compose')" class="weight-bold">✕</button>
-        </div>
-        <div class="form-container">
-            <label class="input-label">Music Engine Search</label>
-            <input type="text" id="search-input" oninput="MusicModule.search(this.value)" class="input-text" placeholder="Search track, artist, album...">
-            <div id="search-results-box" style="margin-top:12px; border-radius:12px; overflow:hidden; border:1px solid #eee; display:none;"></div>
-        </div>
-        <div id="selection-preview-box" class="form-container" style="display:none;">
-            </div>
-        <div class="form-container">
-            <label class="input-label">Technical Annotation</label>
-            <textarea id="caption-input" class="input-text" style="height:110px; resize:none;" placeholder="Enter context for this record..."></textarea>
-        </div>
-        <div class="form-container">
-            <button onclick="AppKernel.executeCommit()" id="btn-submit-commit" class="btn-system btn-primary" style="width:100%; justify-content:center; padding:18px;">COMMIT TO CLOUD</button>
+    <div id="lyr-new" class="sys-layer">
+        <div class="layer-head"><h2 class="weight-800">NEW_ARCHIVE</h2><button onclick="View.close('lyr-new')" class="mono">✕</button></div>
+        <div class="form-content">
+            <label class="mono" style="font-size:10px; color:var(--accent); margin-bottom:10px; display:block;">// DATABASE_QUERY</label>
+            <input type="text" id="m-search" oninput="MusicProcessor.search(this.value)" class="input-sys" placeholder="Search track or artist...">
+            <div id="m-results" style="margin-top:-20px; margin-bottom:20px; border-radius:18px; overflow:hidden; border:var(--border); display:none;"></div>
+            <div id="m-preview" style="margin-bottom:25px; display:none;"></div>
+            <label class="mono" style="font-size:10px; color:var(--accent); margin-bottom:10px; display:block;">// ANNOTATION</label>
+            <textarea id="m-cap" class="input-sys" style="height:120px; resize:none;"></textarea>
+            <button id="btn-push" onclick="Kernel.push()" class="btn-main btn-accent">PUSH_TO_NODE</button>
         </div>
     </div>
 
-    <div id="layer-analytics" class="sys-layer">
-        <div class="layer-header">
-            <h2 class="weight-bold">Network Analytics</h2>
-            <button onclick="LayerController.hide('layer-analytics')">✕</button>
-        </div>
-        <div class="chart-container">
-            <canvas id="mainSystemChart"></canvas>
-        </div>
-        <div class="stats-grid">
-            <div class="stat-card">
-                <span id="st-total-count" class="stat-number">0</span>
-                <span class="stat-label">Total Records</span>
+    <div id="lyr-cfg" class="sys-layer">
+        <div class="layer-head"><h2 class="weight-800">SYS_CONFIG</h2><button onclick="View.close('lyr-cfg')" class="mono">✕</button></div>
+        <div class="form-content">
+            <div id="cfg-ghost" style="text-align:center; padding:50px 0;">
+                <p class="mono text-dim">// NO_PROFILE_DETECTED</p>
+                <button onclick="View.open('lyr-auth')" class="btn-main btn-accent" style="margin-top:20px;">INIT_IDENTITY</button>
             </div>
-            <div class="stat-card">
-                <span class="stat-number">100%</span>
-                <span class="stat-label">System Uptime</span>
+            <div id="cfg-user" style="display:none;">
+                <div style="text-align:center; margin-bottom:30px;">
+                    <img id="cfg-pfp" class="pfp-node" style="width:100px; height:100px; border-radius:30px;">
+                    <h3 id="cfg-name" class="weight-800" style="margin-top:15px;"></h3>
+                </div>
+                <label class="mono" style="font-size:10px; color:var(--accent);">CHAMELEON_THEME_COLOR</label>
+                <input type="color" id="theme-color" class="input-sys" style="height:70px; padding:5px;">
+                <p id="hex-view" class="mono" style="text-align:center; margin-top:-15px; margin-bottom:25px; font-size:12px;"></p>
+                <button onclick="Kernel.saveTheme()" class="btn-main btn-accent">SAVE_PREFERENCES</button>
+                <button onclick="Kernel.exportData()" class="btn-main" style="margin-top:15px; background:var(--bg-elevated); color:white;">EXPORT_DB_JSON</button>
             </div>
-        </div>
-        <div class="form-container" style="margin-top:20px;">
-            <button onclick="AppKernel.runExport()" class="btn-system btn-secondary" style="width:100%; justify-content:center;">EXPORT DATABASE (JSON)</button>
         </div>
     </div>
 
-    <div id="layer-settings" class="sys-layer">
-        <div class="layer-header">
-            <h2 class="weight-bold">Node Configuration</h2>
-            <button onclick="LayerController.hide('layer-settings')">✕</button>
-        </div>
-        <div class="form-container" style="text-align:center;">
-            <img id="cfg-profile-pic" class="card-avatar" style="width:85px; height:85px; margin-bottom:15px; border:3px solid var(--p-color);">
-            <h3 id="cfg-display-name" class="weight-bold"></h3>
-            <p id="cfg-username-tag" class="mono text-sm" style="color:var(--p-color);"></p>
-        </div>
-        <div class="form-container">
-            <label class="input-label">Privacy Protocol</label>
-            <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-base); padding:18px; border-radius:15px;">
-                <span class="text-sm weight-bold">Ghost Mode (Private Node)</span>
-                <input type="checkbox" id="cfg-privacy-toggle" onchange="AppKernel.updatePrivacy(this.checked)">
-            </div>
-        </div>
-        <div class="form-container">
-            <label class="input-label">Global CSS Override</label>
-            <textarea id="cfg-css-box" class="input-text mono text-xs" style="height:140px;" placeholder="/* Add custom styles here */"></textarea>
-            <button onclick="AppKernel.saveCSSPatch()" class="btn-system btn-primary" style="width:100%; margin-top:15px; justify-content:center;">APPLY PATCH</button>
+    <div id="lyr-auth" class="sys-layer">
+        <div class="layer-head"><h2 class="weight-800">IDENTITY_INIT</h2><button onclick="View.close('lyr-auth')" class="mono">✕</button></div>
+        <div class="form-content">
+            <input type="text" id="reg-name" class="input-sys" placeholder="Full Display Name">
+            <input type="text" id="reg-user" class="input-sys mono" placeholder="Handle_Name" oninput="Kernel.checkUN(this.value)">
+            <p id="un-status" class="mono" style="font-size:10px; margin-top:-15px; margin-bottom:25px;"></p>
+            <button id="btn-reg" onclick="Kernel.register()" class="btn-main btn-accent" disabled>ESTABLISH_LINK</button>
         </div>
     </div>
 
-    <div id="layer-auth-init" class="sys-layer" style="display:none; justify-content:center;">
-        <div class="form-container">
-            <h2 class="weight-black" style="font-size:36px; line-height:1; letter-spacing:-1.5px;">IDENTITY PROTOCOL</h2>
-            <p class="text-sm text-muted" style="margin-top:15px; margin-bottom:35px;">Register your digital node to the AmonsPath network.</p>
-            
-            <label class="input-label">Legal Name / Alias</label>
-            <input type="text" id="reg-full-name" class="input-text" style="margin-bottom:20px;">
-            
-            <label class="input-label">Unique Node Username</label>
-            <input type="text" id="reg-node-user" class="input-text mono" oninput="AppKernel.monitorUsername(this.value)" placeholder="e.g. zakia_w">
-            <p id="reg-status-msg" class="text-xs weight-bold" style="margin:12px 0 35px;"></p>
-            
-            <button onclick="AppKernel.initRegistration()" id="reg-btn-action" class="btn-system btn-primary" style="width:100%; justify-content:center; padding:20px;" disabled>CONNECT TO NETWORK</button>
+    <div id="lyr-stats" class="sys-layer">
+        <div class="layer-head"><h2 class="weight-800">ANALYTICS</h2><button onclick="View.close('lyr-stats')" class="mono">✕</button></div>
+        <div class="form-content">
+            <div style="background:var(--bg-card); padding:20px; border-radius:25px; border:var(--border);">
+                <canvas id="statChart"></canvas>
+            </div>
+            <div style="margin-top:20px; display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                <div style="background:var(--bg-card); padding:20px; border-radius:20px; border:var(--border); text-align:center;">
+                    <p class="mono" style="font-size:10px; color:var(--accent);">TOTAL_RECORDS</p>
+                    <h2 id="st-total" class="weight-800">0</h2>
+                </div>
+                <div style="background:var(--bg-card); padding:20px; border-radius:20px; border:var(--border); text-align:center;">
+                    <p class="mono" style="font-size:10px; color:var(--accent);">NODE_STATUS</p>
+                    <h2 class="weight-800" style="color:#4cd964;">ACTIVE</h2>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        /**
-         * AMONSPATH SYSTEM ENGINE v8.0
-         * Engineering Lead: Zakia Wardhani (NIM 09011182530020)
-         * Integrated Cloud Services & Data Analytics.
-         */
-
-        // I. SYSTEM CONFIGURATION & STATE (Line 1610)
-        const System = {
+        const Core = {
             tg: window.Telegram.WebApp,
-            supabase: window.supabase.createClient('https://aldzhrtbrjszppseawrz.supabase.co', 'sb_publishable_h-BSul_X4VDxc-6gwSUa0w_Z_rsJ2xp'),
+            // REPLACE WITH YOUR ACTUAL KEYS
+            db: window.supabase.createClient('https://aldzhrtbrjszppseawrz.supabase.co', 'sb_publishable_h-BSul_X4VDxc-6gwSUa0w_Z_rsJ2xp'),
             state: {
-                activeUser: window.Telegram.WebApp.initDataUnsafe.user || { id: 888, first_name: 'Core_Dev' },
-                profileData: null,
-                currentTab: 'global',
-                dataCache: [],
-                pendingSelection: null,
-                activeAudio: null,
-                sysChart: null
+                user: window.Telegram.WebApp.initDataUnsafe.user || { id: 888, first_name: 'Ghost' },
+                profile: null,
+                view: 'global',
+                selected: null,
+                audio: null
             }
         };
 
-        // II. UI & LAYER CONTROLLER (Line 1630)
-        const LayerController = {
-            show(id) {
-                const el = document.getElementById(id);
-                el.style.display = 'flex';
-                if(id === 'layer-analytics') this.rebuildChart();
-                this.vibrate('light');
+        const View = {
+            open(id) { document.getElementById(id).style.display = 'flex'; if(id==='lyr-stats') this.drawChart(); this.vibrate(); },
+            close(id) { document.getElementById(id).style.display = 'none'; this.vibrate(); },
+            vibrate() { try { Core.tg.HapticFeedback.impactOccurred('medium'); } catch(e){} },
+            notify(msg) { 
+                const n = document.getElementById('notifier');
+                n.innerText = msg; n.style.display = 'block';
+                setTimeout(() => n.style.display = 'none', 3000);
             },
-            hide(id) {
-                document.getElementById(id).style.display = 'none';
-                this.vibrate('light');
-            },
-            vibrate(style) {
-                try {
-                    if(style === 'light') System.tg.HapticFeedback.impactOccurred('light');
-                    if(style === 'success') System.tg.HapticFeedback.notificationOccurred('success');
-                } catch(e) {}
-            },
-            updateClock() {
-                const now = new Date();
-                const clock = document.getElementById('clock-display');
-                clock.innerText = now.toLocaleTimeString('en-GB', { hour12: false }) + " | NODE_SYS_OK";
-            },
-            rebuildChart() {
-                const ctx = document.getElementById('mainSystemChart').getContext('2d');
-                if(System.state.sysChart) System.state.sysChart.destroy();
-                
-                System.state.sysChart = new Chart(ctx, {
+            drawChart() {
+                const ctx = document.getElementById('statChart').getContext('2d');
+                new Chart(ctx, {
                     type: 'line',
-                    data: {
-                        labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
-                        datasets: [{
-                            label: 'Archive Activity',
-                            data: [12, 19, 13, 25, 22, 38, 30],
-                            borderColor: '#007aff',
-                            borderWidth: 4,
-                            tension: 0.4,
-                            fill: true,
-                            backgroundColor: 'rgba(0,122,255,0.06)',
-                            pointRadius: 0
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: { x: { display: false }, y: { display: false } }
-                    }
+                    data: { labels: ['M','T','W','T','F','S','S'], datasets: [{ data: [5, 8, 12, 7, 10, 15, 9], borderColor: getComputedStyle(document.documentElement).getPropertyValue('--accent'), tension: 0.4, borderWeight: 3 }] },
+                    options: { plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false } } }
                 });
             }
         };
 
-        // III. MUSIC & MEDIA MODULE (Line 1690)
-        const MusicModule = {
-            searchTimer: null,
-            search(query) {
-                clearTimeout(this.searchTimer);
-                const resultsBox = document.getElementById('search-results-box');
-                if(query.length < 3) { resultsBox.style.display = 'none'; return; }
-
-                this.searchTimer = setTimeout(async () => {
-                    const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=music&limit=5`);
-                    const json = await response.json();
-                    
-                    if(json.results && json.results.length > 0) {
-                        resultsBox.innerHTML = json.results.map(track => `
-                            <div onclick="MusicModule.selectTrack('${track.trackName}', '${track.artistName}', '${track.previewUrl}', '${track.artworkUrl100}')" 
-                                 style="padding:15px; background:var(--bg-base); border-bottom:1px solid #ddd; display:flex; align-items:center; gap:12px; cursor:pointer;">
-                                <img src="${track.artworkUrl60}" style="width:38px; border-radius:8px;">
-                                <div style="overflow:hidden">
-                                    <p class="weight-bold text-sm truncate">${track.trackName}</p>
-                                    <p class="text-xs text-muted">${track.artistName}</p>
-                                </div>
-                            </div>
-                        `).join('');
-                        resultsBox.style.display = 'block';
-                    }
-                }, 600);
+        const Chameleon = {
+            inject(hex) {
+                if(!hex) return;
+                const r = document.documentElement;
+                r.style.setProperty('--accent', hex);
+                r.style.setProperty('--accent-glow', hex + '66');
+                document.getElementById('hex-view').innerText = hex.toUpperCase();
+                document.getElementById('theme-color').value = hex;
+                document.querySelector('meta[name="theme-color"]').setAttribute('content', hex);
             },
-            selectTrack(title, artist, streamUrl, cover) {
-                System.state.pendingSelection = { 
-                    title, artist, streamUrl, 
-                    cover: cover.replace('100x100','800x800') 
-                };
-                
-                const preview = document.getElementById('selection-preview-box');
-                preview.innerHTML = `
-                    <div class="archive-card" style="margin-bottom:0; border-color:var(--p-color); background:rgba(var(--p-rgb), 0.03);">
-                        <div class="card-header">
-                            <img src="${System.state.pendingSelection.cover}" class="card-avatar">
-                            <div>
-                                <p class="weight-bold text-sm">${title}</p>
-                                <p class="text-xs" style="color:var(--p-color);">${artist}</p>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                preview.style.display = 'block';
-                document.getElementById('search-results-box').style.display = 'none';
-                LayerController.vibrate('light');
-            },
-            togglePlayback(id, url) {
-                if(System.state.activeAudio && System.state.activeAudio.src === url) {
-                    if(System.state.activeAudio.paused) {
-                        System.state.activeAudio.play();
-                        document.getElementById(`play-btn-text-${id}`).innerText = 'STOP_STREAM';
-                    } else {
-                        System.state.activeAudio.pause();
-                        document.getElementById(`play-btn-text-${id}`).innerText = 'PLAY_STREAM';
-                    }
-                } else {
-                    if(System.state.activeAudio) {
-                        System.state.activeAudio.pause();
-                        const oldId = System.state.activeAudio.dataset.ownerId;
-                        if(document.getElementById(`play-btn-text-${oldId}`)) {
-                            document.getElementById(`play-btn-text-${oldId}`).innerText = 'PLAY_STREAM';
-                        }
-                    }
-                    const newAudio = new Audio(url);
-                    newAudio.dataset.ownerId = id;
-                    newAudio.onended = () => {
-                        document.getElementById(`play-btn-text-${id}`).innerText = 'PLAY_STREAM';
-                    };
-                    newAudio.play();
-                    System.state.activeAudio = newAudio;
-                    document.getElementById(`play-btn-text-${id}`).innerText = 'STOP_STREAM';
-                }
-                LayerController.vibrate('light');
+            watch() {
+                document.getElementById('theme-color').addEventListener('input', (e) => this.inject(e.target.value));
             }
         };
 
-        // IV. CORE APPLICATION KERNEL (Line 1770)
-        const AppKernel = {
-            async bootSequence() {
-                LayerController.updateClock();
-                setInterval(() => LayerController.updateClock(), 1000);
-
-                const { data: profile } = await System.supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('telegram_id', System.state.activeUser.id)
-                    .single();
-
-                if(profile) {
-                    System.state.profileData = profile;
-                    this.applyProfileUI(profile);
-                    this.fetchArchiveData();
-                } else {
-                    document.getElementById('layer-auth-init').style.display = 'flex';
-                }
-                
-                System.tg.expand();
-                System.tg.ready();
-            },
-
-            async fetchArchiveData() {
-                const viewport = document.getElementById('view-viewport');
-                viewport.innerHTML = `<div class="shimmer" style="height:250px; border-radius:20px; margin-bottom:25px;"></div>`;
-                
-                let query = System.supabase.from('music_posts').select('*, profiles(*)');
-                
-                if(System.state.currentTab === 'global') {
-                    query = query.eq('profiles.is_private', false);
-                } else {
-                    query = query.eq('sender_id', System.state.activeUser.id);
-                }
-
-                const { data, error } = await query.order('created_at', { ascending: false });
-                
-                if(data) {
-                    System.state.dataCache = data;
-                    this.renderFeed(data);
-                    document.getElementById('st-total-count').innerText = data.length;
-                }
-            },
-
-            renderFeed(records) {
-                const viewport = document.getElementById('view-viewport');
-                if(records.length === 0) {
-                    viewport.innerHTML = `<div style="text-align:center; padding:120px 0; color:var(--text-muted); font-size:12px;" class="mono">INDEX_EMPTY: NO_DATA_AVAILABLE</div>`;
+        const Gatekeeper = {
+            async verifyAccess(lyr) {
+                if(!Core.state.profile) {
+                    View.notify("IDENT_REQUIRED_FOR_WRITE");
+                    View.open('lyr-auth');
                     return;
                 }
+                View.open(lyr);
+            }
+        };
 
-                viewport.innerHTML = records.map(item => `
-                    <div class="archive-card">
-                        <div class="card-header">
-                            <img src="${item.profiles.photo_url}" class="card-avatar">
-                            <div class="card-meta">
-                                <p>@${item.profiles.username}</p>
-                                <span>RECORDED: ${new Date(item.created_at).toLocaleDateString('id-ID')}</span>
+        const MusicProcessor = {
+            search(q) {
+                if(q.length < 3) return;
+                fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(q)}&limit=5`)
+                .then(r => r.json()).then(d => {
+                    const res = document.getElementById('m-results');
+                    res.innerHTML = d.results.map(i => `
+                        <div onclick="MusicProcessor.pick('${i.trackName}','${i.artistName}','${i.previewUrl}','${i.artworkUrl100}')" style="padding:15px; background:var(--bg-elevated); border-bottom:1px solid rgba(255,255,255,0.05); display:flex; gap:12px;">
+                            <img src="${i.artworkUrl60}" style="width:40px; border-radius:10px;">
+                            <div style="overflow:hidden"><p class="weight-800" style="font-size:14px;">${i.trackName}</p><p class="mono text-dim" style="font-size:10px;">${i.artistName}</p></div>
+                        </div>
+                    `).join('');
+                    res.style.display = 'block';
+                });
+            },
+            pick(t, a, u, c) {
+                Core.state.selected = { t, a, u, c: c.replace('100x100','1000x1000') };
+                document.getElementById('m-preview').innerHTML = `<div class="feed-node" style="margin:0; border:2px solid var(--accent);"><div class="node-header"><h4>${t}</h4></div></div>`;
+                document.getElementById('m-preview').style.display = 'block';
+                document.getElementById('m-results').style.display = 'none';
+            },
+            toggle(url, btn) {
+                if(Core.state.audio && Core.state.audio.src === url) {
+                    if(Core.state.audio.paused) { Core.state.audio.play(); btn.innerText = '⏸'; }
+                    else { Core.state.audio.pause(); btn.innerText = '▶'; }
+                } else {
+                    if(Core.state.audio) Core.state.audio.pause();
+                    Core.state.audio = new Audio(url); Core.state.audio.play(); btn.innerText = '⏸';
+                }
+            }
+        };
+
+        const Observer = {
+            subscribe() {
+                Core.db.channel('public:music_posts')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'music_posts' }, () => Kernel.fetchNodes())
+                .subscribe();
+            }
+        };
+
+        const Kernel = {
+            async boot() {
+                this.fetchNodes();
+                const { data: p } = await Core.db.from('profiles').select('*').eq('telegram_id', Core.state.user.id).single();
+                if(p) {
+                    Core.state.profile = p;
+                    this.syncUI(p);
+                    Chameleon.inject(p.theme_color);
+                }
+                Chameleon.watch();
+                Observer.subscribe();
+                Core.tg.expand();
+            },
+            async fetchNodes() {
+                const f = document.getElementById('viewport');
+                f.innerHTML = `<div style="padding:50px; text-align:center;" class="mono text-dim">// SYNCING_STREAMS...</div>`;
+                
+                let q = Core.db.from('music_posts').select('*, profiles(*)').order('created_at', {ascending:false});
+                if(Core.state.view === 'mine') q = q.eq('sender_id', Core.state.user.id);
+                
+                const { data } = await q;
+                document.getElementById('st-total').innerText = data.length;
+                f.innerHTML = data.map(n => `
+                    <div class="feed-node">
+                        <div class="node-header">
+                            <div class="node-meta">
+                                <img src="${n.profiles.photo_url}" class="pfp-node" style="width:30px; height:30px;">
+                                <div><h4 style="font-size:13px;">${n.profiles.display_name}</h4><p class="mono text-dim" style="font-size:8px;">@${n.profiles.username}</p></div>
                             </div>
                         </div>
-                        <div class="card-visual">
-                            <img src="${item.music_cover}" loading="lazy">
+                        <div class="artwork-container">
+                            <img src="${n.music_cover}">
+                            <button class="play-btn" onclick="MusicProcessor.toggle('${n.music_url}', this)">▶</button>
                         </div>
-                        <div class="card-body">
-                            <h3 class="weight-bold">${item.music_title}</h3>
-                            <p>${item.caption}</p>
+                        <div class="node-body">
+                            <h3>${n.music_title}</h3>
+                            <p>${n.caption || ''}</p>
                         </div>
-                        <div class="card-footer">
-                            <button class="btn-system btn-secondary" onclick="MusicModule.togglePlayback('${item.id}', '${item.music_url}')">
-                                <span>▶</span> <span id="play-btn-text-${item.id}" class="mono">PLAY_STREAM</span>
-                            </button>
-                            ${System.state.currentTab === 'private' ? 
-                                `<button onclick="AppKernel.deleteRecord('${item.id}')" class="btn-danger">ERASE_DATA</button>` : ''}
-                        </div>
+                        ${Core.state.view === 'mine' ? `<div style="padding:0 22px 22px;"><button onclick="Kernel.erase('${n.id}')" style="color:#ff3b30; background:none; border:none;" class="mono text-xs">ERASE_DATA</button></div>` : ''}
                     </div>
                 `).join('');
             },
-
-            setTab(tab) {
-                System.state.currentTab = tab;
-                document.getElementById('t-global').classList.toggle('is-active', tab === 'global');
-                document.getElementById('t-private').classList.toggle('is-active', tab === 'private');
-                this.fetchArchiveData();
-                LayerController.vibrate('light');
+            tab(v) { Core.state.view = v; document.getElementById('t-pub').classList.toggle('active', v==='global'); document.getElementById('t-own').classList.toggle('active', v==='mine'); this.fetchNodes(); },
+            async checkUN(u) {
+                const { data } = await Core.db.from('profiles').select('username').eq('username', u.toLowerCase()).single();
+                const s = document.getElementById('un-status'), b = document.getElementById('btn-reg');
+                if(data) { s.innerText = "UNAVAILABLE"; s.style.color="red"; b.disabled=true; }
+                else { s.innerText = "AVAILABLE"; s.style.color="var(--accent)"; b.disabled=false; }
             },
-
-            async monitorUsername(username) {
-                const status = document.getElementById('reg-status-msg');
-                const btn = document.getElementById('reg-btn-action');
-                
-                if(username.length < 4) {
-                    btn.disabled = true;
-                    status.innerText = "";
-                    return;
-                }
-
-                const { data } = await System.supabase
-                    .from('profiles')
-                    .select('username')
-                    .eq('username', username.toLowerCase())
-                    .single();
-
-                if(data) {
-                    status.innerText = "COLLISION: USERNAME_ALREADY_EXISTS";
-                    status.style.color = "var(--e-color)";
-                    btn.disabled = true;
-                } else {
-                    status.innerText = "STATUS: USERNAME_AVAILABLE_FOR_LEASE";
-                    status.style.color = "var(--s-color)";
-                    btn.disabled = false;
-                }
-            },
-
-            async initRegistration() {
-                const fullName = document.getElementById('reg-full-name').value;
-                const nodeUser = document.getElementById('reg-node-user').value.toLowerCase();
-                
-                const { error } = await System.supabase.from('profiles').insert({
-                    telegram_id: System.state.activeUser.id,
-                    username: nodeUser,
-                    display_name: fullName,
-                    photo_url: `https://api.dicebear.com/7.x/identicon/svg?seed=${nodeUser}`
+            async register() {
+                await Core.db.from('profiles').insert({
+                    telegram_id: Core.state.user.id,
+                    username: document.getElementById('reg-user').value.toLowerCase(),
+                    display_name: document.getElementById('reg-name').value,
+                    photo_url: `https://api.dicebear.com/7.x/identicon/svg?seed=${Date.now()}`
                 });
-
-                if(!error) {
-                    LayerController.vibrate('success');
-                    location.reload();
-                }
-            },
-
-            async executeCommit() {
-                if(!System.state.pendingSelection) return;
-                
-                const btn = document.getElementById('btn-submit-commit');
-                const caption = document.getElementById('caption-input').value;
-                
-                btn.disabled = true;
-                btn.innerText = "PUSHING_PACKET...";
-
-                const { error } = await System.supabase.from('music_posts').insert({
-                    sender_id: System.state.activeUser.id,
-                    music_title: `${System.state.pendingSelection.title} - ${System.state.pendingSelection.artist}`,
-                    music_url: System.state.pendingSelection.streamUrl,
-                    music_cover: System.state.pendingSelection.cover,
-                    caption: caption
-                });
-
-                if(!error) {
-                    LayerController.vibrate('success');
-                    location.reload();
-                }
-            },
-
-            applyProfileUI(data) {
-                document.getElementById('cfg-profile-pic').src = data.photo_url;
-                document.getElementById('cfg-display-name').innerText = data.display_name;
-                document.getElementById('cfg-username-tag').innerText = `@${data.username}`;
-                document.getElementById('cfg-privacy-toggle').checked = data.is_private;
-                document.getElementById('cfg-css-box').value = data.custom_css || "";
-                
-                if(data.custom_css) {
-                    const styleElement = document.createElement('style');
-                    styleElement.id = "user-custom-css";
-                    styleElement.innerHTML = data.custom_css;
-                    document.head.appendChild(styleElement);
-                }
-            },
-
-            async updatePrivacy(value) {
-                await System.supabase
-                    .from('profiles')
-                    .update({ is_private: value })
-                    .eq('telegram_id', System.state.activeUser.id);
-                LayerController.vibrate('light');
-            },
-
-            async saveCSSPatch() {
-                const cssValue = document.getElementById('cfg-css-box').value;
-                await System.supabase
-                    .from('profiles')
-                    .update({ custom_css: cssValue })
-                    .eq('telegram_id', System.state.activeUser.id);
                 location.reload();
             },
-
-            async deleteRecord(id) {
-                if(confirm("Permanently erase this record from the archive?")) {
-                    await System.supabase.from('music_posts').delete().eq('id', id);
-                    this.fetchArchiveData();
-                    LayerController.vibrate('success');
-                }
+            syncUI(p) {
+                document.getElementById('sys-pfp').src = p.photo_url;
+                document.getElementById('sys-name').innerText = p.display_name.toUpperCase();
+                document.getElementById('sys-user').innerText = `@${p.username}`;
+                document.getElementById('cfg-ghost').style.display = 'none';
+                document.getElementById('cfg-user').style.display = 'block';
+                document.getElementById('cfg-pfp').src = p.photo_url;
+                document.getElementById('cfg-name').innerText = p.display_name;
             },
-
-            runExport() {
-                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(System.state.dataCache, null, 2));
-                const downloadAnchor = document.createElement('a');
-                downloadAnchor.setAttribute("href", dataStr);
-                downloadAnchor.setAttribute("download", `archive_export_${Date.now()}.json`);
-                downloadAnchor.click();
-                LayerController.vibrate('success');
+            async saveTheme() {
+                await Core.db.from('profiles').update({ theme_color: document.getElementById('theme-color').value }).eq('telegram_id', Core.state.user.id);
+                View.notify("THEME_COMMITTED");
+                setTimeout(() => location.reload(), 1000);
+            },
+            async push() {
+                const b = document.getElementById('btn-push'); b.innerText = "PUSHING..."; b.disabled = true;
+                await Core.db.from('music_posts').insert({
+                    sender_id: Core.state.user.id,
+                    music_title: Core.state.selected.t + " - " + Core.state.selected.a,
+                    music_url: Core.state.selected.u,
+                    music_cover: Core.state.selected.c,
+                    caption: document.getElementById('m-cap').value
+                });
+                location.reload();
+            },
+            async erase(id) { if(confirm("Erase Node?")) { await Core.db.from('music_posts').delete().eq('id', id); this.fetchNodes(); } },
+            exportData() {
+                const blob = new Blob([JSON.stringify(Core.state.profile)], {type: 'application/json'});
+                const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = "amons_profile.json"; a.click();
             }
         };
 
-        // INITIALIZE BOOT PROCESS
-        window.addEventListener('DOMContentLoaded', () => AppKernel.bootSequence());
-
+        window.onload = () => Kernel.boot();
     </script>
 </body>
 </html>

@@ -3,154 +3,362 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AmonsPath | Digital Space</title>
+    <title>AmonsPath | Digital Archive</title>
     
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@1,400;1,700&display=swap" rel="stylesheet">
 
-    <style id="base-theme">
-        :root { --accent: #ec4899; --accent-soft: #fdf2f8; }
-        body { background: #ffffff; color: #1a1a1a; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        .font-serif { font-family: 'Playfair Display', serif; }
-        
-        /* Apple Music Header Style */
-        .apple-header { display: grid; grid-template-columns: 140px 1fr; gap: 20px; padding: 30px 20px; }
-        .apple-cover { width: 140px; height: 140px; border-radius: 12px; object-fit: cover; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .btn-apple { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; border-radius: 10px; font-weight: 600; font-size: 14px; transition: 0.2s; }
-        .btn-play { background: var(--accent); color: white; }
-        .btn-shuffle { background: var(--accent-soft); color: var(--accent); }
+    <style id="master-base-theme">
+        :root { 
+            --accent: #ec4899; 
+            --accent-soft: #fdf2f8; 
+            --bg-main: #ffffff;
+            --card-bg: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #6b7280;
+        }
 
-        /* Timeline Card */
-        .elegant-card { background: white; border: 1px solid #f3f4f6; border-radius: 20px; margin: 15px; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
-        .vinyl-disk { width: 50px; height: 50px; border-radius: 50%; border: 2px solid #eee; transition: 0.5s; }
-        .spinning { animation: rotate 10s linear infinite; }
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+        body { 
+            background-color: var(--bg-main); 
+            color: var(--text-primary); 
+            font-family: 'Inter', sans-serif; 
+            overflow-x: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-        /* Caption Truncate */
-        .caption-truncate { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; cursor: pointer; font-size: 13px; line-height: 1.6; }
-
-        /* Input Styles */
-        .input-apple { width: 100%; background: #f5f5f7; border-radius: 12px; padding: 15px; outline: none; font-size: 14px; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        
-        /* Modal Blur */
-        .modal-layer { backdrop-filter: blur(25px); background: rgba(255,255,255,0.85); position: fixed; inset: 0; z-index: 100; }
+
+        /* HEADER APPLE MUSIC STYLE (November Image) */
+        .apple-header {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            gap: 24px;
+            padding: 40px 20px;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .apple-cover-wrapper {
+            width: 140px;
+            height: 140px;
+            perspective: 1000px;
+        }
+
+        .apple-cover {
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            object-fit: cover;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+            transition: transform 0.5s ease;
+        }
+
+        .apple-cover:hover { transform: scale(1.02) rotateY(-5deg); }
+
+        /* TIMELINE POST CARDS */
+        .post-card {
+            display: flex;
+            gap: 16px;
+            background: var(--card-bg);
+            border: 1px solid rgba(0,0,0,0.04);
+            border-radius: 22px;
+            margin: 0 18px 20px 18px;
+            padding: 18px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.01);
+            transition: 0.3s;
+        }
+
+        .post-card:active { transform: scale(0.98); }
+
+        .post-music-img {
+            width: 85px;
+            height: 85px;
+            border-radius: 12px;
+            object-fit: cover;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        /* VINYL ANIMATION ENGINE */
+        .vinyl-disk {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 2px solid #eee;
+            position: relative;
+            background-size: cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .spinning { animation: rotateVinyl 8s linear infinite; }
+        @keyframes rotateVinyl { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        /* BUTTONS & INPUTS */
+        .btn-apple {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .btn-play { background: var(--accent); color: white; }
+        .btn-shuffle { background: #f3f4f6; color: var(--text-primary); }
+
+        .input-elegant {
+            width: 100%;
+            background: #f5f5f7;
+            border-radius: 14px;
+            padding: 16px;
+            outline: none;
+            border: 1px solid transparent;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .input-elegant:focus { border-color: var(--accent); background: white; box-shadow: 0 0 0 4px var(--accent-soft); }
+
+        /* MODAL & LAYER SYSTEM */
+        .layer-full {
+            position: fixed;
+            inset: 0;
+            z-index: 500;
+            background: #ffffff;
+            display: none;
+            flex-direction: column;
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* CAPTION EXCENT (LONG CAPTION HANDLER) */
+        .caption-truncate {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .caption-truncate:after {
+            content: ' ...more';
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* GLASS NAVIGATION */
+        .glass-nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(25px);
+            border-bottom: 1px solid rgba(0,0,0,0.03);
+            padding: 16px 24px;
+        }
     </style>
     <style id="user-custom-css"></style>
 </head>
-<body class="pb-32 no-scrollbar">
+<body class="pb-28 no-scrollbar">
 
-    <nav class="sticky top-0 z-[60] bg-white/80 backdrop-blur-md px-5 py-4 flex justify-between items-center border-b border-gray-50">
-        <div class="flex items-center gap-3" onclick="toggleModal('settings-modal')">
-            <div id="nav-pfp" class="w-8 h-8 rounded-full bg-gray-100 overflow-hidden"></div>
-            <span id="nav-name" class="text-xs font-bold tracking-tight">AmonsPath</span>
+    <nav class="glass-nav flex justify-between items-center">
+        <div class="flex items-center gap-3" onclick="openProfileLayer()">
+            <div id="nav-pfp-container" class="w-9 h-9 rounded-full bg-gray-100 overflow-hidden border border-gray-100">
+                <img id="nav-pfp" src="" class="w-full h-full object-cover hidden">
+            </div>
+            <div class="flex flex-col">
+                <span id="nav-display-name" class="text-[13px] font-bold tracking-tight">AmonsPath</span>
+                <span class="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Digital Space</span>
+            </div>
         </div>
-        <div class="flex gap-4">
-            <button onclick="toggleModal('search-modal')">🔍</button>
-            <button onclick="toggleModal('notif-modal')">🔔<span id="notif-dot" class="hidden absolute w-2 h-2 bg-red-500 rounded-full"></span></button>
-            <button onclick="toggleModal('settings-modal')">⚙️</button>
+        <div class="flex gap-5 items-center">
+            <button onclick="toggleModal('search-modal')" class="text-lg">🔍</button>
+            <button onclick="toggleModal('notif-modal')" class="relative text-lg">
+                🔔
+                <span id="notif-badge" class="hidden absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+            </button>
+            <button onclick="toggleModal('settings-modal')" class="text-lg">⚙️</button>
         </div>
     </nav>
 
-    <header class="apple-header" id="profile-header-view">
-        <div class="relative cursor-pointer" onclick="toggleModal('edit-profile-modal')">
-            <img id="main-pfp" src="https://via.placeholder.com/300" class="apple-cover">
-            <div class="absolute bottom-2 right-2 bg-black/50 text-white p-1 rounded-full text-[8px]">EDIT</div>
-        </div>
-        <div class="flex flex-col justify-center">
-            <h1 id="main-display-name" class="text-2xl font-bold leading-tight">Make an account</h1>
-            <p id="main-username" class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">@guest</p>
-            <p id="main-bio" class="text-[11px] text-gray-500 italic mt-2 line-clamp-2">No bio yet.</p>
-            <div class="flex items-center gap-2 mt-3 text-[10px] text-pink-500 font-bold">
-                <span id="privacy-badge" class="bg-pink-50 px-2 py-0.5 rounded">PUBLIC</span>
+    <div id="timeline-view">
+        <header class="apple-header">
+            <div class="apple-cover-wrapper">
+                <img id="header-cover" src="https://via.placeholder.com/300" class="apple-cover">
             </div>
-        </div>
-    </header>
-
-    <div class="grid grid-cols-2 gap-4 px-5 mb-8">
-        <button class="btn-apple btn-play" onclick="playFirst()"><span>▶</span> Play</button>
-        <button class="btn-apple btn-shuffle" onclick="shuffleTimeline()"><span>🔀</span> Shuffle</button>
-    </div>
-
-    <main id="timeline" class="min-h-screen"></main>
-
-    <button id="fab-post" onclick="checkAuth(() => toggleModal('post-modal'))" class="hidden fixed bottom-10 right-8 w-14 h-14 rounded-full bg-black text-white shadow-2xl flex items-center justify-center text-3xl z-40 transition active:scale-90">+</button>
-
-    <div id="post-modal" class="hidden modal-layer flex items-end">
-        <div class="bg-white w-full rounded-t-[40px] p-8 shadow-2xl animate-in slide-in-from-bottom duration-300 max-h-[90vh] overflow-y-auto no-scrollbar">
-            <h3 class="font-serif italic text-2xl mb-6">Archive a Vibe</h3>
-            <div class="space-y-4">
-                <input type="text" oninput="searchiTunes(this.value)" placeholder="Search iTunes..." class="input-apple">
-                <div id="itunes-results" class="hidden bg-gray-50 rounded-xl overflow-hidden border border-gray-100"></div>
-                
-                <div id="track-preview" class="hidden flex items-center gap-4 p-4 bg-pink-50 rounded-xl border border-pink-100">
-                    <img id="prev-img" class="w-12 h-12 rounded-lg">
-                    <div class="flex-1"><p id="prev-title" class="text-xs font-bold"></p></div>
-                    <button onclick="resetSelection()">✕</button>
+            <div class="flex flex-col justify-center">
+                <h1 id="header-display-name" class="text-2xl font-bold tracking-tight leading-tight">november 🩰</h1>
+                <p id="header-username" class="text-[10px] text-gray-400 font-bold uppercase tracking-[0.25em] mt-1">@unregistered</p>
+                <p id="header-bio" class="text-[11px] text-gray-500 mt-3 line-clamp-2 italic">Tap to create your archive.</p>
+                <div class="flex items-center gap-2 mt-4 text-[10px] font-bold text-pink-500">
+                    <span id="privacy-status-badge" class="bg-pink-50 px-2 py-0.5 rounded">PUBLIC ARCHIVE</span>
                 </div>
-
-                <textarea id="post-caption" placeholder="Write your thoughts..." class="input-apple h-32 resize-none"></textarea>
-                <button onclick="submitArchive()" class="w-full bg-black text-white py-4 rounded-xl font-bold uppercase tracking-widest text-[10px]">Publish</button>
-                <button onclick="toggleModal('post-modal')" class="w-full py-2 text-gray-300 text-[10px] font-bold">CANCEL</button>
             </div>
+        </header>
+
+        <div class="grid grid-cols-2 gap-4 px-5 mb-8">
+            <button class="btn-apple btn-play" onclick="playFirstTrack()">
+                <span>▶</span> Play
+            </button>
+            <button class="btn-apple btn-shuffle" onclick="shuffleTimeline()">
+                <span>🔀</span> Shuffle
+            </button>
+        </div>
+
+        <div class="px-5 mb-8">
+            <div class="relative">
+                <input type="text" id="timeline-search" oninput="debounceTimelineSearch(this.value)" placeholder="Search lyrics, titles, or people..." class="input-elegant italic font-serif">
+                <span class="absolute right-5 top-4 opacity-20">🔍</span>
+            </div>
+        </div>
+
+        <main id="main-feed" class="pb-10"></main>
+    </div>
+
+    <button id="fab-post" onclick="requireRegistration(() => toggleModal('post-modal'))" class="fixed bottom-10 right-8 w-14 h-14 bg-black text-white rounded-full shadow-2xl flex items-center justify-center text-3xl z-[100] transition active:scale-90 shadow-black/20">+</button>
+
+    <div id="profile-layer" class="layer-full no-scrollbar p-8">
+        <div class="flex justify-between items-center mb-10">
+            <button onclick="closeProfileLayer()" class="text-gray-300 font-bold uppercase tracking-widest text-[10px]">← Close</button>
+            <button onclick="toggleModal('settings-modal')" class="text-gray-300">⚙️</button>
+        </div>
+        
+        <div class="flex flex-col items-center text-center mb-12">
+            <div class="relative w-36 h-36 mb-6">
+                <img id="layer-pfp" src="https://via.placeholder.com/300" class="w-full h-full rounded-[30px] object-cover shadow-2xl">
+                <button onclick="toggleModal('edit-profile-modal')" class="absolute -bottom-2 -right-2 bg-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center border border-gray-50">✏️</button>
+            </div>
+            <h2 id="layer-display-name" class="text-3xl font-bold tracking-tighter">Guest Account</h2>
+            <p id="layer-username" class="text-[11px] text-gray-400 font-bold uppercase tracking-[0.3em] mt-2">@guest_space</p>
+            <div id="layer-bio" class="mt-4 text-sm text-gray-500 italic px-8">Create your profile to start archiving your favorite music and thoughts.</div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-10">
+            <div class="bg-gray-50 p-4 rounded-2xl text-center">
+                <span id="stat-posts" class="block text-xl font-bold">0</span>
+                <span class="text-[9px] text-gray-400 uppercase font-bold tracking-widest">Posts</span>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-2xl text-center">
+                <span id="stat-likes" class="block text-xl font-bold">0</span>
+                <span class="text-[9px] text-gray-400 uppercase font-bold tracking-widest">Received Likes</span>
+            </div>
+        </div>
+
+        <div class="space-y-3">
+            <button onclick="copyProfileLink()" class="w-full p-5 bg-blue-50 text-blue-600 rounded-2xl font-bold text-xs uppercase tracking-widest">Copy Profile Link</button>
+            <button onclick="toggleModal('guide-modal')" class="w-full p-5 bg-gray-50 text-gray-400 rounded-2xl font-bold text-xs uppercase tracking-widest">App Guide & Help</button>
         </div>
     </div>
 
-    <div id="focus-layer" class="hidden fixed inset-0 z-[200] bg-white overflow-y-auto no-scrollbar p-8">
+    <div id="post-modal" class="hidden fixed inset-0 z-[600] bg-white p-8 overflow-y-auto no-scrollbar">
+        <h3 class="font-serif italic text-3xl mb-8">New Archive</h3>
+        <div class="space-y-6">
+            <div>
+                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 block">Search Music (iTunes)</label>
+                <input type="text" id="itunes-query" oninput="searchiTunes(this.value)" placeholder="Enter song or artist name..." class="input-elegant">
+                <div id="itunes-results" class="hidden mt-2 max-h-64 overflow-y-auto bg-gray-50 rounded-2xl border border-gray-100 no-scrollbar"></div>
+            </div>
+
+            <div id="post-music-preview" class="hidden flex items-center gap-4 p-5 bg-pink-50 rounded-2xl border border-pink-100 animate-in fade-in">
+                <img id="post-prev-img" class="w-16 h-16 rounded-xl shadow-md">
+                <div class="flex-1 overflow-hidden">
+                    <p id="post-prev-title" class="text-xs font-bold truncate"></p>
+                    <p id="post-prev-artist" class="text-[10px] text-gray-400"></p>
+                </div>
+                <button onclick="clearMusicSelection()" class="text-gray-300">✕</button>
+            </div>
+
+            <div>
+                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 block">Caption (Your Thoughts)</label>
+                <textarea id="post-caption" placeholder="Write something aesthetic..." class="input-elegant h-40 resize-none"></textarea>
+            </div>
+
+            <button onclick="publishPost()" class="w-full py-5 bg-black text-white rounded-2xl font-bold uppercase tracking-[0.2em] text-[10px] shadow-xl">Confirm & Publish</button>
+            <button onclick="toggleModal('post-modal')" class="w-full py-2 text-gray-300 text-[10px] font-bold uppercase">Discard</button>
+        </div>
+    </div>
+
+    <div id="focus-layer" class="hidden fixed inset-0 z-[1000] bg-white overflow-y-auto no-scrollbar p-10">
         </div>
 
-    <div id="settings-modal" class="hidden modal-layer flex items-end">
-        <div class="bg-white w-full rounded-t-[40px] p-10 shadow-2xl max-h-[85vh] overflow-y-auto no-scrollbar">
-            <h3 class="font-serif italic text-3xl mb-8">Settings</h3>
-            <div class="space-y-8">
+    <div id="settings-modal" class="hidden fixed inset-0 z-[550] bg-white p-10 overflow-y-auto no-scrollbar">
+        <h3 class="font-serif italic text-3xl mb-10">Configuration</h3>
+        <div class="space-y-10">
+            <div>
+                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-5 block">Global Theme</label>
+                <div class="flex gap-4">
+                    <button onclick="updateTheme('#ec4899')" class="w-10 h-10 rounded-full bg-[#ec4899] shadow-lg"></button>
+                    <button onclick="updateTheme('#1a1a1a')" class="w-10 h-10 rounded-full bg-[#1a1a1a] shadow-lg"></button>
+                    <button onclick="updateTheme('#6b7280')" class="w-10 h-10 rounded-full bg-[#6b7280] shadow-lg"></button>
+                    <button onclick="updateTheme('#3b82f6')" class="w-10 h-10 rounded-full bg-[#3b82f6] shadow-lg"></button>
+                </div>
+            </div>
+            <div>
+                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 block">Mirroring Engine (Custom CSS)</label>
+                <textarea id="css-input" class="input-elegant h-48 font-mono text-[10px]" placeholder=".post-card { border-radius: 0px; }"></textarea>
+                <p class="text-[9px] text-gray-400 mt-2 italic">Changes here will affect your profile for all visitors.</p>
+            </div>
+            <div class="flex justify-between items-center p-5 bg-gray-50 rounded-2xl">
                 <div>
-                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-3">Theme Color</span>
-                    <div class="flex gap-4">
-                        <button onclick="updateTheme('#ec4899')" class="w-8 h-8 rounded-full bg-[#ec4899]"></button>
-                        <button onclick="updateTheme('#1a1a1a')" class="w-8 h-8 rounded-full bg-[#1a1a1a]"></button>
-                        <button onclick="updateTheme('#6b7280')" class="w-8 h-8 rounded-full bg-[#6b7280]"></button>
-                        <button onclick="updateTheme('#3b82f6')" class="w-8 h-8 rounded-full bg-[#3b82f6]"></button>
-                    </div>
+                    <span class="block text-xs font-bold uppercase tracking-widest">Private Profile</span>
+                    <span class="text-[10px] text-gray-400">Hide your timeline from others</span>
                 </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-sm font-medium">Account Privacy</span>
-                    <input type="checkbox" id="privacy-toggle" onchange="togglePrivacy(this.checked)" class="w-5 h-5 accent-pink-500">
-                </div>
-                <div>
-                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Custom Layout (CSS)</span>
-                    <textarea id="css-input" class="input-apple h-40 font-mono text-[10px]" placeholder="/* Inject your own CSS code here */"></textarea>
-                </div>
-                <div class="bg-gray-50 p-5 rounded-xl text-[11px] leading-relaxed text-gray-500">
-                    <p class="font-bold mb-2">Panduan Mini App:</p>
-                    • Mirroring: CSS-mu akan mengubah tampilan profilmu di mata orang lain.<br>
-                    • Privacy: Jika private, orang lain tidak bisa melihat timeline-mu.<br>
-                    • Secret Music: Gunakan caption untuk pesan tersembunyi.
-                </div>
-                <button onclick="saveSettings()" class="btn-apple btn-play w-full py-4">Apply Changes</button>
-                <button onclick="copyProfileLink()" class="w-full py-4 bg-blue-50 text-blue-600 rounded-xl text-[10px] font-bold uppercase tracking-widest">Share My Profile Link</button>
-                <button onclick="toggleModal('settings-modal')" class="w-full py-2 text-gray-300 text-[10px] font-bold">CLOSE</button>
+                <input type="checkbox" id="privacy-toggle" onchange="updatePrivacy(this.checked)" class="w-6 h-6 accent-pink-500">
             </div>
+            
+            <button onclick="saveSettings()" class="w-full py-5 bg-black text-white rounded-2xl font-bold uppercase tracking-widest text-[10px]">Save & Apply</button>
+            <button onclick="toggleModal('settings-modal')" class="w-full py-2 text-gray-300 text-[10px] font-bold uppercase">Back</button>
         </div>
     </div>
 
-    <div id="search-modal" class="hidden modal-layer p-8">
-        <div class="flex gap-4 mb-8">
-            <input id="search-bar" type="text" oninput="runGlobalSearch(this.value)" placeholder="Search users or vibes..." class="input-apple">
-            <button onclick="toggleModal('search-modal')" class="text-sm font-bold">Close</button>
+    <div id="auth-modal" class="hidden fixed inset-0 z-[2000] bg-white p-10 flex flex-col justify-center">
+        <h2 class="font-serif italic text-4xl mb-3">Identity.</h2>
+        <p class="text-gray-400 text-[10px] uppercase tracking-[0.4em] mb-12">Permanent Registration</p>
+        <div class="space-y-5">
+            <input id="reg-display-name" type="text" placeholder="Display Name (e.g. Zakia)" class="input-elegant">
+            <div class="relative">
+                <input id="reg-username" type="text" oninput="checkUsernameAvailability(this.value)" placeholder="Username (Unique)" class="input-elegant">
+                <span id="username-status" class="absolute right-4 top-5 text-[8px] font-bold"></span>
+            </div>
+            <textarea id="reg-bio" placeholder="Bio..." class="input-elegant h-24 resize-none"></textarea>
+            <button id="reg-submit-btn" onclick="submitRegistration()" class="w-full py-5 bg-black text-white rounded-2xl font-bold uppercase text-[10px] mt-8 opacity-50" disabled>Create Space</button>
         </div>
-        <div id="search-results-global" class="space-y-6"></div>
     </div>
 
-    <div id="auth-modal" class="hidden fixed inset-0 z-[1000] bg-white p-10 flex flex-col justify-center items-center text-center">
-        <h1 class="font-serif italic text-4xl mb-4">Identify Yourself.</h1>
-        <p class="text-gray-400 text-sm mb-12 uppercase tracking-widest">Create your digital space</p>
-        <div class="w-full space-y-4">
-            <input id="reg-name" type="text" placeholder="Display Name" class="input-apple">
-            <input id="reg-user" type="text" placeholder="Username (@...)" class="input-apple">
-            <textarea id="reg-bio" placeholder="Short bio..." class="input-apple h-20"></textarea>
-            <button onclick="processRegister()" class="btn-apple btn-play w-full py-5 mt-4">Create Account</button>
+    <div id="edit-profile-modal" class="hidden fixed inset-0 z-[700] bg-white p-10 overflow-y-auto no-scrollbar">
+        <h3 class="font-serif italic text-3xl mb-10">Edit Profile</h3>
+        <div class="space-y-6">
+            <input id="edit-name" type="text" placeholder="Display Name" class="input-elegant">
+            <textarea id="edit-bio" placeholder="Bio" class="input-elegant h-32"></textarea>
+            <input id="edit-pfp" type="text" placeholder="Photo URL" class="input-elegant">
+            <button onclick="updateProfile()" class="w-full py-5 bg-black text-white rounded-2xl font-bold uppercase text-[10px]">Update</button>
+            <button onclick="toggleModal('edit-profile-modal')" class="w-full text-gray-300 text-[10px] font-bold uppercase">Cancel</button>
+        </div>
+    </div>
+
+    <div id="guide-modal" class="hidden fixed inset-0 z-[800] bg-white p-10 overflow-y-auto no-scrollbar">
+        <h3 class="font-serif italic text-3xl mb-8">AmonsPath Guide</h3>
+        <div class="space-y-6 text-sm text-gray-600 leading-relaxed">
+            <p><strong class="text-black">Timeline:</strong> A private-feeling archive of music. Everyone can see it unless you set it to Private.</p>
+            <p><strong class="text-black">Mirroring:</strong> Use the CSS input in Settings to change how YOUR profile looks to OTHERS. You are the designer.</p>
+            <p><strong class="text-black">iTunes Engine:</strong> High-resolution album covers (600x600) are automatically fetched for every post.</p>
+            <p><strong class="text-black">Permanent ID:</strong> Once you create an account, it is linked to your Telegram ID forever.</p>
+            <button onclick="toggleModal('guide-modal')" class="w-full mt-10 py-4 bg-gray-50 rounded-xl font-bold text-[10px] uppercase tracking-widest">Got it</button>
         </div>
     </div>
 
@@ -158,118 +366,151 @@
         const tg = window.Telegram.WebApp; tg.expand();
         const client = supabase.createClient('https://aldzhrtbrjszppseawrz.supabase.co', 'sb_publishable_h-BSul_X4VDxc-6gwSUa0w_Z_rsJ2xp');
         
-        let user = tg.initDataUnsafe.user || { id: 777123, first_name: 'DevUser' };
+        let currentUser = tg.initDataUnsafe.user || { id: 12345678, first_name: 'Debug' };
         let activeOwnerId = null;
         let isRegistered = false;
         let currentAudio = null;
         let selectedMusic = null;
-        let replyId = null;
+        let replyTargetId = null;
 
         async function init() {
-            const sp = tg.initDataUnsafe.start_param;
-            activeOwnerId = sp ? parseInt(sp) : user.id;
+            const startParam = tg.initDataUnsafe.start_param;
+            activeOwnerId = startParam ? parseInt(startParam) : currentUser.id;
 
-            // Fetch Profile
-            const { data: p } = await client.from('profiles').select('*').eq('telegram_id', activeOwnerId).single();
+            // Load Global Profile
+            const { data: profile } = await client.from('profiles').select('*').eq('telegram_id', activeOwnerId).single();
             
-            if (p) {
-                // Apply Personalization
-                document.getElementById('main-display-name').innerText = p.display_name;
-                document.getElementById('main-username').innerText = '@' + p.username;
-                document.getElementById('main-bio').innerText = p.bio || 'Silence is gold.';
-                document.getElementById('nav-name').innerText = p.display_name;
-                
-                if (p.photo_url) {
-                    document.getElementById('main-pfp').src = p.photo_url;
-                    document.getElementById('nav-pfp').innerHTML = `<img src="${p.photo_url}" class="w-full h-full object-cover">`;
-                }
-
-                // MIRRORING LOGIC: Inject Custom CSS
-                if (p.custom_css) document.getElementById('user-custom-css').innerHTML = p.custom_css;
-                document.documentElement.style.setProperty('--accent', p.theme_color);
-                document.getElementById('privacy-badge').innerText = p.is_private ? 'PRIVATE' : 'PUBLIC';
-
-                if (activeOwnerId === user.id) {
+            if (profile) {
+                renderProfileUI(profile);
+                if (activeOwnerId === currentUser.id) {
                     isRegistered = true;
                     document.getElementById('fab-post').classList.remove('hidden');
-                    document.getElementById('css-input').value = p.custom_css;
-                    document.getElementById('privacy-toggle').checked = p.is_private;
-                } else if (p.is_private) {
-                    document.getElementById('timeline').innerHTML = `<div class="py-40 text-center text-gray-300 italic">This profile is private.</div>`;
+                    fillSettingsForm(profile);
+                } else if (profile.is_private) {
+                    document.getElementById('main-feed').innerHTML = `<div class="py-40 text-center text-gray-300 italic text-xs">This archive is private.</div>`;
                     return;
                 }
-            } else if (activeOwnerId === user.id) {
-                document.getElementById('auth-modal').classList.remove('hidden');
+            } else if (activeOwnerId === currentUser.id) {
+                // Not registered, user is guest on their own app
             }
 
-            loadVibes();
-            checkNotifs();
+            loadTimelinePosts(activeOwnerId);
+            fetchStats(activeOwnerId);
         }
 
-        // --- CORE: TIMELINE ---
-        async function loadVibes() {
-            const { data: posts } = await client.from('music_posts').select('*, profiles(*), likes(id), comments(id)').eq('sender_id', activeOwnerId).order('created_at', { ascending: false });
-            const cont = document.getElementById('timeline');
+        // --- UI RENDERING ---
+        function renderProfileUI(p) {
+            document.getElementById('header-display-name').innerText = p.display_name;
+            document.getElementById('header-username').innerText = '@' + p.username;
+            document.getElementById('header-bio').innerText = p.bio || 'Silence is a choice.';
+            document.getElementById('nav-display-name').innerText = p.display_name;
+            document.getElementById('layer-display-name').innerText = p.display_name;
+            document.getElementById('layer-username').innerText = '@' + p.username;
+            document.getElementById('layer-bio').innerText = p.bio || 'No bio provided.';
             
+            if (p.photo_url) {
+                document.getElementById('header-cover').src = p.photo_url;
+                document.getElementById('layer-pfp').src = p.photo_url;
+                document.getElementById('nav-pfp').src = p.photo_url;
+                document.getElementById('nav-pfp').classList.remove('hidden');
+            }
+
+            // MIRRORING: Injecting the User's Personal CSS
+            if (p.custom_css) {
+                document.getElementById('user-custom-css').innerHTML = p.custom_css;
+            }
+
+            // THEME COLOR
+            document.documentElement.style.setProperty('--accent', p.theme_color || '#ec4899');
+            document.getElementById('privacy-status-badge').innerText = p.is_private ? 'PRIVATE ARCHIVE' : 'PUBLIC ARCHIVE';
+        }
+
+        async function loadTimelinePosts(ownerId, query = '') {
+            let db = client.from('music_posts').select('*, profiles(*), likes(id), comments(id)').eq('sender_id', ownerId);
+            
+            if (query) {
+                db = db.or(`caption.ilike.%${query}%, music_title.ilike.%${query}%`);
+            }
+
+            const { data: posts } = await db.order('created_at', { ascending: false });
+            const feed = document.getElementById('main-feed');
+
             if (!posts || posts.length === 0) {
-                cont.innerHTML = `<div class="py-40 text-center text-gray-300 italic">Archive empty.</div>`;
+                feed.innerHTML = `<div class="py-20 text-center text-gray-300 italic text-xs">No vibes archived.</div>`;
                 return;
             }
 
-            cont.innerHTML = posts.map(p => `
-                <div class="elegant-card animate-in fade-in duration-500">
-                    <div class="flex items-center gap-4 mb-5">
-                        <img src="${p.music_cover}" class="vinyl-disk" id="disk-${p.id}" onclick="openFocus('${p.id}')">
-                        <div class="flex-1 overflow-hidden" onclick="openFocus('${p.id}')">
-                            <h2 class="font-bold text-sm truncate">${p.music_title}</h2>
-                            <p class="text-[9px] text-gray-400 uppercase tracking-widest mt-0.5">${new Date(p.created_at).toLocaleString()}</p>
+            feed.innerHTML = posts.map(p => `
+                <div class="post-card">
+                    <img src="${p.music_cover}" class="post-music-img" onclick="openFocusMode('${p.id}')">
+                    <div class="flex-1 overflow-hidden">
+                        <div class="flex justify-between items-start">
+                            <div class="overflow-hidden" onclick="openFocusMode('${p.id}')">
+                                <h3 class="text-[13px] font-bold truncate pr-6">${p.music_title}</h3>
+                                <p class="text-[9px] text-gray-400 uppercase tracking-widest mt-1">${new Date(p.created_at).toLocaleString()}</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="triggerHaptic('light'); sharePostLink('${p.id}')" class="text-[10px]">📤</button>
+                                <button onclick="openTrackOptions('${p.id}', '${p.music_url}')" class="text-[10px]">•••</button>
+                            </div>
                         </div>
-                        <div class="flex gap-4">
-                             <button onclick="sharePost('${p.id}')" class="text-xs">📤</button>
-                             <button onclick="showPostMenu('${p.id}', '${p.music_url}')" class="text-xs">•••</button>
-                        </div>
-                    </div>
-                    <div class="caption-truncate italic text-gray-600 mb-6" onclick="openFocus('${p.id}')">"${p.caption}"</div>
-                    <div class="flex items-center gap-4 bg-gray-50 rounded-2xl p-4 border border-gray-100">
-                        <button onclick="playMusic('${p.id}', '${p.music_url}')" id="btn-${p.id}" class="w-10 h-10 bg-white rounded-full shadow-sm flex items-center justify-center text-xs">▶</button>
-                        <div class="flex-1 h-1 bg-gray-200 rounded-full overflow-hidden">
-                            <div id="prog-${p.id}" class="h-full bg-pink-500 w-0 transition-all duration-300"></div>
-                        </div>
-                        <audio id="audio-${p.id}" src="${p.music_url}" ontimeupdate="updProgress('${p.id}')" onended="audioEnd('${p.id}')"></audio>
-                        <div class="flex gap-4 items-center">
-                            <button onclick="handleLike('${p.id}')" class="text-[10px] font-bold text-pink-500">❤️ ${p.likes.length}</button>
-                            <button onclick="openFocus('${p.id}')" class="text-[10px] font-bold text-gray-300">💬 ${p.comments.length}</button>
+                        
+                        <div class="caption-truncate mt-4 italic" onclick="openFocusMode('${p.id}')">"${p.caption}"</div>
+                        
+                        <div class="flex items-center gap-4 mt-6 bg-gray-50/50 rounded-2xl p-3 border border-gray-50">
+                            <button onclick="toggleAudio('${p.id}', '${p.music_url}')" id="playbtn-${p.id}" class="vinyl-disk border bg-white shadow-sm">▶</button>
+                            <div class="flex-1 h-[2px] bg-gray-200 rounded-full overflow-hidden">
+                                <div id="progress-${p.id}" class="h-full bg-pink-500 w-0 transition-all"></div>
+                            </div>
+                            <audio id="audio-${p.id}" src="${p.music_url}" ontimeupdate="syncAudioProgress('${p.id}')" onended="audioFinished('${p.id}')"></audio>
+                            <div class="flex gap-4 items-center">
+                                <button onclick="handleLikePost('${p.id}', '${p.sender_id}')" class="text-[10px] font-bold text-pink-500">❤️ ${p.likes.length}</button>
+                                <button onclick="openFocusMode('${p.id}')" class="text-[10px] font-bold text-gray-300">💬 ${p.comments.length}</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             `).join('');
         }
 
-        // --- FEATURE: ELEGANT FOCUS LAYER ---
-        async function openFocus(postId) {
-            const { data: p } = await client.from('music_posts').select('*, profiles(*)').eq('id', postId).single();
-            const { data: comms } = await client.from('comments').select('*, profiles(*)').eq('post_id', postId).order('created_at', { ascending: true });
+        // --- FOCUS MODE (LONG CAPTION & NESTED COMMENTS) ---
+        async function openFocusMode(postId) {
+            triggerHaptic('medium');
+            const { data: post } = await client.from('music_posts').select('*, profiles(*)').eq('id', postId).single();
+            const { data: comments } = await client.from('comments').select('*, profiles(*)').eq('post_id', postId).order('created_at', { ascending: true });
             
             const layer = document.getElementById('focus-layer');
             layer.innerHTML = `
-                <button onclick="toggleModal('focus-layer')" class="mb-10 text-gray-400 uppercase tracking-[0.3em] text-[10px] font-bold">← Back to Space</button>
-                <div class="flex flex-col items-center text-center mb-12">
-                    <img src="${p.music_cover}" class="w-48 h-48 rounded-2xl shadow-2xl mb-6">
-                    <h1 class="font-serif italic text-3xl leading-tight mb-2">${p.music_title}</h1>
-                    <p class="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Posted by @${p.profiles.username}</p>
-                </div>
-                <div class="text-lg font-serif italic text-gray-700 leading-relaxed mb-16 text-center px-4">"${p.caption}"</div>
-                
-                <div class="space-y-8 pb-32">
-                    <h4 class="text-[10px] font-bold uppercase tracking-widest text-gray-300">Discussion Log</h4>
-                    ${renderComments(comms)}
+                <div class="flex justify-between items-center mb-12">
+                    <button onclick="toggleModal('focus-layer')" class="text-[10px] font-bold uppercase tracking-widest text-gray-300">← Back</button>
+                    <span class="text-[9px] text-gray-300 uppercase font-bold tracking-[0.4em]">Focus View</span>
                 </div>
 
-                <div class="fixed bottom-0 left-0 right-0 p-6 bg-white/90 backdrop-blur-xl border-t border-gray-100">
-                    <div id="reply-box" class="hidden text-[9px] text-pink-500 font-bold uppercase mb-2">Replying to someone...</div>
-                    <div class="flex gap-3">
-                        <input id="comm-input" class="input-apple flex-1" placeholder="Add a thought...">
-                        <button onclick="sendComment('${p.id}')" class="bg-black text-white px-6 rounded-xl font-bold text-[10px]">SEND</button>
+                <div class="flex flex-col items-center mb-16 text-center">
+                    <img src="${post.music_cover}" class="w-56 h-56 rounded-[40px] shadow-2xl mb-8">
+                    <h1 class="font-serif italic text-4xl mb-3">${post.music_title}</h1>
+                    <p class="text-[11px] text-gray-400 font-bold uppercase tracking-widest">Archived by @${post.profiles.username}</p>
+                </div>
+
+                <div class="text-xl font-serif italic text-gray-800 leading-relaxed text-center mb-24 px-4">
+                    "${post.caption}"
+                </div>
+
+                <div class="pb-40">
+                    <h4 class="text-[11px] font-bold uppercase tracking-[0.3em] text-gray-300 mb-10">Archive Discussion</h4>
+                    <div id="comment-container" class="space-y-10">
+                        ${renderComments(comments)}
+                    </div>
+                </div>
+
+                <div class="fixed bottom-0 left-0 right-0 p-8 bg-white/80 backdrop-blur-2xl border-t border-gray-50">
+                    <div id="reply-indicator" class="hidden text-[10px] text-pink-500 font-bold uppercase mb-3 flex justify-between">
+                        <span>Replying to someone...</span>
+                        <button onclick="cancelReply()">✕</button>
+                    </div>
+                    <div class="flex gap-4">
+                        <input id="comment-input" class="input-elegant flex-1" placeholder="Add your thought...">
+                        <button onclick="sendComment('${post.id}')" class="bg-black text-white px-8 rounded-2xl font-bold text-[11px] tracking-widest uppercase">↵</button>
                     </div>
                 </div>
             `;
@@ -281,144 +522,266 @@
             return parents.map(c => {
                 const replies = comms.filter(r => r.parent_id === c.id);
                 return `
-                <div class="border-l-2 border-gray-100 pl-4 py-2">
-                    <p class="text-[9px] font-bold uppercase text-gray-400">@${c.profiles.username}</p>
-                    <p class="text-sm text-gray-600 mt-1">${c.comment_text}</p>
-                    <button onclick="prepReply('${c.id}', '${c.profiles.username}')" class="text-[8px] font-bold text-pink-500 mt-2 uppercase">Reply</button>
+                <div class="space-y-6">
+                    <div class="border-l-2 border-gray-100 pl-6 py-1">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[10px] font-bold uppercase text-gray-400">@${c.profiles.username}</span>
+                            <span class="text-[8px] text-gray-300 uppercase">${new Date(c.created_at).toLocaleDateString()}</span>
+                        </div>
+                        <p class="text-sm text-gray-700 mt-2 leading-relaxed">${c.comment_text}</p>
+                        <button onclick="prepareReply('${c.id}', '${c.profiles.username}')" class="text-[9px] font-bold text-pink-500 uppercase mt-3 tracking-widest">Reply</button>
+                    </div>
                     ${replies.map(r => `
-                        <div class="mt-4 border-l border-pink-100 pl-4">
-                            <p class="text-[8px] font-bold text-pink-300">@${r.profiles.username}</p>
-                            <p class="text-xs text-gray-500">${r.comment_text}</p>
+                        <div class="ml-10 border-l border-pink-100 pl-6 py-1">
+                            <span class="text-[9px] font-bold uppercase text-pink-300">@${r.profiles.username}</span>
+                            <p class="text-xs text-gray-500 mt-1">${r.comment_text}</p>
                         </div>
                     `).join('')}
                 </div>`;
-            }).join('') || '<p class="text-center text-gray-300 italic text-xs">No comments yet.</p>';
+            }).join('') || '<div class="text-center text-gray-300 italic text-xs py-10">The discussion is quiet.</div>';
         }
 
-        // --- FEATURE: iTUNES HIGH-RES ENGINE ---
+        // --- iTUNES ENGINE (High-Res) ---
         async function searchiTunes(q) {
-            const resBox = document.getElementById('itunes-results');
-            if (q.length < 3) { resBox.classList.add('hidden'); return; }
-            const r = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(q)}&media=music&limit=5`);
-            const d = await r.json();
-            resBox.innerHTML = d.results.map(t => `
-                <div class="p-4 border-b border-gray-100 flex items-center gap-4 active:bg-gray-100" onclick="selectTrack('${t.trackName}', '${t.artistName}', '${t.previewUrl}', '${t.artworkUrl100}')">
-                    <img src="${t.artworkUrl60}" class="w-10 h-10 rounded-lg">
-                    <div class="overflow-hidden"><p class="text-xs font-bold truncate">${t.trackName}</p><p class="text-[10px] text-gray-400">${t.artistName}</p></div>
+            const resultsBox = document.getElementById('itunes-results');
+            if (q.length < 3) { resultsBox.classList.add('hidden'); return; }
+
+            const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(q)}&media=music&limit=6`);
+            const data = await response.json();
+
+            resultsBox.innerHTML = data.results.map(t => `
+                <div class="p-4 border-b border-gray-50 flex items-center gap-4 active:bg-gray-100 transition" 
+                     onclick="selectMusicTrack('${t.trackName}', '${t.artistName}', '${t.previewUrl}', '${t.artworkUrl100}')">
+                    <img src="${t.artworkUrl60}" class="w-12 h-12 rounded-xl shadow-sm">
+                    <div class="overflow-hidden">
+                        <p class="text-xs font-bold truncate">${t.trackName}</p>
+                        <p class="text-[10px] text-gray-400 truncate uppercase tracking-widest">${t.artistName}</p>
+                    </div>
                 </div>`).join('');
-            resBox.classList.remove('hidden');
+            resultsBox.classList.remove('hidden');
         }
 
-        function selectTrack(title, artist, url, cover) {
-            // High-Res Transform
-            const hiRes = cover.replace('100x100bb.jpg', '600x600bb.jpg');
-            selectedMusic = { title: `${title} - ${artist}`, url, cover: hiRes };
-            document.getElementById('prev-img').src = hiRes;
-            document.getElementById('prev-title').innerText = selectedMusic.title;
-            document.getElementById('track-preview').classList.remove('hidden');
-            document.getElementById('itunes-results').classList.add('hidden');
-            tg.HapticFeedback.impactOccurred('medium');
-        }
-
-        // --- AUDIO CONTROL ---
-        function playMusic(id, url) {
-            const a = document.getElementById(`audio-${id}`);
-            const b = document.getElementById(`btn-${id}`);
-            const d = document.getElementById(`disk-${id}`);
+        function selectMusicTrack(title, artist, url, artwork) {
+            // Transformation to 600x600 for High-Res aesthetic
+            const highRes = artwork.replace('100x100bb.jpg', '600x600bb.jpg');
+            selectedMusic = { title, artist, url, artwork: highRes };
             
-            if (a.paused) {
-                if (currentAudio) {
+            document.getElementById('post-prev-img').src = highRes;
+            document.getElementById('post-prev-title').innerText = title;
+            document.getElementById('post-prev-artist').innerText = artist;
+            document.getElementById('post-music-preview').classList.remove('hidden');
+            document.getElementById('itunes-results').classList.add('hidden');
+            triggerHaptic('medium');
+        }
+
+        // --- AUDIO ENGINE ---
+        function toggleAudio(id, url) {
+            const audio = document.getElementById(`audio-${id}`);
+            const btn = document.getElementById(`playbtn-${id}`);
+            
+            if (audio.paused) {
+                if (currentAudio && currentAudio !== audio) {
                     currentAudio.pause();
                     document.querySelectorAll('.vinyl-disk').forEach(el => el.classList.remove('spinning'));
-                    document.querySelectorAll('button[id^="btn-"]').forEach(el => el.innerText = '▶');
+                    document.querySelectorAll('button[id^="playbtn-"]').forEach(el => el.innerText = '▶');
                 }
-                a.play(); b.innerText = '⏸'; d.classList.add('spinning');
-                currentAudio = a;
-                tg.HapticFeedback.impactOccurred('medium');
+                audio.play();
+                btn.innerText = '⏸';
+                btn.classList.add('spinning');
+                currentAudio = audio;
+                triggerHaptic('medium');
             } else {
-                a.pause(); b.innerText = '▶'; d.classList.remove('spinning');
+                audio.pause();
+                btn.innerText = '▶';
+                btn.classList.remove('spinning');
             }
         }
 
-        // --- UTILS & INTERACTIONS ---
-        function updProgress(id) {
-            const a = document.getElementById(`audio-${id}`);
-            document.getElementById(`prog-${id}`).style.width = (a.currentTime/a.duration)*100 + '%';
+        function syncAudioProgress(id) {
+            const audio = document.getElementById(`audio-${id}`);
+            const bar = document.getElementById(`progress-${id}`);
+            bar.style.width = (audio.currentTime / audio.duration) * 100 + '%';
         }
-        function audioEnd(id) {
-            document.getElementById(`btn-${id}`).innerText = '▶';
-            document.getElementById(`disk-${id}`).classList.remove('spinning');
+
+        function audioFinished(id) {
+            document.getElementById(`playbtn-${id}`).innerText = '▶';
+            document.getElementById(`playbtn-${id}`).classList.remove('spinning');
         }
-        function toggleModal(id) { document.getElementById(id).classList.toggle('hidden'); }
-        function prepReply(id, name) { replyId = id; document.getElementById('reply-box').innerText = `Replying to @${name}`; document.getElementById('reply-box').classList.remove('hidden'); document.getElementById('comm-input').focus(); }
-        function checkAuth(cb) { if(!isRegistered) { tg.showAlert("Please register to interact."); } else { cb(); } }
-        
-        async function handleLike(postId) {
-            checkAuth(async () => {
-                const { error } = await client.from('likes').insert({ post_id: postId, user_id: user.id });
-                if (!error && activeOwnerId !== user.id) {
-                    await client.from('notifications').insert({ receiver_id: activeOwnerId, sender_id: user.id, type: 'like', post_id: postId });
+
+        // --- AUTH & INTERNAL USERNAME CHECK ---
+        async function checkUsernameAvailability(u) {
+            const status = document.getElementById('username-status');
+            const btn = document.getElementById('reg-submit-btn');
+            if (u.length < 3) return;
+
+            const { data } = await client.from('profiles').select('username').eq('username', u.toLowerCase()).single();
+            if (data) {
+                status.innerText = "ALREADY TAKEN"; status.style.color = "#ef4444";
+                btn.disabled = true; btn.style.opacity = "0.5";
+            } else {
+                status.innerText = "AVAILABLE"; status.style.color = "#10b981";
+                btn.disabled = false; btn.style.opacity = "1";
+            }
+        }
+
+        async function submitRegistration() {
+            const name = document.getElementById('reg-display-name').value;
+            const userIn = document.getElementById('reg-username').value.toLowerCase();
+            const bio = document.getElementById('reg-bio').value;
+
+            if (!name || !userIn) return;
+
+            const { error } = await client.from('profiles').insert({
+                telegram_id: currentUser.id,
+                display_name: name,
+                username: userIn,
+                bio: bio
+            });
+
+            if (error) {
+                tg.showAlert("Registration failed. Maybe the username was taken just now?");
+            } else {
+                triggerHaptic('success');
+                location.reload();
+            }
+        }
+
+        // --- INTERACTION LOGIC ---
+        function requireRegistration(callback) {
+            if (!isRegistered) {
+                toggleModal('auth-modal');
+            } else {
+                callback();
+            }
+        }
+
+        async function handleLikePost(postId, ownerId) {
+            requireRegistration(async () => {
+                const { error } = await client.from('likes').insert({ post_id: postId, user_id: currentUser.id });
+                if (!error) {
+                    if (ownerId !== currentUser.id) {
+                        await client.from('notifications').insert({ receiver_id: ownerId, sender_id: currentUser.id, type: 'like', post_id: postId });
+                    }
+                    triggerHaptic('light');
+                    loadTimelinePosts(activeOwnerId);
                 }
-                tg.HapticFeedback.impactOccurred('light');
-                loadVibes();
             });
         }
 
         async function sendComment(postId) {
-            const text = document.getElementById('comm-input').value;
-            if(!text) return;
-            checkAuth(async () => {
-                await client.from('comments').insert({ post_id: postId, user_id: user.id, parent_id: replyId, comment_text: text });
-                if (activeOwnerId !== user.id) {
-                    await client.from('notifications').insert({ receiver_id: activeOwnerId, sender_id: user.id, type: 'comment', post_id: postId });
+            const input = document.getElementById('comment-input');
+            const text = input.value;
+            if (!text) return;
+
+            requireRegistration(async () => {
+                await client.from('comments').insert({
+                    post_id: postId,
+                    user_id: currentUser.id,
+                    parent_id: replyTargetId,
+                    comment_text: text
+                });
+                
+                if (activeOwnerId !== currentUser.id) {
+                    await client.from('notifications').insert({ receiver_id: activeOwnerId, sender_id: currentUser.id, type: 'comment', post_id: postId });
                 }
-                document.getElementById('comm-input').value = '';
-                replyId = null; document.getElementById('reply-box').classList.add('hidden');
-                openFocus(postId);
+
+                input.value = '';
+                replyTargetId = null;
+                document.getElementById('reply-indicator').classList.add('hidden');
+                openFocusMode(postId);
             });
         }
 
-        async function processRegister() {
-            const dName = document.getElementById('reg-name').value;
-            const uName = document.getElementById('reg-user').value.toLowerCase();
-            const bio = document.getElementById('reg-bio').value;
-            if(!dName || !uName) return;
-            
-            const { error } = await client.from('profiles').insert({ telegram_id: user.id, display_name: dName, username: uName, bio: bio });
-            if(error) tg.showAlert("Username already taken."); else location.reload();
+        // --- SYSTEM UTILS ---
+        function triggerHaptic(style) {
+            if (style === 'success') tg.HapticFeedback.notificationOccurred('success');
+            else tg.HapticFeedback.impactOccurred(style);
+        }
+
+        function toggleModal(id) {
+            const el = document.getElementById(id);
+            if (el.classList.contains('hidden')) el.classList.remove('hidden');
+            else el.classList.add('hidden');
+        }
+
+        function openProfileLayer() { document.getElementById('profile-layer').style.display = 'flex'; }
+        function closeProfileLayer() { document.getElementById('profile-layer').style.display = 'none'; }
+        
+        function prepareReply(id, name) {
+            replyTargetId = id;
+            const ri = document.getElementById('reply-indicator');
+            ri.querySelector('span').innerText = `Replying to @${name}`;
+            ri.classList.remove('hidden');
+            document.getElementById('comment-input').focus();
+        }
+
+        function cancelReply() {
+            replyTargetId = null;
+            document.getElementById('reply-indicator').classList.add('hidden');
+        }
+
+        function updateTheme(color) {
+            document.documentElement.style.setProperty('--accent', color);
+            triggerHaptic('light');
         }
 
         async function saveSettings() {
             const css = document.getElementById('css-input').value;
-            await client.from('profiles').update({ custom_css: css }).eq('telegram_id', user.id);
+            const theme = getComputedStyle(document.documentElement).getPropertyValue('--accent');
+            
+            await client.from('profiles').update({ 
+                custom_css: css,
+                theme_color: theme.trim()
+            }).eq('telegram_id', currentUser.id);
+            
+            triggerHaptic('success');
             location.reload();
         }
 
-        async function togglePrivacy(v) {
-            await client.from('profiles').update({ is_private: v }).eq('telegram_id', user.id);
-            tg.HapticFeedback.notificationOccurred('success');
+        async function publishPost() {
+            if (!selectedMusic) return;
+            const cap = document.getElementById('post-caption').value;
+
+            await client.from('music_posts').insert({
+                sender_id: currentUser.id,
+                music_title: selectedMusic.title + ' - ' + selectedMusic.artist,
+                music_url: selectedMusic.url,
+                music_cover: selectedMusic.artwork,
+                caption: cap
+            });
+
+            triggerHaptic('success');
+            location.reload();
         }
 
         function copyProfileLink() {
-            const link = `https://t.me/AmonsPathBot/app?startapp=${user.id}`;
-            const t = document.createElement("textarea"); t.value = link; document.body.appendChild(t); t.select();
-            document.execCommand("copy"); document.body.removeChild(t);
-            tg.showAlert("Link copied! Share it with your friends.");
-            tg.HapticFeedback.notificationOccurred('success');
+            const link = `https://t.me/AmonsPathBot/app?startapp=${currentUser.id}`;
+            const el = document.createElement('textarea');
+            el.value = link;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            tg.showAlert("Profile link copied to clipboard!");
+            triggerHaptic('success');
         }
 
-        async function submitArchive() {
-            if(!selectedMusic) return;
-            const cap = document.getElementById('post-caption').value;
-            await client.from('music_posts').insert({
-                sender_id: user.id,
-                music_title: selectedMusic.title,
-                music_url: selectedMusic.url,
-                music_cover: selectedMusic.cover,
-                caption: cap
-            });
-            tg.HapticFeedback.notificationOccurred('success');
-            location.reload();
+        let searchTimeout;
+        function debounceTimelineSearch(val) {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => loadTimelinePosts(activeOwnerId, val), 600);
+        }
+
+        async function fetchStats(uid) {
+            const { count: pCount } = await client.from('music_posts').select('*', { count: 'exact', head: true }).eq('sender_id', uid);
+            const { data: likes } = await client.from('music_posts').select('id').eq('sender_id', uid);
+            
+            if (likes) {
+                const ids = likes.map(l => l.id);
+                const { count: lCount } = await client.from('likes').select('*', { count: 'exact', head: true }).in('post_id', ids);
+                document.getElementById('stat-likes').innerText = lCount || 0;
+            }
+            document.getElementById('stat-posts').innerText = pCount || 0;
         }
 
         init();

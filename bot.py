@@ -17,11 +17,6 @@ from typing import Dict, List, Optional, Set, Tuple
 from functools import wraps
 
 from telethon import TelegramClient, events, types, functions
-from telethon.tl.types import (
-    UpdateBotInlineSend,
-    InputBotInlineResultArticle,
-    InputTextMessageContent,
-)
 from telethon.errors import (
     MessageNotModifiedError,
     MessageDeletedError,
@@ -56,6 +51,8 @@ class InlineMessageSession:
     query_text: str
     sender_id: int
     sender_hash: str
+    chat_id: Optional[int] = None
+    msg_id: Optional[int] = None
     packed_inline_msg_id: Optional[str] = None
     created_at: datetime = field(default_factory=datetime.now)
 
@@ -317,8 +314,7 @@ You are now sending an **anonymous message** to this user.
         try:
             async with self.client.conversation(
                 sender_id,
-                timeout=300,
-                exclusive=True
+                timeout=300
             ) as conv:
                 response = await conv.get_response()
                 
@@ -332,6 +328,7 @@ You are now sending an **anonymous message** to this user.
                     target_user_id=target_user_id,
                     target_hash=target_hash,
                     sender_id=sender_id,
+                    sender_hash=hash_user_id(sender_id),
                     message=response
                 )
                 
@@ -351,10 +348,10 @@ You are now sending an **anonymous message** to this user.
         target_user_id: int,
         target_hash: str,
         sender_id: int,
+        sender_hash: str,
         message
     ):
         """Forward anonymous message to target user"""
-        sender_hash = hash_user_id(sender_id)
         
         forward_text = f"""
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -417,7 +414,9 @@ You are now sending an **anonymous message** to this user.
             session_id=session_id,
             query_text=question,
             sender_id=sender_id,
-            sender_hash=sender_hash
+            sender_hash=sender_hash,
+            chat_id=original_message.chat_id,
+            msg_id=original_message.id
         )
         inline_msg_db[session_id] = session
         
@@ -448,7 +447,7 @@ You are now sending an **anonymous message** to this user.
                             data=f"reply_inbox_{session_id}".encode()
                         ),
                         types.KeyboardButtonCallback(
-                            text="���� Block",
+                            text="🚫 Block",
                             data=f"block_user_{sender_id}".encode()
                         )
                     ]
@@ -507,8 +506,7 @@ You are now sending an **anonymous message** to this user.
         try:
             async with self.client.conversation(
                 OWNER_ID,
-                timeout=300,
-                exclusive=True
+                timeout=300
             ) as conv:
                 response = await conv.get_response()
                 
@@ -518,8 +516,8 @@ You are now sending an **anonymous message** to this user.
                 
                 owner_answer = response.text
                 
-                # Edit original message in group (if we have inline msg id)
-                if session.packed_inline_msg_id:
+                # Edit original message in group (if we have msg id)
+                if session.chat_id and session.msg_id:
                     await self.edit_original_question(
                         session_id=session_id,
                         owner_answer=owner_answer
@@ -534,7 +532,7 @@ You are now sending an **anonymous message** to this user.
 
     @error_handler
     async def edit_original_question(self, session_id: int, owner_answer: str):
-        """Edit the original inline message in the group"""
+        """Edit the original message in the group"""
         session = inline_msg_db.get(session_id)
         if not session:
             return
@@ -548,8 +546,12 @@ You are now sending an **anonymous message** to this user.
 {owner_answer}
 """
             
-            # Note: Actual inline message editing requires the original inline_msg_id
-            # This is a simplified example. For full functionality, store chat_id and msg_id
+            await self.client.edit_message(
+                session.chat_id,
+                session.msg_id,
+                edited_text,
+                parse_mode="markdown"
+            )
             logger.info(f"✅ Question {session_id} answered by owner")
             
         except Exception as e:
@@ -570,8 +572,7 @@ You are now sending an **anonymous message** to this user.
         try:
             async with self.client.conversation(
                 target_user_id,
-                timeout=300,
-                exclusive=True
+                timeout=300
             ) as conv:
                 response = await conv.get_response()
                 
